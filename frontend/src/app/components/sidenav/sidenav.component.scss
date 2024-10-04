@@ -1,0 +1,81 @@
+@use '../.././../../libs/shared-assets/_styles/mixins.scss' as mixins;
+@use '@angular/material' as mat;
+
+$common-margin: 32px;
+$theme: mat.define-theme();
+
+::ng-deep {
+	.mat-typography p {
+		margin: 0;
+	}
+
+	.mat-expansion-panel {
+		box-shadow: none !important;
+		border: none !important;
+		border-radius: 0 !important;
+	}
+
+	.mat-expansion-panel-header,
+	.mat-expansion-panel-body {
+		padding: 0 16px !important;
+	}
+
+}
+
+.active {
+	color: var(--primary-0);
+}
+
+.sidenav {
+	@include mixins.flex(column);
+	padding-top: $common-margin;
+	padding-bottom: $common-margin;
+	flex: 1;
+	gap: 16px;
+
+	.logo-container {
+		@include mixins.size(168px, 36px);
+		@include mixins.flex(column, center, center);
+		border-radius: 8px;
+		background-color: var(--neutral-9);
+		color: var(--neutral-5);
+		margin: 0 16px;
+
+		.logo-text {
+			@include mixins.flex(column, center, center);
+			font-size: 14px;
+		}
+	}
+
+	.nav-list {
+		flex: 1;
+		padding: 0;
+	}
+
+	.mat-mdc-button {
+		@include mixins.size(100%);
+		color: var(--neutral-1);
+		border-radius: 0;
+		padding-left: 24px;
+		padding-right: 8px;
+		justify-content: flex-start;
+
+		mat-icon {
+			transform: scale(1.33);
+		}
+
+		p {
+			font-size: 16px;
+			letter-spacing: 0.15px;
+		}
+	}
+
+	.mat-mdc-button.active {
+		background-color: var(--primary-4);
+		color: var(--primary-3);
+
+		mat-icon {
+			@extend .active;
+		}
+	}
+}

@@ -1,0 +1,10 @@
+<mat-sidenav-container class="routing-container" cdk-scrollable="false">
+	@if (shouldShowSidenav) {
+		<mat-sidenav #sidenav mode="side" opened disableClose>
+			<app-sidenav></app-sidenav>
+		</mat-sidenav>
+	}
+	<mat-sidenav-content class="main">
+		<router-outlet></router-outlet>
+	</mat-sidenav-content>
+</mat-sidenav-container>

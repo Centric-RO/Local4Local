@@ -1,0 +1,37 @@
+<div class="sidenav">
+	<div class="logo-container">
+		<p class="logo-text">{{ 'general.logo' | translate }}</p>
+	</div>
+	<mat-nav-list class="nav-list">
+		@for(entry of links; track entry.id) {
+			@if(!entry.children) {
+				<button mat-button (click)="navigate(entry.route)" [class.active]="isCurrentRoute(entry.route)">
+					<mat-icon>{{ entry.icon }}</mat-icon>
+					<p>{{ entry.title | translate }}</p>
+				</button>
+			}
+			@else {
+				<mat-expansion-panel [expanded]="isMerchantsTab()">
+					<mat-expansion-panel-header>
+						<mat-icon [class.active]="isMerchantsRoute()">{{ entry.icon }}</mat-icon>
+						<p>{{ entry.title | translate }}</p>
+					</mat-expansion-panel-header>
+					<mat-list>
+						@for(child of entry.children; track child.id) {
+							<button mat-button (click)="navigate(child.route)" [class.active]="isCurrentRoute(child.route)">
+								<p>{{ child.title | translate }}</p>
+							</button>
+						}
+					</mat-list>
+				</mat-expansion-panel>
+			}
+		}
+	</mat-nav-list>
+
+	<div class="logout-button">
+		<button mat-button (click)="logout()">
+			<mat-icon>logout</mat-icon>
+			<p>{{ 'general.logout' | translate }}</p>
+		</button>
+	</div>
+</div>

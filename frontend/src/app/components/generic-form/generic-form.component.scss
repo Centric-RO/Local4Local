@@ -1,0 +1,12 @@
+@use '../.././../../libs/shared-assets/_styles/common-input-style';
+
+::ng-deep {
+    .mat-mdc-unelevated-button:not(:disabled) {
+        color: var(--neutral-5) !important;
+    }
+
+}
+
+.error-space {
+    margin-bottom: 16px;
+}

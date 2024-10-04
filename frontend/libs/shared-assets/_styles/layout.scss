@@ -1,0 +1,58 @@
+@import 'mixins.scss';
+
+.flex-column-center {
+    @include flex(column, center, center);
+}
+
+.flex-column-start {
+    @include flex(column, center, flex-start);
+}
+
+.flex-column-end {
+    @include flex(column, center, flex-end);
+}
+
+.flex-row-center {
+    @include flex(row, center, center);
+}
+
+.flex-row-spaced {
+    @include flex(row, space-between, center);
+}
+
+.flex-column-spaced {
+    @include flex(column, space-between, center);
+}
+
+.flex-row-end {
+    @include flex(row, flex-end, center);
+}
+
+.flex-row-start {
+    @include flex(row, flex-start, center);
+}
+
+.flex-row-start-start {
+    @include flex(row, flex-start, flex-start);
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+.display-none {
+    display: none;
+}
+
+.disabled {
+    background-color: var(--neutral-2) !important;
+}
+
+.dialog-header {
+    @include flex(row, space-between, center);
+    padding-top: 24px;
+
+    span {
+        margin-right: auto;
+    }
+}
