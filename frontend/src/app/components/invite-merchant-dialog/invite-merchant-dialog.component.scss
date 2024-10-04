@@ -1,0 +1,10 @@
+@use "../.././../../libs/shared-assets/_styles/common-form.scss" as common-form;
+
+.email-error-message {
+    margin-top: 4px;
+    font-size: 12px;
+    line-height: 16px;
+    color: var(--status-danger-500);
+    font-weight: 400;
+    padding: 0 16px;
+  }

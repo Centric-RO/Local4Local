@@ -1,0 +1,159 @@
+{
+    "general": {
+        "noResults": "...No results for this input",
+        "button": {
+            "cancel": "...Cancel",
+            "delete": "...Delete button",
+            "understand": "...I understand",
+            "confirm": "...Confirm",
+            "link": "...Send me link",
+            "continueToLogin": "...Continue to Login"
+        },
+        "forgotPassword": "...Forgot password?",
+        "rememberMe": "...Remember me",
+        "logo": "...Logo",
+        "dashboard": "...Dashboard",
+        "merchants": "...Merchants",
+        "profile": "...Profile page",
+        "logout": "...Log out",
+        "invitations": "...Invitations",
+        "noData": "...No data image",
+        "status": {
+            "pending": "...Pending",
+            "rejected": "...Rejected",
+            "approved": "...Approved"
+        },
+        "paginatorResult": "...Results per page",
+        "congratulations": "...Congratulations!"
+    },
+    "table": {
+        "column": {
+            "companyName": "...Company name",
+            "category": "...Category",
+            "kvkNumber": "...KvK number",
+            "address": "...Address",
+            "website": "...Website",
+            "status": "...Status",
+            "actions": "...Actions"
+        }
+    },
+    "welcomePage": {
+        "registerButton": "...Register as a merchant",
+        "titleLeft": "...Find out where",
+        "titleRight": "...you can use *insert coin name*"
+    },
+    "register": {
+        "title": "...Register your store",
+        "subtitle": "...Grow your business — join our platform today.",
+        "website": "...Website (optional)",
+        "registerButton": "...Register",
+        "contactEmail": "...Contact email",
+        "error": {
+            "companyNameRequired": "...Enter company name.",
+            "kvkNumberRequired": "...Enter Kvk number.",
+            "categoryRequired": "...Choose category.",
+            "addressRequired": "...Enter address.",
+            "kvkFormControlLength": "...KVK must have 8 digits.",
+            "invalidUrl": "...Please enter a valid website URL. (e.g. www.example.com).",
+            "emailRequired": "...Enter your email to receive future updates.",
+            "emailInvalid": "...Please enter a valid email address."
+        }
+    },
+    "category": {
+        "all": "...All",
+        "foodAndBeverage": "...Food & Beverage",
+        "retail": "...Retail",
+        "healthAndWellness": "...Health & Wellness",
+        "services": "...Services",
+        "entertainmentAndLeisure": "...Entertainment & Leisure",
+        "specialtyStores": "...Specialty stores",
+        "technologyAndCommunications": "...Technology & Communications",
+        "homeImprovement": "...Home Improvement",
+        "other": "...Other"
+    },
+    "approvalDialog": {
+        "title": "...Wait for approval",
+        "text": "...Manager approval typically takes up to 5 business days.<br>Please note that you won't be able to see your store on the map until your request has been approved."
+    },
+    "recoveryDialog": {
+        "title": "Wachtwoord herstel succesvol!",
+        "secondaryText": "...Password recovery email sent!"
+    },
+    "changePassDialog": {
+        "title": "...New password set successful!",
+        "secondaryText": "...Your password has been successfully update!"
+    },
+    "alreadyRegisteredDialog": {
+        "title": "...Registration already applied",
+        "text": "...You have already applied with this KVK number, and your application is under review. Manager approval typically takes up to 5 business days.<br> Please note that your store will not appear on the map until your request is approved."
+    },
+    "login": {
+        "title": "...Log in",
+        "subtitle": "...to continue to your Local for Local account.",
+        "hidePassword": "...Hide password"
+    },
+    "recover": {
+        "title": "...Forgot your password?",
+        "subtitle": "...Please enter the following information to set a new password:"
+    },
+    "email": {
+        "label": "...E-mail",
+        "error": {
+            "emailRequired": "...E-mail is required.",
+            "validEmail": "...Please enter a valid email address."
+        }
+    },
+    "password": {
+        "resetPassword": {
+            "title": "...Set new password"
+        },
+        "label": "...Password",
+        "newPassword": "...New password",
+        "confirmPassword": "...Re-enter new password",
+        "error": {
+            "passwordRequired": "...Password is required.",
+            "confirmPasswordMatch": "...Confirm password has to match with password",
+            "confirmPasswordRequired": "...Confirm password is required.",
+            "passwordRequirements": "...Password must be at least 8 characters.Include at least one capital letter, one number and one symbol."
+        }
+    },
+    "dashboard": {
+        "greeting": "...Hello! \uD83D\uDC4B",
+        "currency": "...Currency",
+        "changeRateMsg": "...You can change the rate by accessing your Profile page.",
+        "nrOfMerchants": "...Number of merchants",
+        "inviteMerchantsMsg": "...Invite more merchants today!",
+        "merchantsMap": "...Merchants map"
+    },
+    "inviteMerchants": {
+        "title": "...Invite merchants",
+        "subtitle": "...Send an invitation to merchants to join Local for Local.",
+        "button": "...Invite merchants",
+        "emailAddresses": "...E-mail address(es)",
+        "invitationMessage": "...Invitation Message",
+        "emailsHint": "...You can add multiple email addresses by pressing Enter after each one.",
+        "error": {
+            "emailAddressesRequired": "...Enter E-mail address(es).",
+            "invitationMessageRequired": "...Enter invitation message",
+            "emailPattern": "...Please enter a valid email address.",
+            "emailAlreadyInList": "...This e-mail is already in the list.",
+            "emailsLimitReached": "...You've reached the limit of 50 emails."
+        },
+        "successOne": "...The invitation was successfully sent.",
+        "successMultiple": "...The invitations were successfully sent."
+    },
+    "merchants": {
+        "noData": {
+            "title": "...Welcome to Invitations",
+            "description": "...It looks like you haven’t sent any invitations yet. Let's start inviting merchants."
+        }
+    },
+    "errors": {
+        "40007": "...Ooops we got an error. Invalid credentials. Please try again or use the forgot password option",
+        "40003": "Bepaalde details in uw verzoek zijn onvolledig. Probeer het nogmaals. ",
+        "40005": "...Your attempt was unsuccessful multiple times. Please complete the ReCAPTCHA to proceed.",
+        "40014": "U kunt slechts drie pogingen tot wachtwoordherstel per dag initiëren.",
+        "40016": "De link voor wachtwoordherstel is verlopen.",
+        "40017": "Uw nieuwe wachtwoord komt overeen met uw oude wachtwoord. Kies alstublieft een ander wachtwoord."
+    }
+}
