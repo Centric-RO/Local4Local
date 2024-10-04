@@ -89,7 +89,16 @@
         </div>
     } @else {
         <div class="empty-state">
-            <app-no-data [noDataTitle]="noDataTitle" [noDataDescription]="noDataDescription"></app-no-data>
+            <app-no-data [noDataTitle]="noDataTitle" [noDataDescription]="noDataDescription">
+                <div class="button-container">
+                    <button
+                        mat-flat-button
+                        attr.aria-label="{{ 'dashboard.inviteMerchantsMsg' | translate }}"
+                        (click)="openInviteMerchantsDialog()">
+                        <mat-icon>add</mat-icon> {{ 'inviteMerchants.title' | translate }}
+                    </button>
+                </div>
+            </app-no-data>
         </div>
     }
 </div>

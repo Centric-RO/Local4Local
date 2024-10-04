@@ -144,8 +144,8 @@
     },
     "merchants": {
         "noData": {
-            "title": "...Welcome to Invitations",
-            "description": "...It looks like you haven’t sent any invitations yet. Let's start inviting merchants."
+            "title": "...Welcome to Merchants Management",
+            "description": "...It looks like no merchants joined the platform yet. Let's get started by inviting merchants."
         }
     },
     "errors": {
