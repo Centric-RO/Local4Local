@@ -1,6 +1,10 @@
 @use "./mixins.scss" as mixins;
 @forward "./layout.scss";
 
+$theme-500: var(--theme-500);
+$neutral-0: var(--neutral-0);
+$neutral-600: var(--neutral-600);
+
 ::ng-deep {
     .mdc-text-field--outlined:not(.mdc-text-field--disabled) {
 
@@ -9,17 +13,17 @@
         &:active {
 
             .mdc-notched-outline {
-                border-color: var(--neutral-1) !important;
+                border-color: $neutral-600 !important;
             }
         }
 
         &.mdc-text-field--focused {
             .mdc-floating-label {
-                color: var(--neutral-1) !important;
+                color: $neutral-600 !important;
             }
 
             .mdc-text-field__input:focus {
-                caret-color: var(--neutral-1) !important;
+                caret-color: $neutral-600 !important;
             }
         }
     }
@@ -31,17 +35,17 @@
 
 
     .mat-mdc-option.mdc-list-item {
-        background-color: var(--neutral-5) !important;
+        background-color: $neutral-0 !important;
 
         &:hover,
         &:active {
-            background-color: var(--neutral-5) !important;
+            background-color: $neutral-0 !important;
         }
 
     }
 
     .mat-mdc-autocomplete-panel.mat-mdc-autocomplete-visible {
-        background-color: var(--neutral-5);
+        background-color: $neutral-0;
     }
 }
 
@@ -57,11 +61,11 @@
     mat-dialog-actions {
         button {
             &:nth-of-type(2) {
-                background-color: var(--primary-0);
+                background-color: $theme-500;
             }
 
             &:nth-of-type(1) {
-                color: var(--primary-0);
+                color: $theme-500;
             }
 
         }

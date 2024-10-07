@@ -1,5 +1,7 @@
 @use "../.././../../libs/shared-assets/_styles/mixins.scss" as mixins;
 
+$theme-500-rgb: var(--theme-500-rgb);
+
 :host {
 	::ng-deep {
 		.ol-viewport {
@@ -33,7 +35,7 @@
 			min-width: 320px;
 			padding: 24px;
 			gap: 16px;
-			box-shadow: 0 1px 2px 0 var(--primary-5);
+			box-shadow: 0 1px 2px 0 $theme-500-rgb;
 
 			mat-card-header {
 				padding: 0;
@@ -52,11 +54,11 @@
 				p {
 					font-size: 32px;
 					line-height: 40px;
-					color: var(--primary-1);
+					color: var(--theme-900);
 				}
 
 				button {
-					background-color: var(--primary-0);
+					background-color: var(--theme-500);
 
 					mat-icon {
 						color: white;
@@ -68,7 +70,7 @@
 
 	.map-card {
 		mat-card {
-			box-shadow: 0 1px 2px 0 var(--primary-5);
+			box-shadow: 0 1px 2px 0 $theme-500-rgb;
 
 			mat-card-header {
 				height: 60px;
