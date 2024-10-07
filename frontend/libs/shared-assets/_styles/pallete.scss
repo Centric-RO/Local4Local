@@ -1,38 +1,49 @@
 :root {
-	//Primary Colors
-	--primary-0: #6750a4;
-	--primary-1: #21005d;
-	--primary-2: #1e88e5;
-	--primary-3: #000000;
-	--primary-4: #e8def8;
-	--primary-5: #6750a44d;
+	
+	// Theme colors
+	--theme-50: #F1EEF8;
+	--theme-100: #DFD4F1;
+	--theme-200: #C2B1E3;
+	--theme-300: #A38BD3;
+	--theme-400: #8465C3;
+	--theme-500: #6750A4;
+	--theme-500-rgb: rgba(103, 80, 164, 0.3);
+	--theme-600: #594693;
+	--theme-700: #46387D;
+	--theme-800: #362C69;
+	--theme-900: #24194F;
 
-	//Neutrals
-	--neutral-0: #79747e;
-	--neutral-1: #49454f;
-	--neutral-2: #1d1b201f;
-	--neutral-3: rgba(73, 69, 79, 0.12);
-	--neutral-4: #cac4d0;
-	--neutral-5: white;
-	--neutral-7: #555;
-	--neutral-8: #5f6368;
-	--neutral-9: #1d1b20;
-	--neutral-10: #f0f7e8;
-	--neutral-11: #61a612;
-	--neutral-12: #e6f5fb;
-	--neutral-13: #0093d2;
-	--neutral-14: #fcebeb;
-	--neutral-15: #dd3333;
-	--neutral-16: #fff8e8;
-	--neutral-17: #ffb100;
-	--neutral-18: #f3f5f9;
-	--neutral-19: #FF9B0C;
-	--neutral-20: #086B39;
-	--neutral-21: #B60809;
-	--neutral-22: #56515F;
-	--neutral-23: #B9B7BF;
+	--tint-50: #D9D6EC;
+	--tint-100: #CBC0E4;
 
-	//Danger colors
+	// Neutrals colors
+	--neutral-0: #FFFFFF;
+	--neutral-50: #F2F1F3;
+	--neutral-100: #DAD8DD;
+	--neutral-200: #B9B7BF;
+	--neutral-300: #918F9C;
+	--neutral-400: #6C6877;
+	--neutral-500: #56515F;
+	--neutral-600: #49454F;
+	--neutral-700: #3A353F;
+	--neutral-800: #2A2732;
+	--neutral-900: #1D1B20;
 
-	--status-danger-500: rgb(255, 5, 5);
+	--surface: #F3F5F9;
+
+	// Accents colors
+	--success-50: #F0F7E8;
+	--success-100: #61A612;
+	--success-200: #086B39;
+
+	--info-50: #E6F5FB;
+	--info-100: #0093D2;
+
+	--danger-50: #FCEBEB;
+	--danger-100: #DD3333;
+	--danger-200: #B60809;
+
+	--warning-50: #FFF8E8;
+	--warning-100: #FFB100;
+	--warning-200: #FF9B0C;
 }

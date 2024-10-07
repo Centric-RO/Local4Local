@@ -1,11 +1,11 @@
 @use '../.././../../libs/shared-assets/_styles/mixins.scss' as mixins;
 
 :host {
-    button {
-        margin-right: 32px;
-        color: var(--primary-0);
-        border: 1px solid var(--neutral-0);
-    }
+  button {
+    margin-right: 32px;
+    color: var(--theme-500);
+    border: 1px solid var(--neutral-300);
+  }
 
   ::ng-deep {
     .mdc-evolution-chip__action--presentational:hover {
@@ -16,7 +16,11 @@
       --mdc-chip-flat-selected-outline-width: 1px;
 
       .mat-mdc-chip-highlighted {
-        background-color: var(--neutral-3);
+        background-color: var(--theme-500);
+
+        .mat-mdc-chip-action-label {
+          color: var(--neutral-0);
+        }
       }
 
       .mdc-evolution-chip-set__chips {
@@ -28,8 +32,8 @@
 }
 
 .top-section {
-    @include mixins.size(100%, 10%);
-    @include mixins.flex(row, end, center);
+  @include mixins.size(100%, 10%);
+  @include mixins.flex(row, end, center);
 }
 
 .welcome {
@@ -39,17 +43,17 @@
   h1 {
     font-size: 36px;
     line-height: 44px;
-    color: var(--primary-1);
+    color: var(--theme-900);
     margin: 0;
   }
 }
 
 .categories-section {
-    padding: 0 128px;
+  padding: 0 128px;
 }
 
 .map-container {
-    @include mixins.size(100%, 772px);
-    padding: 24px 128px 32px 128px;
-    box-sizing: border-box;
+  @include mixins.size(100%, 772px);
+  padding: 24px 128px 32px 128px;
+  box-sizing: border-box;
 }

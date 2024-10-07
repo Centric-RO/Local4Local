@@ -1,5 +1,7 @@
 @use '../.././../../libs/shared-assets/_styles/mixins.scss' as mixins;
 
+$neutral-0: var(--neutral-0);
+
 ::ng-deep {
 	.ol-attribution,
 	.ol-rotate {
@@ -26,7 +28,7 @@ $common-font-size: 14px;
 }
 
 .ol-popup {
-	background-color: var(--neutral-5);
+	background-color: $neutral-0;
 	padding: 8px 0px 16px 16px;
 	border-radius: 28px;
 	max-width: 360px;
@@ -44,7 +46,7 @@ $common-font-size: 14px;
 	}
 
 	&:after {
-		border-top-color: var(--neutral-5);
+		border-top-color: $neutral-0;
 		border-width: 10px;
 		margin-left: -10px;
 	}
@@ -69,18 +71,18 @@ $common-font-size: 14px;
 }
 
 #popup-category {
-	color: var(--neutral-0);
+	color: var(--neutral-300);
 }
 
 #popup-address {
-	color: var(--neutral-7);
+	color: var(--neutral-500);
 	margin-left: 4px;
 	width: 100%;
 	line-height: 20px;
 }
 
 #popup-link {
-	color: var(--primary-2);
+	color: var(--info-100);
 	margin-left: 4px;
 }
 
@@ -106,7 +108,7 @@ $common-font-size: 14px;
 .link-icon {
 	@include mixins.size(16px, 16px);
 	font-size: 16px;
-	color: var(--neutral-8);
+	color: var(--neutral-400);
 }
 
 .location-icon {

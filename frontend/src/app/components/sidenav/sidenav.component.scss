@@ -23,7 +23,7 @@ $theme: mat.define-theme();
 }
 
 .active {
-	color: var(--primary-0);
+	color: var(--neutral-900);
 }
 
 .sidenav {
@@ -38,7 +38,7 @@ $theme: mat.define-theme();
 		@include mixins.flex(column, center, center);
 		border-radius: 8px;
 		background-color: var(--neutral-9);
-		color: var(--neutral-5);
+		color: var(--neutral-0);
 		margin: 0 16px;
 
 		.logo-text {
@@ -54,7 +54,7 @@ $theme: mat.define-theme();
 
 	.mat-mdc-button {
 		@include mixins.size(100%);
-		color: var(--neutral-1);
+		color: var(--neutral-600);
 		border-radius: 0;
 		padding-left: 24px;
 		padding-right: 8px;
@@ -71,8 +71,8 @@ $theme: mat.define-theme();
 	}
 
 	.mat-mdc-button.active {
-		background-color: var(--primary-4);
-		color: var(--primary-3);
+		background-color: var(--theme-100);
+		color: var(--neutral-900);
 
 		mat-icon {
 			@extend .active;

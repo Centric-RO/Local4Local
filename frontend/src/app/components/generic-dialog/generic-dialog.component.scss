@@ -1,19 +1,21 @@
 @use "../.././../../libs/shared-assets/_styles/mixins.scss" as mixins;
 @use "../.././../../libs/shared-assets/_styles/layout.scss" as layout;
 
+$theme-500: var(--theme-500);
+
 :host {
     mat-dialog-actions {
         height: 88px;
         margin-top: 24px;
-        border-top: 1px solid var(--neutral-4);
+        border-top: 1px solid var(--neutral-200);
 
         button {
             &:nth-of-type(2) {
-                background-color: var(--primary-0);
+                background-color: var($theme-500);
             }
 
             &:nth-of-type(1) {
-                color: var(--primary-0);
+                color: var($theme-500);
             }
 
         }

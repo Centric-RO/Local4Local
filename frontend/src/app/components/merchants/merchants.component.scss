@@ -8,7 +8,7 @@
         padding: 32px;
 
         button {
-            background-color: var(--primary-0);
+            background-color: var(--theme-500);
         }
     }
 
@@ -24,7 +24,7 @@
     }
 
     .mat-mdc-table {
-        background-color: var(--neutral-5);
+        background-color: var(--neutral-0);
     }
 
     .status-container {
@@ -36,15 +36,15 @@
     .status-icon {
 
         &.pending {
-            color: var(--neutral-19);
+            color: var(--warning-200);
         }
 
         &.approved {
-            color: var(--neutral-20);
+            color: var(--success-200);
         }
 
         &.rejected {
-            color: var(--neutral-21);
+            color: var(--danger-200);
         }
     }
 
@@ -52,11 +52,11 @@
 
         &.pending,
         &.approved {
-            color: var(--neutral-22);
+            color: var(--neutral-500);
         }
 
         &.rejected {
-            color: var(--neutral-23);
+            color: var(--neutral-200);
         }
     }
 
