@@ -9,6 +9,8 @@ import { GenericFormComponent } from './components/generic-form/generic-form.com
 import { MerchantsComponent } from './components/merchants/merchants.component';
 import { InvitationsComponent } from './components/invitations/invitations.component';
 import { ProfileComponent } from './components/profile/profile.component';
+import { MfaComponent } from './components/mfa/mfa.component';
+import { MfaGuard } from './guards/mfa.guard';
 
 
 export const appRoutes: Route[] = [
@@ -20,5 +22,6 @@ export const appRoutes: Route[] = [
     { path: commonRoutingConstants.merchants, component: MerchantsComponent, canActivate: [AuthGuard] },
     { path: commonRoutingConstants.invitations, component: InvitationsComponent, canActivate: [AuthGuard] },
     { path: commonRoutingConstants.profile, component: ProfileComponent, canActivate: [AuthGuard] },
+    { path: commonRoutingConstants.mfa, component: MfaComponent, canActivate: [MfaGuard] },
     { path: '**', redirectTo: '', pathMatch: 'full' }
 ];

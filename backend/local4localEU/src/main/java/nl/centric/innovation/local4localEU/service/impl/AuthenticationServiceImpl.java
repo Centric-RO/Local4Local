@@ -4,48 +4,35 @@ import io.hypersistence.utils.common.StringUtils;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import nl.centric.innovation.local4localEU.dto.AuthResponseDto;
 import nl.centric.innovation.local4localEU.dto.LoginRequestDto;
 import nl.centric.innovation.local4localEU.dto.LoginResponseDto;
 import nl.centric.innovation.local4localEU.entity.LoginAttempt;
 import nl.centric.innovation.local4localEU.entity.OtpCodes;
-import nl.centric.innovation.local4localEU.entity.Role;
 import nl.centric.innovation.local4localEU.entity.User;
-import nl.centric.innovation.local4localEU.exception.CustomException;
 import nl.centric.innovation.local4localEU.exception.CustomException.AuthenticationLoginException;
 import nl.centric.innovation.local4localEU.exception.CustomException.CaptchaException;
 import nl.centric.innovation.local4localEU.exception.CustomException.DtoValidateNotFoundException;
 import nl.centric.innovation.local4localEU.exception.CustomException.InvalidRoleException;
-import nl.centric.innovation.local4localEU.exception.L4LEUException;
-import nl.centric.innovation.local4localEU.repository.OtpCodesRepository;
 import nl.centric.innovation.local4localEU.service.interfaces.AuthenticationService;
 import nl.centric.innovation.local4localEU.service.interfaces.CaptchaService;
 import nl.centric.innovation.local4localEU.service.interfaces.EmailService;
 import nl.centric.innovation.local4localEU.service.interfaces.LoginAttemptService;
 import nl.centric.innovation.local4localEU.service.interfaces.OtpCodesService;
-import nl.centric.innovation.local4localEU.service.interfaces.RefreshTokenService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.http.HttpCookie;
 import org.springframework.http.HttpHeaders;
-import org.springframework.http.ResponseCookie;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import nl.centric.innovation.local4localEU.authentication.JwtUtil;
 import util.SecurityUtils;
 
-import java.security.SecureRandom;
-import java.util.Date;
-import java.util.Map;
 import java.util.Optional;
 import java.util.UUID;
-
-import static util.ClaimsUtils.setClaims;
 
 @Service
 @RequiredArgsConstructor
@@ -62,8 +49,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private final CaptchaService captchaService;
 
-    private final RefreshTokenService refreshTokenService;
-
     private final EmailService emailService;
 
     private final OtpCodesService otpCodesService;
@@ -76,18 +61,24 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     @Value("${error.credentials.invalid}")
     private String errorCredentialsInvalid;
 
-    @Value("${jwt.refresh.expiration}")
-    private String refreshTokenDuration;
-
-    @Value("${jwt.expiration.time}")
-    private String jwtExpirationTime;
+    @Value("${otp.expiration.time}")
+    private String otpExpirationTime;
 
     @Value("${error.jwt.notFound}")
     private String errorJwtNotFound;
 
+    @Value("${error.existing.session}")
+    private String errorExistingSession;
+
     @Override
-    public AuthResponseDto authenticateByRole(LoginRequestDto loginRequest, String language, HttpServletRequest request)
+    public HttpHeaders authenticateByRole(LoginRequestDto loginRequest, String language, HttpServletRequest request)
             throws CaptchaException, AuthenticationLoginException, InvalidRoleException {
+
+        String accessToken = jwtUtil.extractTokenFromCookie(request, "jwtToken");
+
+        if (accessToken != null) {
+            throw new AuthenticationLoginException(errorExistingSession);
+        }
 
         String remoteAddress = SecurityUtils.getClientIP(request);
 
@@ -101,7 +92,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
 
         if (isCaptchaValid(isRecaptchaBlank, loginRequest.reCaptchaResponse(), remoteAddress)) {
-            return performAuthentication(loginRequest, remoteAddress, loginAttempt, language);
+            return performAuthentication(loginRequest, remoteAddress, loginAttempt, language, request);
         }
 
         throw new CaptchaException(errorCaptchaNotCompleted);
@@ -109,7 +100,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     @Override
     public LoginResponseDto getTokenInfo(HttpServletRequest httpServletRequest) throws DtoValidateNotFoundException,
-            ExpiredJwtException, AuthenticationLoginException {
+            ExpiredJwtException {
         String token = jwtUtil.extractTokenFromCookie(httpServletRequest, "jwtToken");
 
         if (token == null) {
@@ -124,8 +115,9 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     }
 
-    private AuthResponseDto performAuthentication(LoginRequestDto loginRequestDto, String remoteAddress,
-                                                  Optional<LoginAttempt> loginAttempt, String language)
+    private HttpHeaders performAuthentication(LoginRequestDto loginRequestDto, String remoteAddress,
+                                              Optional<LoginAttempt> loginAttempt, String language,
+                                              HttpServletRequest httpServletRequest)
             throws CaptchaException, AuthenticationLoginException, InvalidRoleException {
 
         authenticate(loginAttempt, loginRequestDto, remoteAddress);
@@ -134,7 +126,34 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         loginAttemptService.countLoginAttempts(loginAttempt, remoteAddress, true);
 
-        return generateAuthenticationResponse(userDetails, loginRequestDto.rememberMe(), language);
+        HttpHeaders httpHeaders = new HttpHeaders();
+
+        String sessionId = jwtUtil.extractTokenFromCookie(httpServletRequest, "sessionId");
+        OtpCodes otpCode = otpCodesService.checkForOtpCode(userDetails, sessionId);
+
+        boolean verifySessionId = sessionId == null || sessionId.isEmpty() ||
+                otpCode.getSessionId() != UUID.fromString(sessionId);
+
+        if (verifySessionId) {
+            setCookies(httpHeaders, otpCode.getSessionId(), loginRequestDto.rememberMe());
+        }
+
+        emailService.sendManagerOtpEmail(language, new String[]{userDetails.getEmail()}, otpCode.getOtpCode());
+
+        return httpHeaders;
+    }
+
+    private HttpCookie createSessionIdCookie(UUID sessionId) {
+        return SecurityUtils.createCookie("sessionId", sessionId.toString(), otpExpirationTime);
+    }
+
+    private HttpCookie createRememberMeCookie(Boolean rememberMe) {
+        return SecurityUtils.createCookie("rememberMe", rememberMe.toString(), otpExpirationTime);
+    }
+
+    private void setCookies(HttpHeaders httpHeaders, UUID sessionId, Boolean rememberMe) {
+        httpHeaders.add(HttpHeaders.SET_COOKIE, createSessionIdCookie(sessionId).toString());
+        httpHeaders.add(HttpHeaders.SET_COOKIE, createRememberMeCookie(rememberMe).toString());
     }
 
     private User loadUserDetails(String email) throws AuthenticationLoginException {
@@ -150,35 +169,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         }
     }
 
-    private AuthResponseDto generateAuthenticationResponse(User userDetails, boolean rememberMe, String language) {
-        HttpHeaders httpHeaders = new HttpHeaders();
-
-        // Modify extraClaims when necessary
-        Map<String, Object> extraClaims = setClaims(userDetails);
-
-        String jwtToken = jwtUtil.generateToken(extraClaims, userDetails);
-
-        if (rememberMe) {
-            String refreshToken = refreshTokenService.getRefreshToken(userDetails).getToken();
-            httpHeaders.add(HttpHeaders.SET_COOKIE, createRefreshTokenCookie(refreshToken).toString());
-            httpHeaders.add(HttpHeaders.SET_COOKIE, createJwtTokenCookie(jwtToken, true).toString());
-        } else {
-            httpHeaders.add(HttpHeaders.SET_COOKIE, createJwtTokenCookie(jwtToken, false).toString());
-        }
-
-        Role role = (Role) extraClaims.get("role");
-        Date expirationDate = jwtUtil.extractExpirationDate(jwtToken);
-        sendOtpCode(userDetails, language);
-
-        return AuthResponseDto.builder()
-                .loginResponseDto(LoginResponseDto.builder()
-                        .role(role.getName())
-                        .expirationDate(expirationDate)
-                        .rememberMe(rememberMe)
-                        .build())
-                .httpHeaders(httpHeaders)
-                .build();
-    }
 
     private void authenticate(Optional<LoginAttempt> loginAttempt, LoginRequestDto loginRequestDto,
                               String remoteAddress) throws CaptchaException, AuthenticationLoginException {
@@ -192,11 +182,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
         } catch (BadCredentialsException e) {
             this.manageBadCredentials(loginRequestDto, remoteAddress, loginAttempt);
         }
-    }
-
-    private void sendOtpCode(User userDetails, String language) {
-        OtpCodes otpCode = otpCodesService.saveOtpCode(userDetails);
-        emailService.sendManagerOtpEmail(language, new String[]{userDetails.getEmail()}, otpCode.getOtpCode());
     }
 
     private void manageBadCredentials(LoginRequestDto loginRequestDto, String
@@ -219,17 +204,6 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
     private boolean isCaptchaValid(boolean isRecaptchaBlank, String reCaptchaResponse, String remoteAddress) {
         return isRecaptchaBlank || captchaService.isResponseValid(reCaptchaResponse, remoteAddress);
-    }
-
-    private HttpCookie createJwtTokenCookie(String jwtToken, boolean rememberMe) {
-        if (rememberMe) {
-            return SecurityUtils.createCookie("jwtToken", jwtToken, refreshTokenDuration);
-        }
-        return SecurityUtils.createCookie("jwtToken", jwtToken, jwtExpirationTime);
-    }
-
-    private HttpCookie createRefreshTokenCookie(String refreshToken) {
-        return SecurityUtils.createCookie("refreshToken", refreshToken, refreshTokenDuration);
     }
 
 }

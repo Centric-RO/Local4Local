@@ -25,7 +25,6 @@ export class LoginComponent implements OnInit {
 	public form: FormGroup;
 	public matcher = new L4LErrorStateMatcher();
 	public userIsBlocked = false;
-	private returnUrl: string = commonRoutingConstants.dashboard;
 
 	@ViewChild(RecaptchaComponent) ngRecaptcha!: RecaptchaComponent;
 
@@ -41,8 +40,6 @@ export class LoginComponent implements OnInit {
 
 	public ngOnInit(): void {
 		this.createForm();
-		const encodedReturnUrl = this.route.snapshot.queryParams['returnUrl'] || commonRoutingConstants.dashboard;
-		this.returnUrl = decodeURIComponent(encodedReturnUrl);
 	}
 
 	public login(): void {
@@ -66,8 +63,15 @@ export class LoginComponent implements OnInit {
 			role: Role.MANAGER
 		};
 
+		const returnUrl = this.route.snapshot.queryParams['returnUrl'];
+
 		this.authService.login(loginRequest).subscribe(() => {
-			this.router.navigateByUrl(this.returnUrl);
+			if (returnUrl && returnUrl !== `/${commonRoutingConstants.mfa}`) {
+				this.router.navigate([commonRoutingConstants.mfa], { queryParams: { returnUrl } });
+				return;
+			}
+
+			this.router.navigate([commonRoutingConstants.mfa]);
 		});
 	}
 
@@ -85,6 +89,10 @@ export class LoginComponent implements OnInit {
 			if (data === CaptchaStatus.CREATED) {
 				this.addRecaptcha();
 			} else {
+				if (!this.ngRecaptcha) {
+					return;
+				}
+				
 				this.ngRecaptcha.reset();
 			}
 

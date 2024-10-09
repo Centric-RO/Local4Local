@@ -26,4 +26,14 @@ public class SecurityUtils {
                 .path("/")
                 .build();
     }
+
+    public static ResponseCookie deleteCookie(String cookieName) {
+        return ResponseCookie.from(cookieName, null)
+                .maxAge(0)
+                .httpOnly(true)
+                .secure(true)
+                .path("/")
+                .sameSite("None")
+                .build();
+    }
 }

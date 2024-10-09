@@ -14,7 +14,7 @@ import { commonRoutingConstants } from '../_constants/common-routing.constants';
 import { AuthService } from '../services/auth.service';
 import { Router } from '@angular/router';
 import { LoginResponseDto } from '../models/login-response.model';
-import { CAPTCHA_SHOW, CREDENTIALS_INVALID, JWT_EXPIRED, JWT_NOT_FOUND } from '../_constants/error-constants';
+import { CAPTCHA_SHOW, CREDENTIALS_INVALID, JWT_EXPIRED, JWT_NOT_FOUND, OTP_NOT_FOUND } from '../_constants/error-constants';
 
 @Injectable()
 export class ErrorCatchingInterceptor implements HttpInterceptor {
@@ -45,6 +45,11 @@ export class ErrorCatchingInterceptor implements HttpInterceptor {
         next: HttpHandler
     ): Observable<HttpEvent<unknown>> {
         const customErrorCode = error.error;
+        const errorCodes = [
+            JWT_NOT_FOUND,
+            OTP_NOT_FOUND
+          ];
+          
         switch (customErrorCode.message) {
             case CREDENTIALS_INVALID:
                 this.handleCaptcha(CaptchaStatus.INVALID_CREDENTIALS);
@@ -58,7 +63,7 @@ export class ErrorCatchingInterceptor implements HttpInterceptor {
                 break;
         }
 
-        if (!this.shownErrorCodes.has(customErrorCode.message) && customErrorCode.message !== JWT_NOT_FOUND) {
+        if (!this.shownErrorCodes.has(customErrorCode.message) && !errorCodes.includes(customErrorCode.message)) {
 
             this.showToast(customErrorCode.message, SnackbarType.ERROR);
             this.shownErrorCodes.add(customErrorCode);

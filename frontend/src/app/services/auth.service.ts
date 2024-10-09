@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders, HttpResponse } from '@angular/common/http';
+import { HttpClient, HttpHeaders, HttpParams, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { Observable, BehaviorSubject, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
@@ -21,9 +21,8 @@ export class AuthService {
 			headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
 			observe: 'response'
 		}).pipe(
-			tap((response: HttpResponse<LoginResponseDto>) => {
-				this.loginResponseDto = response.body;
-				this.isAuthenticatedSubject.next(this.isTokenValid());
+			tap(() => {
+				this.isAuthenticatedSubject.next(true);
 			})
 		);
 	}
@@ -50,7 +49,21 @@ export class AuthService {
 		);
 	}
 
-	public setDto(login : LoginResponseDto) {
+	public verifyOtpCode(otpCode: number): Observable<HttpResponse<LoginResponseDto>> {
+		const params = new HttpParams().set('otpCode', otpCode)
+		return this.http.post<LoginResponseDto>(`${environment.apiPath}/authenticate/validateOtp`, {}, {
+			headers: new HttpHeaders({ 'Content-Type': 'application/json' }),
+			params: params,
+			observe: 'response'
+		}).pipe(
+			tap((response: HttpResponse<LoginResponseDto>) => {
+				this.loginResponseDto = response.body;
+				this.isAuthenticatedSubject.next(this.isTokenValid());
+			})
+		);
+	}
+
+	public setDto(login: LoginResponseDto) {
 		this.loginResponseDto = login;
 		this.isAuthenticatedSubject.next(this.isTokenValid());
 	}

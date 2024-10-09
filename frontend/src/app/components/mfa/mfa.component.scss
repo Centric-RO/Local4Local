@@ -1,0 +1,13 @@
+@use '../.././../../libs/shared-assets/_styles/common-input-style';
+
+:host {
+	.header {
+		:nth-child(2) {
+			text-align: start !important;
+		}
+	}
+
+    .resend-message {
+        margin-top: 32px !important; 
+    }
+}

@@ -1,0 +1,39 @@
+<div class="background-cover">
+	<div class="form-container">
+		<div mat-button class="logo-container flex-column-center">
+			<p class="logo-text">{{ 'general.logo' | translate }}</p>
+		</div>
+
+		<div class="header">
+			<p class="bold">{{ 'mfa.title' | translate }}</p>
+			<p [innerHTML]="'mfa.subtitle' | translate"></p>
+		</div>
+
+		<form [formGroup]="form">
+			<mat-form-field class="inputs" appearance="outline">
+				<mat-label>{{ 'mfa.label' | translate }}</mat-label>
+				<input
+					matInput
+					maxlength="6"
+					placeholder="{{ 'mfa.label' | translate }}"
+					formControlName="code"
+					[errorStateMatcher]="matcher" />
+				@if (hasRequiredError(form, 'code')) {
+				<mat-error>
+					{{ 'mfa.error.required' | translate }}
+				</mat-error>
+				} @if (hasPatternError(form, 'code') || invalidCode) {
+				<mat-error>
+					{{ 'mfa.error.invalid' | translate }}
+				</mat-error>
+				}
+			</mat-form-field>
+		</form>
+
+		<button mat-flat-button class="form-button" [disabled]="!form.valid" (click)="verifyOtpCode()">
+			{{ 'general.button.continue' | translate }}
+		</button>
+
+		<p class="resend-message">{{ 'mfa.resendMessage' | translate }}</p>
+	</div>
+</div>
