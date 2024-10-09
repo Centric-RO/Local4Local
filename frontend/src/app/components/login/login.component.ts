@@ -43,6 +43,7 @@ export class LoginComponent implements OnInit {
 		this.createForm();
 		const encodedReturnUrl = this.route.snapshot.queryParams['returnUrl'] || commonRoutingConstants.dashboard;
 		this.returnUrl = decodeURIComponent(encodedReturnUrl);
+		console.log("test")
 	}
 
 	public login(): void {
