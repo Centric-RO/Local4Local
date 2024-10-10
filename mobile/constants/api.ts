@@ -1,1 +1,0 @@
-export const API_PATH = 'http://Local4local-eu-testing.eba-pcbpxvpp.eu-central-1.elasticbeanstalk.com/api';
