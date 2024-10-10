@@ -1,1 +1,1 @@
-# Local4Local EU
+# Local4Local
