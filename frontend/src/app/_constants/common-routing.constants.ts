@@ -5,5 +5,6 @@ export const commonRoutingConstants = {
     changePassword: 'recover/reset-password',
     merchants: 'merchants',
     invitations: 'invitations',
-    profile: 'profile'
+    profile: 'profile',
+    mfa: 'mfa'
 }

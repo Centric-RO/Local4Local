@@ -90,18 +90,33 @@ describe('LoginComponent', () => {
         });
     });
 
-    it('should navigate to dashboard after successful login', () => {
+    it('should navigate to MFA after successful login', () => {
         jest.spyOn(authServiceMock, 'login').mockReturnValue(of({}) as any);
-        jest.spyOn(routerMock as any, 'navigateByUrl'); // Mocking navigateByUrl
-
+        const navigateSpy = jest.spyOn(routerMock as any, 'navigate');
+    
         component.form.get('email')?.setValue('test@example.com');
         component.form.get('password')?.setValue('Password123');
-
+    
         component.login();
-
-        expect(routerMock.navigateByUrl).toHaveBeenCalledWith(commonRoutingConstants.dashboard);
+    
+        expect(navigateSpy).toHaveBeenCalledWith([commonRoutingConstants.mfa]);
     });
 
+    it('should navigate to MFA with returnUrl in queryParams if returnUrl is not MFA', () => {
+        jest.spyOn(authServiceMock, 'login').mockReturnValue(of({}) as any);
+        const navigateSpy = jest.spyOn(routerMock as any, 'navigate');
+        
+        const returnUrl = '/dashboard';
+        component["route"].snapshot.queryParams = { returnUrl };
+    
+        component.form.get('email')?.setValue('test@example.com');
+        component.form.get('password')?.setValue('Password123');
+    
+        component.login();
+    
+        expect(navigateSpy).toHaveBeenCalledWith([commonRoutingConstants.mfa], { queryParams: { returnUrl } });
+    });
+    
     it('should create a form group with form controls', () => {
         expect(component.form.contains('email')).toBeTruthy();
         expect(component.form.contains('password')).toBeTruthy();

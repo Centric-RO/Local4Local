@@ -7,7 +7,8 @@
             "understand": "I understand",
             "confirm": "Confirm",
             "link": "Send me link",
-            "continueToLogin": "Continue to Login"
+            "continueToLogin": "Continue to Login",
+            "continue": "Continue"
         },
         "forgotPassword": "Forgot password?",
         "rememberMe": "Remember me",
@@ -144,8 +145,17 @@
     },
     "merchants": {
         "noData": {
-            "title": "Welcome to Merchants Management",
-            "description": "It looks like no merchants joined the platform yet. Let's get started by inviting merchants."
+            "title": "Welcome to Invitations",
+            "description": "It looks like you haven’t sent any invitations yet. Let's start inviting merchants."
+        }
+    },
+    "mfa": {
+        "title": "Two-factor authentication",
+        "subtitle": "To continue, enter the secure code we sent to your e-mail.<br>Check junk mail if it’s not in your inbox.",
+        "label": "6-digit code",
+        "error": {
+            "required": "Enter the one time code.",
+            "invalid": "Invalid code"
         }
     },
     "errors": {

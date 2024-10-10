@@ -21,7 +21,8 @@ export class SidenavService {
 		const pathsToHideFor = [
 			commonRoutingConstants.login,
 			commonRoutingConstants.recover,
-			commonRoutingConstants.changePassword
+			commonRoutingConstants.changePassword,
+			commonRoutingConstants.mfa
 		];
 
 		pathsToHideFor.forEach(pathToHideFor => {

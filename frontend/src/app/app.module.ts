@@ -44,6 +44,7 @@ import { InvitationsComponent } from './components/invitations/invitations.compo
 import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { ProfileComponent } from './components/profile/profile.component';
+import { MfaComponent } from './components/mfa/mfa.component';
 
 export function httpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -65,7 +66,8 @@ export function httpLoaderFactory(http: HttpClient) {
 		InvitationsComponent,
 		MerchantsComponent,
 		NoDataComponent,
-  ProfileComponent
+  ProfileComponent,
+  MfaComponent
 	],
 	imports: [
 		HttpClientModule,

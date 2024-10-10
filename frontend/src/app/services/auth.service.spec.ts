@@ -248,8 +248,29 @@ describe('AuthService', () => {
 			expect(isAuthenticated).toBe(false);
 		});
 	});
-	
 
+	it('should call verifyOtpCode and return HttpResponse<LoginResponseDto>', (done) => {
+		const otpCode = 123456;
+		const mockLoginResponseDto: LoginResponseDto = {
+			role: Role.MANAGER,
+			expirationDate: new Date('2099-12-31T23:59:59'),
+			rememberMe: false
+		};
+	
+		service.verifyOtpCode(otpCode).subscribe((response) => {
+			expect(response.body).toEqual(mockLoginResponseDto);
+			expect(service['loginResponseDto']).toEqual(mockLoginResponseDto);
+			expect(service.isTokenValid()).toBe(true);
+			done();
+		});
+	
+		const req = httpMock.expectOne(`${environment.apiPath}/authenticate/validateOtp?otpCode=${otpCode}`);
+		expect(req.request.method).toBe('POST');
+		expect(req.request.params.get('otpCode')).toBe(otpCode.toString());
+		expect(req.request.headers.get('Content-Type')).toBe('application/json');
+		req.flush(mockLoginResponseDto);
+	});
+	
 	describe('isRememberMeActive', () => {
         it('should return null if loginResponseDto is undefined', () => {
             service['loginResponseDto'] = null;

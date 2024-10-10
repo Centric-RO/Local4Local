@@ -13,6 +13,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.logout.SimpleUrlLogoutSuccessHandler;
 import org.springframework.stereotype.Component;
 
+import static util.SecurityUtils.deleteCookie;
+
 @Component
 @RequiredArgsConstructor
 public class LogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
@@ -40,15 +42,5 @@ public class LogoutSuccessHandler extends SimpleUrlLogoutSuccessHandler {
         }
 
         response.setStatus(200);
-    }
-
-    private ResponseCookie deleteCookie(String cookieName) {
-        return ResponseCookie.from(cookieName, null)
-                .maxAge(0)
-                .httpOnly(true)
-                .secure(true)
-                .path("/")
-                .sameSite("None")
-                .build();
     }
 }

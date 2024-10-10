@@ -1,17 +1,17 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import { inject, Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot } from '@angular/router';
-import { Observable, of } from 'rxjs';
-import { catchError, switchMap } from 'rxjs/operators';
+import { ActivatedRouteSnapshot, CanActivate, RouterStateSnapshot } from '@angular/router';
 import { AuthService } from '../services/auth.service';
+import { catchError, Observable, of, switchMap } from 'rxjs';
 import { GuardUtil } from './guard';
 
 @Injectable({
     providedIn: 'root'
 })
-export class AuthGuard extends GuardUtil implements CanActivate {
+export class MfaGuard extends GuardUtil implements CanActivate {
 
     private authService = inject(AuthService);
-
+    
     canActivate(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<boolean> {
         return this.authService.isAuthenticatedObservable().pipe(
             switchMap(isAuthenticated => {
@@ -24,10 +24,10 @@ export class AuthGuard extends GuardUtil implements CanActivate {
                     switchMap(() => this.checkAccess()),
                     catchError(() => this.redirectToLogin(returnUrl))
                 );
-
             }),
             catchError(() => this.redirectToLogin(state.url))
         );
+
     }
 
     private checkAccess(): Observable<boolean> {
@@ -35,10 +35,10 @@ export class AuthGuard extends GuardUtil implements CanActivate {
         const isManager = this.authService.isRoleManager();
 
         if (tokenValid && isManager) {
-            return of(true);
+            return this.redirectToDashboard();
         }
 
-        return this.redirectToLogin();
+        return of(true);
     }
 
 }
