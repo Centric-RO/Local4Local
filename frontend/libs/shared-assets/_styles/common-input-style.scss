@@ -1,0 +1,92 @@
+@use 'mixins' as mixins;
+
+$common-margin: 32px;
+$common-font-size: 14px;
+$theme-500: var(--theme-500);
+$neutral-0: var(--neutral-0);
+
+::ng-deep {
+    .mat-typography p {
+        margin: 0;
+    }
+
+    .mat-mdc-unelevated-button:not(:disabled) {
+        background-color: $theme-500 !important;
+    }
+
+    .mdc-checkbox__native-control:enabled:checked~.mdc-checkbox__background {
+        background-color: $theme-500 !important;
+        border-color: $theme-500 !important;
+    }
+
+    .mat-internal-form-field>label {
+        color: var(--neutral-900);
+        font-size: $common-font-size;
+    }
+
+    .mat-mdc-text-field-wrapper {
+        background-color: $neutral-0;
+    }
+}
+
+.form-container,
+.logo-text {
+    @include mixins.flex(column, center, center);
+}
+
+.form-container {
+    @include mixins.size(512px, 100%);
+}
+
+.logo-container {
+    @include mixins.size(184px, 36px);
+    border-radius: 16px;
+    background-color: var(--neutral-9);
+    margin-bottom: $common-margin;
+    color: $neutral-0;
+}
+
+.header {
+    @include mixins.flex(column, false, flex-start);
+    margin-bottom: $common-margin;
+
+    :nth-child(1) {
+        text-align: center;
+        font-size: 32px;
+        margin-bottom: 16px;
+        color: var(--theme-900);
+    }
+
+    :nth-child(2) {
+        text-align: center;
+        font-size: 16px;
+        color: var(--neutral-900);
+    }
+}
+
+.form-button {
+    margin-top: $common-margin;
+    font-size: $common-font-size;
+}
+
+form,
+.header,
+.remember-forgot,
+.form-button,
+.inputs {
+    width: 100%;
+}
+
+.inputs {
+    margin-bottom: 8px;
+}
+
+.remember-forgot p {
+    font-size: $common-font-size;
+    color: $theme-500;
+    font-weight: 500;
+}
+
+.captcha-active-margin {
+    margin-top: 16px;
+}

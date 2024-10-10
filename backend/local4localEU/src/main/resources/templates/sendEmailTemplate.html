@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head th:replace="template :: header(subject = ${subject})">
+</head>
+
+<body>
+<table align="center" border="0" style="width: 800px;">
+    <tr>
+        <td>
+            <table border="0" cellpadding="0" cellspacing="0" style="width: 800px;">
+                <tr th:replace="template :: logo(logoImage = ${logoImage})"></tr>
+                <tr th:replace="template :: title(title = ${title})"></tr>
+                <tr th:replace="template :: content(content = ${content})"></tr>
+                <tr th:replace="template :: action(action = ${action})"></tr>
+                <tr th:replace="template :: button(url=${url}, btnText=${btnText})"></tr>
+                <tr th:replace="template :: closing(closing = ${closing})"></tr>
+            </table>
+        </td>
+    </tr>
+</table>
+</body>
+
+</html>

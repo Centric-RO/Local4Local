@@ -1,0 +1,116 @@
+@use '../.././../../libs/shared-assets/_styles/mixins.scss' as mixins;
+
+$neutral-0: var(--neutral-0);
+
+::ng-deep {
+	.ol-attribution,
+	.ol-rotate {
+		display: none;
+	}
+
+	.ol-viewport {
+		border-radius: 8px;
+	}
+
+	.mat-typography p {
+		margin: 0;
+	}
+
+	.ol-overlay-container {
+		padding-bottom: 24px;
+	}
+}
+
+$common-font-size: 14px;
+
+.map {
+	@include mixins.size(100%, 100%);
+}
+
+.ol-popup {
+	background-color: $neutral-0;
+	padding: 8px 0px 16px 16px;
+	border-radius: 28px;
+	max-width: 360px;
+	min-width: 280px;
+	width: max-content;
+
+	&:after,
+	&:before {
+		@include mixins.pos(absolute);
+		top: calc(100% - 24px);
+		border: solid transparent;
+		content: ' ';
+		pointer-events: none;
+		left: 50%;
+	}
+
+	&:after {
+		border-top-color: $neutral-0;
+		border-width: 10px;
+		margin-left: -10px;
+	}
+
+	&:before {
+		border-width: 12px;
+		margin-left: -11px;
+	}
+}
+
+#popup-title {
+	font-size: 18px;
+	color: var(--neutral-9);
+	display: block;
+}
+
+#popup-category,
+#popup-address,
+#popup-link {
+	font-size: $common-font-size;
+	display: block;
+}
+
+#popup-category {
+	color: var(--neutral-300);
+}
+
+#popup-address {
+	color: var(--neutral-500);
+	margin-left: 4px;
+	width: 100%;
+	line-height: 20px;
+}
+
+#popup-link {
+	color: var(--info-100);
+	margin-left: 4px;
+}
+
+.popup-body {
+	padding: 8px 16px 0 0;
+}
+
+.address {
+	display: flex;
+}
+
+.link {
+	display: flex;
+	align-items: center;
+	margin-top: 4px;
+}
+
+.close-button {
+	margin-right: 8px;
+}
+
+.location-icon,
+.link-icon {
+	@include mixins.size(16px, 16px);
+	font-size: 16px;
+	color: var(--neutral-400);
+}
+
+.location-icon {
+	margin-top: 2px;
+}

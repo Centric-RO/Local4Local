@@ -1,0 +1,108 @@
+<section mat-dialog-title class="dialog-header">
+    <span>{{ 'register.title' | translate }}</span>
+    <button
+        mat-icon-button
+        mat-dialog-close
+        aria-label="{{ 'general.button.close' | translate }}"
+        [attr.aria-label]="'general.button.cancel' | translate">
+        <mat-icon>close</mat-icon>
+    </button>
+</section>
+
+<mat-dialog-content>
+    <p>{{ 'register.subtitle' | translate }}</p>
+    <form [formGroup]="form">
+        @for (field of formFields; track field.formControl) {
+            <mat-form-field appearance="outline">
+                <mat-label>{{ field.labelKey | translate }}</mat-label>
+
+                @switch(field.fieldType) {
+                    @case('input') {
+                        @switch(field.formControl) {
+                            @case('address') {
+                                <input
+                                    matInput
+                                    [maxlength]="field.maxLength ?? null"
+                                    [placeholder]="field.labelKey | translate"
+                                    [formControlName]="field.formControl"
+                                    [errorStateMatcher]="matcher"
+                                    [matAutocomplete]="auto"
+                                    (input)="onSearchAddress($event)" />
+
+                                <mat-autocomplete #auto="matAutocomplete" (optionSelected)="selectAddress($event.option.value)">
+                                    @for (suggestion of suggestions; track suggestion.text) {
+                                        <mat-option [value]="suggestion">{{ suggestion.text }}</mat-option>
+                                    }
+
+                                    @if (hasNoSuggestions) {
+                                    <mat-option [disabled]="true">
+                                        {{ 'general.noResults' | translate }}
+                                    </mat-option>
+                                }
+                                </mat-autocomplete>
+                            }
+
+                            @case('kvkNumber') {
+                                <input
+                                    matInput
+                                    [maxlength]="field.maxLength ?? null"
+                                    [placeholder]="field.labelKey | translate"
+                                    [formControlName]="field.formControl"
+                                    [errorStateMatcher]="matcher"
+                                    (input)="onKvkInput($event)" />
+                            }
+
+                            @default {
+                                <input
+                                    matInput
+                                    [maxlength]="field.maxLength ?? null"
+                                    [placeholder]="field.labelKey | translate"
+                                    [formControlName]="field.formControl"
+                                    [errorStateMatcher]="matcher"/>
+                            }
+                        }
+                    }
+
+                    @case('select') {
+                        <mat-select
+                            [formControlName]="field.formControl"
+                            [errorStateMatcher]="matcher">
+                            <mat-option
+                                *ngFor="let option of field.options"
+                                [value]="option.id">
+                                {{ option.label | translate }}
+                            </mat-option>
+                        </mat-select>
+                    }
+                }
+
+                @if (hasRequiredError(form, field.formControl) && field.requiredMessage) {
+                    <mat-error>
+                        {{ field.requiredMessage | translate }}
+                    </mat-error>
+                }
+
+                @if (hasPatternError(form, field.formControl) && field.patternMessage) {
+                    <mat-error>
+                        {{ field.patternMessage | translate }}
+                    </mat-error>
+                }
+            </mat-form-field>
+        }
+    </form>
+</mat-dialog-content>
+
+<mat-dialog-actions>
+    <button
+        mat-button
+        (click)="closeDialog()">
+        {{ 'general.button.cancel' | translate }}
+    </button>
+    <button
+        mat-flat-button
+        [disabled]="isDisabled"
+        [class.disabled]="isDisabled"
+        (click)="registerMerchant()">
+        {{ 'register.registerButton' | translate }}
+    </button>
+</mat-dialog-actions>
