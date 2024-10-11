@@ -82,7 +82,7 @@ public class MerchantController {
     }
 
     @RequestMapping(path = "/approve/{merchantId}", method = RequestMethod.PATCH)
-    //@Secured({Role.ROLE_MANAGER})
+    @Secured({Role.ROLE_MANAGER})
     public ResponseEntity<Void> approveMerchant(@PathVariable("merchantId") UUID merchantId,
                                                 @CookieValue(value = "language", defaultValue = "nl-NL") String language) throws DtoValidateException {
         merchantService.approveMerchant(merchantId, language);
