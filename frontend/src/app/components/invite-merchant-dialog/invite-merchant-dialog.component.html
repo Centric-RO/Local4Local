@@ -18,7 +18,9 @@
 				matInput
 				formControlName="invitationMessage"
 				rows="5"
+				maxlength="1024"
 				[placeholder]="'inviteMerchants.invitationMessage' | translate"></textarea>
+			<mat-hint align="end">{{ invitationMessageLength }} / 1024</mat-hint>
 
 			@if (hasRequiredError(form,'invitationMessage')) {
 			<mat-error>
@@ -28,7 +30,9 @@
 		</mat-form-field>
 
 		<mat-form-field appearance="outline">
-			<mat-label>{{ 'inviteMerchants.emailAddresses' | translate }} <span class="required-asterisk">*</span></mat-label>
+			<mat-label
+				>{{ 'inviteMerchants.emailAddresses' | translate }} <span class="required-asterisk">*</span></mat-label
+			>
 			<mat-chip-grid #emailChipGrid>
 				@for (merchantEmail of merchantEmailsArray; track merchantEmail) {
 				<mat-chip-row (removed)="removeEmailFromList(merchantEmail)">
@@ -42,7 +46,6 @@
 			<input [matChipInputFor]="emailChipGrid" (matChipInputTokenEnd)="handleEnterKeyup($event)" />
 
 			<mat-hint>{{ 'inviteMerchants.emailsHint' | translate }}</mat-hint>
-			
 		</mat-form-field>
 		@if (!!emailError) {
 		<span class="email-error-message"> {{ emailError | translate }} </span>
