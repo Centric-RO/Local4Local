@@ -42,7 +42,7 @@ public class MerchantInvitationServiceImpl implements MerchantInvitationService 
 			throw new DtoValidateException(errorTooManyEmails);
 		}
 
-		if (inviteMerchantDto.message() == null || inviteMerchantDto.message().isEmpty()) {
+		if (inviteMerchantDto.message() == null || inviteMerchantDto.message().isEmpty() || inviteMerchantDto.message().length() > 1024) {
 			throw new DtoValidateException(errorEntityValidate);
 		}
 

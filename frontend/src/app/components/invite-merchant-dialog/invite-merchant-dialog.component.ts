@@ -21,7 +21,7 @@ import { SnackbarData } from '../../models/snackbar-data.model';
 })
 export class InviteMerchantDialogComponent implements OnInit {
 	public hasRequiredError = FormUtil.hasRequiredError;
-	public hasPatternError = FormUtil.hasPatternError;
+
 	public merchantEmails: Set<string> = new Set<string>();
 	public emailError: string;
 
@@ -42,6 +42,10 @@ export class InviteMerchantDialogComponent implements OnInit {
 
 	public get merchantEmailsArray(): string[] {
 		return [...this.merchantEmails];
+	}
+
+	public get invitationMessageLength(): number {
+		return this.form.controls['invitationMessage'].value.length;
 	}
 
 	public ngOnInit(): void {
@@ -102,7 +106,7 @@ export class InviteMerchantDialogComponent implements OnInit {
 
 	private createForm(): void {
 		this.form = this.fb.group({
-			invitationMessage: ['', [Validators.required]],
+			invitationMessage: ['', [Validators.required, Validators.maxLength(1024)]],
 			email: ['']
 		});
 	}
