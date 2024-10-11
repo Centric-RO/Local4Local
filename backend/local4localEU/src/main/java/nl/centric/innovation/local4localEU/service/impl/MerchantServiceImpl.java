@@ -81,8 +81,8 @@ public class MerchantServiceImpl implements MerchantService {
     }
 
     @Override
-    public List<MerchantViewDto> getAll() {
-        return merchantRepository.findAll().stream()
+    public List<MerchantViewDto> getAllApproved() {
+        return merchantRepository.findByStatus(MerchantStatusEnum.APPROVED).stream()
                 .map(MerchantViewDto::fromEntity)
                 .collect(Collectors.toList());
     }
