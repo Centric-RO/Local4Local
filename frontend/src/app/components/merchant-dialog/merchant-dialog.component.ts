@@ -15,14 +15,15 @@ import { ALREADY_REGISTERED_CODE, SUCCESS_CODE } from '../../_constants/error-co
 import { RegexUtil } from '../../util/regex.util';
 
 @Component({
-	selector: 'app-merchant-registration-dialog',
-	templateUrl: './merchant-registration-dialog.component.html',
-	styleUrls: ['./merchant-registration-dialog.component.scss']
+	selector: 'app-merchant-dialog',
+	templateUrl: './merchant-dialog.component.html',
+	styleUrls: ['./merchant-dialog.component.scss']
 })
-export class MerchantRegistrationDialogComponent implements OnInit {
+export class MerchantDialogComponent implements OnInit {
 	public hasRequiredError = FormUtil.hasRequiredError;
 	public hasPatternError = FormUtil.hasPatternError;
 
+	public isRegistrationDialog = false;
 	public formFields: FormField[] = [];
 	public form: FormGroup;
 	public matcher = new L4LErrorStateMatcher();
@@ -34,7 +35,7 @@ export class MerchantRegistrationDialogComponent implements OnInit {
 	private fb = inject(FormBuilder);
 	private esriLocatorService = inject(EsriLocatorService);
 
-	private readonly dialogRef = inject(MatDialogRef<MerchantRegistrationDialogComponent>);
+	private readonly dialogRef = inject(MatDialogRef<MerchantDialogComponent>);
 	private readonly categoryService = inject(CategoryService);
 	private readonly merchantService = inject(MerchantService);
 
@@ -50,6 +51,7 @@ export class MerchantRegistrationDialogComponent implements OnInit {
 		this.initCategories();
 		this.initializeFormFields();
 		this.createForm();
+		this.checkDialogType();
 	}
 
 	public onSearchAddress(event: Event): void {
@@ -201,5 +203,13 @@ export class MerchantRegistrationDialogComponent implements OnInit {
 		this.categoryService.categories.subscribe((data) => {
 			this.categories = data;
 		});
+	}
+
+	private checkDialogType(): void {
+		if (!this.isRegistrationDialog) {
+			return;
+		}
+
+		this.form.disable();
 	}
 }

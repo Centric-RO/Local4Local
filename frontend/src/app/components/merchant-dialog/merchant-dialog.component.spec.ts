@@ -1,7 +1,6 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
 import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { MerchantRegistrationDialogComponent } from './merchant-registration-dialog.component';
 import { TranslateModule } from '@ngx-translate/core';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { EsriSuggestionResult } from '../../models/esri-suggestion-response.model';
@@ -13,6 +12,7 @@ import { CategoryService } from '../../services/category.service';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { MerchantService } from '../../services/merchant.service';
 import { ALREADY_REGISTERED_CODE } from '../../_constants/error-constants';
+import { MerchantDialogComponent } from './merchant-dialog.component';
 
 const matDialogRefStub = {
     close: jest.fn()
@@ -26,15 +26,15 @@ const matDialogStub = {
     open: jest.fn()
 };
 
-describe('MerchantRegistrationDialogComponent', () => {
-    let component: MerchantRegistrationDialogComponent;
-    let fixture: ComponentFixture<MerchantRegistrationDialogComponent>;
+describe('MerchantDialogComponent', () => {
+    let component: MerchantDialogComponent;
+    let fixture: ComponentFixture<MerchantDialogComponent>;
     let esriLocatorService: EsriLocatorService;
     let merchantService: MerchantService;
 
     beforeEach(async () => {
         await TestBed.configureTestingModule({
-            declarations: [MerchantRegistrationDialogComponent],
+            declarations: [MerchantDialogComponent],
             providers: [
                 FormBuilder,
                 { provide: MatDialogRef, useValue: matDialogRefStub },
@@ -53,7 +53,7 @@ describe('MerchantRegistrationDialogComponent', () => {
             imports: [TranslateModule.forRoot(), MatAutocomplete, HttpClientTestingModule],
         }).compileComponents();
 
-        fixture = TestBed.createComponent(MerchantRegistrationDialogComponent);
+        fixture = TestBed.createComponent(MerchantDialogComponent);
         component = fixture.componentInstance;
         esriLocatorService = TestBed.inject(EsriLocatorService);
         merchantService = TestBed.inject(MerchantService);

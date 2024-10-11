@@ -1,6 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
-import { MerchantRegistrationDialogComponent } from '../merchant-registration-dialog/merchant-registration-dialog.component';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { CategoryService } from "../../services/category.service";
 import { of } from "rxjs";
@@ -12,6 +11,7 @@ import { GenericDialogComponent } from '../generic-dialog/generic-dialog.compone
 import { CustomDialogConfigUtil } from '../../config/custom-dialog-config';
 import { ALREADY_REGISTERED_CODE, SUCCESS_CODE } from '../../_constants/error-constants';
 import { MerchantsMapComponent } from '../merchants-map/merchants-map.component';
+import { MerchantDialogComponent } from '../merchant-dialog/merchant-dialog.component';
 
 const matDialogMock = {
 	open: jest.fn().mockReturnValue({
@@ -79,7 +79,7 @@ describe('HomeComponent', () => {
 
 	it('should open the dialog with correct configuration when openDialog is called', () => {
 		component.openDialog();
-		expect(matDialogMock.open).toHaveBeenCalledWith(MerchantRegistrationDialogComponent, {
+		expect(matDialogMock.open).toHaveBeenCalledWith(MerchantDialogComponent, {
 			width: '560px'
 		});
 	});
