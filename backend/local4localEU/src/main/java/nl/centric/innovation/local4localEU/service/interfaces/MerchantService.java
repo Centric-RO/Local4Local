@@ -12,7 +12,7 @@ public interface MerchantService {
 
     MerchantDto saveMerchant(MerchantDto merchantDto) throws DtoValidateException;
 
-    List<MerchantViewDto> getAll();
+    List<MerchantViewDto> getAllApproved();
 
     List<MerchantViewDto> getPaginatedMerchants(Integer page, Integer size);
 
