@@ -20,13 +20,13 @@ public enum EmailStructureEnum {
     LOGO_IMAGE("logoImage"),
     URL("url"),
     BTN_TEXT("btnText"),
-    APPROVE("contentApprove"),
     REJECT("contentReject"),
     REASON("reason"),
     SUPPLIER_NAME("supplier"),
     REPRESENTATIVE_NAME("name"),
     COMPANY_NAME("companyName"),
-    OTP_CODE_MESSAGE("otpCodeMessage");
+    OTP_CODE_MESSAGE("otpCodeMessage"),
+    SEE_MAP("seeMap");
 
     private final String structure;
 

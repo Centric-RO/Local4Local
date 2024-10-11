@@ -6,8 +6,12 @@ import static util.Validators.isValidUrl;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.UUID;
 import java.util.stream.Collectors;
 
+import nl.centric.innovation.local4localEU.enums.MerchantStatusEnum;
+import nl.centric.innovation.local4localEU.exception.CustomException.DtoValidateNotFoundException;
+import nl.centric.innovation.local4localEU.service.interfaces.EmailService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
@@ -32,6 +36,8 @@ public class MerchantServiceImpl implements MerchantService {
 
     private final MerchantRepository merchantRepository;
 
+    private final EmailService emailService;
+
     @Value("${error.unique.violation}")
     private String errorUniqueViolation;
 
@@ -43,6 +49,28 @@ public class MerchantServiceImpl implements MerchantService {
 
     @Value("${error.constraint.duplicate}")
     private String duplicateValue;
+
+    @Value("${error.entity.redundantChange}")
+    private String redundantChange;
+
+    @Override
+    public void approveMerchant(UUID merchantId, String language) throws DtoValidateException {
+        Optional<Merchant> merchant = merchantRepository.findById(merchantId);
+
+        if (merchant.isEmpty()) {
+            throw new DtoValidateNotFoundException(errorEntityNotFound);
+        }
+
+        if (merchant.get().getStatus() == MerchantStatusEnum.APPROVED) {
+            throw new DtoValidateAlreadyExistsException(redundantChange);
+        }
+
+        merchant.get().setStatus(MerchantStatusEnum.APPROVED);
+        merchantRepository.save(merchant.get());
+
+        String[] email = new String[]{merchant.get().getContactEmail()};
+        emailService.sendApproveMerchantEmail(email, language, merchant.get().getCompanyName());
+    }
 
     @Override
     public MerchantDto saveMerchant(MerchantDto merchantDto) throws DtoValidateException {
@@ -58,6 +86,7 @@ public class MerchantServiceImpl implements MerchantService {
                 .map(MerchantViewDto::fromEntity)
                 .collect(Collectors.toList());
     }
+
     @Override
     public List<MerchantViewDto> getPaginatedMerchants(Integer page, Integer size) {
         Pageable pageable = PageRequest.of(page, size, Sort.by(

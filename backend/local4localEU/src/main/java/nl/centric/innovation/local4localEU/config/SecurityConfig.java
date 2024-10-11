@@ -82,6 +82,7 @@ public class SecurityConfig {
                 .requestMatchers("/authenticate/**")
                 .requestMatchers("/merchant/register")
                 .requestMatchers("/merchant/all")
+                .requestMatchers("/merchant/approve/**")
                 .requestMatchers("/merchant/paginated")
                 .requestMatchers("/merchant/filter/**")
                 .requestMatchers("/category/**")
