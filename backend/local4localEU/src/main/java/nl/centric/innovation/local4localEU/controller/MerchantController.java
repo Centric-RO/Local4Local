@@ -1,7 +1,9 @@
 package nl.centric.innovation.local4localEU.controller;
 
 import java.util.List;
+import java.util.UUID;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
 import org.springframework.web.bind.annotation.CookieValue;
@@ -77,5 +79,13 @@ public class MerchantController {
 
         merchantInvitationService.save(inviteMerchantDto, language);
         return ResponseEntity.ok().build();
+    }
+
+    @RequestMapping(path = "/approve/{merchantId}", method = RequestMethod.PATCH)
+    @Secured({Role.ROLE_MANAGER})
+    public ResponseEntity<Void> approveMerchant(@PathVariable("merchantId") UUID merchantId,
+                                                @CookieValue(value = "language", defaultValue = "nl-NL") String language) throws DtoValidateException {
+        merchantService.approveMerchant(merchantId, language);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 }

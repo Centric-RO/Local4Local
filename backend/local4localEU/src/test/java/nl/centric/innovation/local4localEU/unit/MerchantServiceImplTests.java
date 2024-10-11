@@ -8,8 +8,10 @@ import nl.centric.innovation.local4localEU.entity.Merchant;
 import nl.centric.innovation.local4localEU.enums.MerchantStatusEnum;
 import nl.centric.innovation.local4localEU.exception.CustomException.DtoValidateAlreadyExistsException;
 import nl.centric.innovation.local4localEU.exception.CustomException.DtoValidateException;
+import nl.centric.innovation.local4localEU.exception.CustomException.DtoValidateNotFoundException;
 import nl.centric.innovation.local4localEU.repository.MerchantRepository;
 import nl.centric.innovation.local4localEU.service.impl.MerchantServiceImpl;
+import nl.centric.innovation.local4localEU.service.interfaces.EmailService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,6 +44,8 @@ public class MerchantServiceImplTests {
 
     @Mock
     private MerchantRepository merchantRepository;
+    @Mock
+    private EmailService emailService;
 
     private static final String VALID_KVK = "12345678";
     private static final String INVALID_KVK = "1234";
@@ -49,6 +53,11 @@ public class MerchantServiceImplTests {
     private static final String INVALID_WEBSITE = "invalid-url";
     private static final Integer VALID_CATEGORY = 0;
     private static final Integer INVALID_CATEGORY = 9;
+
+    private static final UUID VALID_MERCHANT_ID = UUID.randomUUID();
+    private static final String VALID_LANGUAGE = "en";
+    private Merchant pendingMerchant;
+    private Merchant approvedMerchant;
 
     private MerchantDto validMerchantDto;
     private MerchantDto invalidKvkMerchantDto;
@@ -325,6 +334,50 @@ public class MerchantServiceImplTests {
         verify(merchantRepository, times(1)).findAll(any(Pageable.class));
     }
 
+    @Test
+    public void GivenNonExistingMerchant_WhenApproveMerchant_ThenThrowDtoValidateNotFoundException() {
+        // Given
+        when(merchantRepository.findById(VALID_MERCHANT_ID)).thenReturn(Optional.empty());
+
+        // When & Then
+        assertThrows(DtoValidateNotFoundException.class, () -> merchantService.approveMerchant(VALID_MERCHANT_ID, VALID_LANGUAGE));
+
+        verify(merchantRepository, times(1)).findById(VALID_MERCHANT_ID);
+        verify(merchantRepository, never()).save(any(Merchant.class));
+        verify(emailService, never()).sendApproveMerchantEmail(any(), any(), any());
+    }
+
+    @Test
+    public void GivenAlreadyApprovedMerchant_WhenApproveMerchant_ThenThrowDtoValidateAlreadyExistsException() {
+        // Given
+        Merchant approvedMerchant = merchantBuilder("Company 1", VALID_KVK);
+        approvedMerchant.setStatus(MerchantStatusEnum.APPROVED); // Set the merchant status to APPROVED
+        when(merchantRepository.findById(VALID_MERCHANT_ID)).thenReturn(Optional.of(approvedMerchant));
+
+        // When & Then
+        assertThrows(DtoValidateAlreadyExistsException.class, () -> merchantService.approveMerchant(VALID_MERCHANT_ID, VALID_LANGUAGE));
+
+        verify(merchantRepository, times(1)).findById(VALID_MERCHANT_ID);
+        verify(merchantRepository, never()).save(any(Merchant.class));
+        verify(emailService, never()).sendApproveMerchantEmail(any(), any(), any());
+    }
+
+    @Test
+    public void GivenPendingMerchant_WhenApproveMerchant_ThenMerchantIsApprovedAndEmailIsSent() throws DtoValidateException {
+        // Given
+        Merchant pendingMerchant = merchantBuilder("Company 1", VALID_KVK);
+        pendingMerchant.setStatus(MerchantStatusEnum.PENDING); // Set the merchant status to PENDING
+        when(merchantRepository.findById(VALID_MERCHANT_ID)).thenReturn(Optional.of(pendingMerchant));
+
+        // When
+        merchantService.approveMerchant(VALID_MERCHANT_ID, VALID_LANGUAGE);
+
+        // Then
+        assertEquals(MerchantStatusEnum.APPROVED, pendingMerchant.getStatus());
+        verify(merchantRepository, times(1)).findById(VALID_MERCHANT_ID);
+        verify(merchantRepository, times(1)).save(pendingMerchant);
+        verify(emailService, times(1)).sendApproveMerchantEmail(new String[]{pendingMerchant.getContactEmail()}, VALID_LANGUAGE, pendingMerchant.getCompanyName());
+    }
 
     private Merchant merchantBuilder(String companyName, String kvk) {
         return Merchant.builder()

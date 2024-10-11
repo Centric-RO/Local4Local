@@ -220,5 +220,34 @@ public class EmailServiceImplTests {
         emailService.sendEmail(fromAddr, toAddr, subject, htmlContent, textContent);
     }
 
+    @Test
+    void GivenValidInformation_WhenSendApproveMerchantEmail_ThenExpectAmazonEmailServiceToBeCalled() {
+        // Given
+        String[] toAddress = {"email@domain.com"};
+        String language = "en";
+        String companyName = "Test Company";
+        String baseURL = "http://example.com"; // Set the base URL to mock the real environment
+
+        // Mocking a template for approval email
+        MailTemplate mailTemplate = MailTemplate.builder()
+                .locale(new Locale(language))
+                .subject("Merchant Approval")
+                .content(companyName + " has been approved!")
+                .build();
+
+        String htmlContent = "<html><body><h1>Merchant Approval: " + companyName + "</h1></body></html>";
+        String textContent = "Merchant Approval: " + companyName;
+
+        // Mock the behavior of the mailTemplateBuilder and sendEmail methods
+        when(mailTemplateBuilder.buildEmailTemplate(any(MailTemplate.class))).thenReturn(htmlContent);
+
+        // When
+        emailService.sendApproveMerchantEmail(toAddress, language, companyName);
+
+        // Then
+        verify(mailTemplateBuilder, times(1)).buildEmailTemplate(any(MailTemplate.class));
+        verify(amazonEmailService, times(1)).sendEmail(any(SendEmailRequest.class));
+    }
+
 }
 

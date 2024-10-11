@@ -9,7 +9,6 @@ import com.amazonaws.services.simpleemail.model.MessageRejectedException;
 import com.amazonaws.services.simpleemail.model.SendEmailRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import nl.centric.innovation.local4localEU.entity.User;
 import nl.centric.innovation.local4localEU.enums.AssetsEnum;
 import nl.centric.innovation.local4localEU.enums.EmailHtmlEnum;
 import nl.centric.innovation.local4localEU.enums.EmailStructureEnum;
@@ -23,7 +22,6 @@ import org.springframework.stereotype.Service;
 import util.MailTemplate;
 import util.StringUtils;
 
-import java.util.Arrays;
 import java.util.Locale;
 
 @Slf4j
@@ -95,7 +93,7 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendPasswordRecoveryEmail(String url, String[] toAddress, String language) {
-        MailTemplate mailTemplate = getPasswordRecoveryTemplate(language, url, EmailTemplateEnum.PASSWORD_RECOVER.getTemplate(), "");
+        MailTemplate mailTemplate = getPasswordRecoveryTemplate(language, url, EmailTemplateEnum.PASSWORD_RECOVER.getTemplate());
         String htmlContent = mailTemplateBuilder.buildEmailTemplate(mailTemplate);
         String textContent = buildTemplateText(mailTemplate);
         sendEmail(emailSender, toAddress, mailTemplate.getSubject(), htmlContent, textContent.toString());
@@ -129,6 +127,14 @@ public class EmailServiceImpl implements EmailService {
 
     }
 
+    @Override
+    public void sendApproveMerchantEmail(String[] email, String language, String companyName) {
+        MailTemplate mailTemplate = getApproveMerchantTemplate(language, baseURL, EmailTemplateEnum.APPROVE_MERCHANT.getTemplate(), companyName + EmailHtmlEnum.EXCL.getTag());
+        String htmlContent = mailTemplateBuilder.buildEmailTemplate(mailTemplate);
+        String textContent = buildTemplateText(mailTemplate);
+        sendEmail(emailSender, email, mailTemplate.getSubject(), htmlContent, textContent.toString());
+    }
+
     private MailTemplate getManagerOtpEmailTemplate(String language, String templateMiddlePart, int otpCode) {
         Locale locale = new Locale(language);
         MailTemplate mailTemplate = buildGenericTemplate(locale, language, "", templateMiddlePart, "");
@@ -156,9 +162,24 @@ public class EmailServiceImpl implements EmailService {
         return mailTemplate;
     }
 
-    private MailTemplate getPasswordRecoveryTemplate(String language, String url, String templateMiddlePart, String receiverName) {
+    private MailTemplate getApproveMerchantTemplate(String language, String url, String templateMiddlePart, String receiverName) {
         Locale locale = new Locale(language);
         MailTemplate mailTemplate = buildGenericTemplate(locale, language, url, templateMiddlePart, receiverName);
+
+        String content = getContentForApproveMerchant(locale, templateMiddlePart);
+        String btnText = getEmailStringText(locale, EmailStructureEnum.GENERIC.getStructure(),
+                EmailStructureEnum.SEE_MAP.getStructure());
+
+        mailTemplate.setAction(null);
+        mailTemplate.setBtnText(btnText);
+        mailTemplate.setContent(content);
+
+        return mailTemplate;
+    }
+
+    private MailTemplate getPasswordRecoveryTemplate(String language, String url, String templateMiddlePart) {
+        Locale locale = new Locale(language);
+        MailTemplate mailTemplate = buildGenericTemplate(locale, language, url, templateMiddlePart, "");
 
         String content = getEmailStringText(locale, templateMiddlePart, EmailStructureEnum.CONTENT.getStructure()).replace(EmailHtmlEnum.LINE_BREAK.getTag(), EmailHtmlEnum.RN.getTag());
         mailTemplate.setContent(content);
@@ -181,6 +202,12 @@ public class EmailServiceImpl implements EmailService {
                 .replace(EmailHtmlEnum.LINE_BREAK.getTag(), EmailHtmlEnum.RN.getTag());
         return StringUtils.joinStringPieces(contentInfo);
     }
+    private String getContentForApproveMerchant(Locale locale, String templateMiddlePart) {
+        String contentInfo = getEmailStringText(locale, templateMiddlePart, EmailStructureEnum.CONTENT.getStructure()).replace(EmailHtmlEnum.LINE_BREAK.getTag(), EmailHtmlEnum.RN.getTag());
+        String approveText = StringUtils.addStringBeforeAndAfter(EmailHtmlEnum.P_START.getTag(), "", EmailHtmlEnum.P_END.getTag());
+        return StringUtils.joinStringPieces(contentInfo, approveText);
+    }
+
 
     private String getContentForMerchantRegistered(Locale locale, String templateMiddlePart, String merchantName) {
         String contentInfo = getEmailStringText(locale, templateMiddlePart, EmailStructureEnum.CONTENT.getStructure()).replace(EmailHtmlEnum.LINE_BREAK.getTag(), EmailHtmlEnum.RN.getTag());
