@@ -49,5 +49,5 @@ jobs:
       # Step 7: Build project (with Angular build)
       - name: Build project
         run: |
-          npm run build -- --watch --configuration frontend
+          npm run build -- --configuration frontend
         working-directory: frontend
