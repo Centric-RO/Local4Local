@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormBuilder } from '@angular/forms';
+import { FormBuilder, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
@@ -17,224 +17,357 @@ import { FormField } from '../../models/form-field.model';
 import { ColumnType } from '../../enums/column.enum';
 
 const matDialogRefStub = {
-    close: jest.fn()
+	close: jest.fn()
 };
 
 const merchantServiceStub = {
-    registerMerchant: jest.fn().mockReturnValue(of({}))
+	registerMerchant: jest.fn().mockReturnValue(of({})),
+	approveMerchant: jest.fn().mockReturnValue(of({}))
 };
 
 const matDialogStub = {
-    open: jest.fn()
+	open: jest.fn()
 };
 const matDialogDataStub = {};
 
 describe('MerchantDialogComponent', () => {
-    let component: MerchantDialogComponent;
-    let fixture: ComponentFixture<MerchantDialogComponent>;
-    let esriLocatorService: EsriLocatorService;
-    let merchantService: MerchantService;
-    let translateService: TranslateService;
-    
-    beforeEach(async () => {
-        await TestBed.configureTestingModule({
-            declarations: [MerchantDialogComponent],
-            providers: [
-                FormBuilder,
-                { provide: MatDialogRef, useValue: matDialogRefStub },
-                { provide: MatDialog, useValue: matDialogStub },
-                {
-                    provide: EsriLocatorService,
-                    useValue: {
-                        findLocationBasedOnSuggestion: jest.fn(),
-                        getSuggestions: jest.fn()
-                    }
-                },
-                { provide: MerchantService, useValue: merchantServiceStub },
-                { provide: MAT_DIALOG_DATA, useValue: matDialogDataStub },
-                CategoryService
-            ],
-            schemas: [NO_ERRORS_SCHEMA],
-            imports: [TranslateModule.forRoot(), MatAutocomplete, HttpClientTestingModule],
-        }).compileComponents();
+	let component: MerchantDialogComponent;
+	let fixture: ComponentFixture<MerchantDialogComponent>;
+	let esriLocatorService: EsriLocatorService;
+	let merchantService: MerchantService;
+	let translateService: TranslateService;
 
-        fixture = TestBed.createComponent(MerchantDialogComponent);
-        translateService = { instant: jest.fn() } as unknown as TranslateService;
-        component = fixture.componentInstance;
-        esriLocatorService = TestBed.inject(EsriLocatorService);
-        merchantService = TestBed.inject(MerchantService);
-        fixture.detectChanges();
-    });
+	beforeEach(async () => {
+		await TestBed.configureTestingModule({
+			declarations: [MerchantDialogComponent],
+			providers: [
+				FormBuilder,
+				{ provide: MatDialogRef, useValue: matDialogRefStub },
+				{ provide: MatDialog, useValue: matDialogStub },
+				{
+					provide: EsriLocatorService,
+					useValue: {
+						findLocationBasedOnSuggestion: jest.fn(),
+						getSuggestions: jest.fn()
+					}
+				},
+				{ provide: MerchantService, useValue: merchantServiceStub },
+				{ provide: MAT_DIALOG_DATA, useValue: matDialogDataStub },
+				CategoryService
+			],
+			schemas: [NO_ERRORS_SCHEMA],
+			imports: [TranslateModule.forRoot(), MatAutocomplete, HttpClientTestingModule]
+		}).compileComponents();
 
-    it('should create', () => {
-        expect(component).toBeTruthy();
-    });
+		fixture = TestBed.createComponent(MerchantDialogComponent);
+		translateService = { instant: jest.fn() } as unknown as TranslateService;
+		component = fixture.componentInstance;
+		esriLocatorService = TestBed.inject(EsriLocatorService);
+		merchantService = TestBed.inject(MerchantService);
+		fixture.detectChanges();
+	});
 
-    describe('Form Initialization', () => {
-        it('should initialize form fields correctly', () => {
-            component.ngOnInit();
-            expect(component.formFields).toBeDefined();
-            expect(component.formFields.length).toBe(6);
-            expect(component.formFields[0].formControl).toBe('companyName');
-        });
+	it('should create', () => {
+		expect(component).toBeTruthy();
+	});
 
-        test.each([
-            ['companyName', 'required'],
-            ['kvk', 'required'],
-            ['category', 'required'],
-            ['address', 'required'],
-            ['contactEmail', 'required'],
-            ['website', null]
-        ])('should initialize %s field with %s validator', (controlName, expectedError) => {
-            component.ngOnInit();
-            const control = component.form.get(controlName);
-            expect(control).toBeTruthy();
+	describe('Form Initialization', () => {
+		it('should initialize form fields correctly', () => {
+			component.ngOnInit();
+			expect(component.formFields).toBeDefined();
+			expect(component.formFields.length).toBe(6);
+			expect(component.formFields[0].formControl).toBe('companyName');
+		});
 
-            if (expectedError) {
-                expect(control?.hasError(expectedError)).toBe(true);
-            } else {
-                expect(control?.errors).toBeNull();
-            }
-        });
-    });
+		test.each([
+			['companyName', 'required'],
+			['kvk', 'required'],
+			['category', 'required'],
+			['address', 'required'],
+			['contactEmail', 'required'],
+			['website', null]
+		])('should initialize %s field with %s validator', (controlName, expectedError) => {
+			component.ngOnInit();
+			const control = component.form.get(controlName);
+			expect(control).toBeTruthy();
 
-    it('should close the dialog on onNoClick', () => {
-        component.closeDialog(ALREADY_REGISTERED_CODE);
-        expect(matDialogRefStub.close).toHaveBeenCalled();
-    });
+			if (expectedError) {
+				expect(control?.hasError(expectedError)).toBe(true);
+			} else {
+				expect(control?.errors).toBeNull();
+			}
+		});
+	});
 
-    describe('Form Submission', () => {
-        test.each([
-            [{ companyName: '', kvk: '', category: '', address: '', contactEmail: '', website: '' }, true],
-            [{ companyName: 'Valid Company', kvk: '12345678', category: 'Category 1', address: 'Valid Address', contactEmail: 'domain@example.com', website: 'https://valid.url' }, false]
-        ])('should mark form as %s when form data is %s', (formValue, expectedValidity) => {
-            component.form.setValue(formValue);
-            component['registerMerchant']();
-            expect(component.form.valid).toBe(!expectedValidity);
-        });
-    });
+	it('should close the dialog on onNoClick', () => {
+		component.closeDialog(ALREADY_REGISTERED_CODE);
+		expect(matDialogRefStub.close).toHaveBeenCalled();
+	});
 
-    describe('onSearchAddress', () => {
-        it('should clear suggestions if input length is <= 2', () => {
-            const event = { target: { value: 'ab' } } as unknown as Event;
+	describe('Form Submission', () => {
+		test.each([
+			[{ companyName: '', kvk: '', category: '', address: '', contactEmail: '', website: '' }, true],
+			[
+				{
+					companyName: 'Valid Company',
+					kvk: '12345678',
+					category: 'Category 1',
+					address: 'Valid Address',
+					contactEmail: 'domain@example.com',
+					website: 'https://valid.url'
+				},
+				false
+			]
+		])('should mark form as %s when form data is %s', (formValue, expectedValidity) => {
+			component.form.setValue(formValue);
+			component['registerMerchant']();
+			expect(component.form.valid).toBe(!expectedValidity);
+		});
+	});
 
-            component.onSearchAddress(event);
+	describe('onSearchAddress', () => {
+		it('should clear suggestions if input length is <= 2', () => {
+			const event = { target: { value: 'ab' } } as unknown as Event;
 
-            expect(component.suggestions).toEqual([]);
-        });
+			component.onSearchAddress(event);
 
-        it('should fetch and set address suggestions on valid input', () => {
-            const mockSuggestions: EsriSuggestionResult[] = [
-                { text: 'Suggestion 1', magicKey: 'key' },
-                { text: 'Suggestion 2', magicKey: 'key1' }
-            ];
-            jest.spyOn(esriLocatorService, 'getSuggestions').mockReturnValue(of(mockSuggestions));
-            const event = { target: { value: '123' } } as unknown as Event;
+			expect(component.suggestions).toEqual([]);
+		});
 
-            component.onSearchAddress(event);
+		it('should fetch and set address suggestions on valid input', () => {
+			const mockSuggestions: EsriSuggestionResult[] = [
+				{ text: 'Suggestion 1', magicKey: 'key' },
+				{ text: 'Suggestion 2', magicKey: 'key1' }
+			];
+			jest.spyOn(esriLocatorService, 'getSuggestions').mockReturnValue(of(mockSuggestions));
+			const event = { target: { value: '123' } } as unknown as Event;
 
-            expect(esriLocatorService.getSuggestions).toHaveBeenCalledWith('123');
-            expect(component.suggestions).toEqual(mockSuggestions);
-        });
+			component.onSearchAddress(event);
 
-        it('should handle error during address suggestions fetch', () => {
-            jest.spyOn(esriLocatorService, 'getSuggestions').mockReturnValue(throwError(() => new Error('Error')));
-            const event = { target: { value: '123' } } as unknown as Event;
+			expect(esriLocatorService.getSuggestions).toHaveBeenCalledWith('123');
+			expect(component.suggestions).toEqual(mockSuggestions);
+		});
 
-            component.onSearchAddress(event);
+		it('should handle error during address suggestions fetch', () => {
+			jest.spyOn(esriLocatorService, 'getSuggestions').mockReturnValue(throwError(() => new Error('Error')));
+			const event = { target: { value: '123' } } as unknown as Event;
 
-            expect(esriLocatorService.getSuggestions).toHaveBeenCalledWith('123');
-            expect(component.suggestions).toEqual([]);
-        });
-    });
+			component.onSearchAddress(event);
 
-    it('should update address and fetch location on selectAddress', () => {
-        const mockAddressCandidate: AddressCandidate = {
-            address: '123 Mock St',
-            location: { x: 123.45, y: 678.90 }
-        } as unknown as AddressCandidate;
+			expect(esriLocatorService.getSuggestions).toHaveBeenCalledWith('123');
+			expect(component.suggestions).toEqual([]);
+		});
+	});
 
-        const mockSuggestion: EsriSuggestionResult = { text: 'Selected Address', magicKey: 'key' };
+	it('should update address and fetch location on selectAddress', () => {
+		const mockAddressCandidate: AddressCandidate = {
+			address: '123 Mock St',
+			location: { x: 123.45, y: 678.9 }
+		} as unknown as AddressCandidate;
 
-        jest.spyOn(esriLocatorService, 'findLocationBasedOnSuggestion').mockReturnValue(of([mockAddressCandidate]));
+		const mockSuggestion: EsriSuggestionResult = { text: 'Selected Address', magicKey: 'key' };
 
-        component.selectAddress(mockSuggestion);
+		jest.spyOn(esriLocatorService, 'findLocationBasedOnSuggestion').mockReturnValue(of([mockAddressCandidate]));
 
-        expect(component.form.get('address')?.value).toBe('Selected Address');
-        expect(component.suggestions).toEqual([]);
-        expect(component.selectedLocation).toEqual(mockAddressCandidate);
-    });
+		component.selectAddress(mockSuggestion);
 
-    it('should handle error during location fetch in selectAddress', () => {
-        const mockSuggestion: EsriSuggestionResult = { text: 'Selected Address', magicKey: 'key' };
+		expect(component.form.get('address')?.value).toBe('Selected Address');
+		expect(component.suggestions).toEqual([]);
+		expect(component.selectedLocation).toEqual(mockAddressCandidate);
+	});
 
-        jest.spyOn(esriLocatorService, 'findLocationBasedOnSuggestion').mockReturnValue(throwError(() => new Error('Error')));
+	it('should handle error during location fetch in selectAddress', () => {
+		const mockSuggestion: EsriSuggestionResult = { text: 'Selected Address', magicKey: 'key' };
 
-        component.selectAddress(mockSuggestion);
+		jest.spyOn(esriLocatorService, 'findLocationBasedOnSuggestion').mockReturnValue(
+			throwError(() => new Error('Error'))
+		);
 
-        expect(component.form.get('address')?.value).toBe('Selected Address');
-        expect(component.suggestions).toEqual([]);
-        expect(component.selectedLocation).toBeNull();
-    });
+		component.selectAddress(mockSuggestion);
 
-    describe('isDisabled', () => {
-        test.each([
-            [{ companyName: '', kvk: '', category: '', address: '', contactEmail: '', website: '' }, null, true],
-            [{ companyName: '', kvk: '', category: '', address: '', contactEmail: '', website: '' }, { location: { x: 0, y: 0 } } as any, true],
-            [{ companyName: 'Valid Company', kvk: '12345678', category: 'Category 1', address: 'Valid Address', contactEmail: 'domain@example.com', website: 'https://valid.url' }, null, true],
-            [{ companyName: 'Valid Company', kvk: '12345678', category: 'Category 1', address: 'Valid Address', contactEmail: 'domain@example.com', website: 'https://valid.url' }, { location: { x: 0, y: 0 } } as any, false]
-        ])(
-            'should return %s when form is %p and selectedLocation is %p',
-            (formValue, selectedLocation, expectedIsDisabled) => {
-                component.form.setValue(formValue);
-                component.selectedLocation = selectedLocation;
-                expect(component.isDisabled).toBe(expectedIsDisabled);
-            }
-        );
-    });
+		expect(component.form.get('address')?.value).toBe('Selected Address');
+		expect(component.suggestions).toEqual([]);
+		expect(component.selectedLocation).toBeNull();
+	});
 
-    it('should remove non-digit characters from KVK number input', () => {
-        const inputEvent = new Event('input');
-        const inputElement = document.createElement('input');
-        inputElement.value = 'abc123def';
+	describe('isDisabled', () => {
+		test.each([
+			[{ companyName: '', kvk: '', category: '', address: '', contactEmail: '', website: '' }, null, true],
+			[
+				{ companyName: '', kvk: '', category: '', address: '', contactEmail: '', website: '' },
+				{ location: { x: 0, y: 0 } } as any,
+				true
+			],
+			[
+				{
+					companyName: 'Valid Company',
+					kvk: '12345678',
+					category: 'Category 1',
+					address: 'Valid Address',
+					contactEmail: 'domain@example.com',
+					website: 'https://valid.url'
+				},
+				null,
+				true
+			],
+			[
+				{
+					companyName: 'Valid Company',
+					kvk: '12345678',
+					category: 'Category 1',
+					address: 'Valid Address',
+					contactEmail: 'domain@example.com',
+					website: 'https://valid.url'
+				},
+				{ location: { x: 0, y: 0 } } as any,
+				false
+			]
+		])(
+			'should return %s when form is %p and selectedLocation is %p',
+			(formValue, selectedLocation, expectedIsDisabled) => {
+				component.form.setValue(formValue);
+				component.selectedLocation = selectedLocation;
+				expect(component.isDisabled).toBe(expectedIsDisabled);
+			}
+		);
+	});
 
-        Object.defineProperty(inputEvent, 'target', { value: inputElement });
+	it('should remove non-digit characters from KVK number input', () => {
+		const inputEvent = new Event('input');
+		const inputElement = document.createElement('input');
+		inputElement.value = 'abc123def';
 
-        component.onKvkInput(inputEvent);
+		Object.defineProperty(inputEvent, 'target', { value: inputElement });
 
-        expect(inputElement.value).toBe('123');
-    });
+		component.onKvkInput(inputEvent);
 
-    describe('registerMerchant', () => {
-        it('should close dialog with ALREADY_REGISTERED_CODE when registration fails with ALREADY_REGISTERED_CODE', () => {
-            const mockError = { error: { message: ALREADY_REGISTERED_CODE } };
-            jest.spyOn(merchantService, 'registerMerchant').mockReturnValue(throwError(() => mockError));
+		expect(inputElement.value).toBe('123');
+	});
 
-            component['registerMerchant']();
+	describe('registerMerchant', () => {
+		it('should close dialog with ALREADY_REGISTERED_CODE when registration fails with ALREADY_REGISTERED_CODE', () => {
+			const mockError = { error: { message: ALREADY_REGISTERED_CODE } };
+			jest.spyOn(merchantService, 'registerMerchant').mockReturnValue(throwError(() => mockError));
 
-            expect(matDialogRefStub.close).toHaveBeenCalledWith(ALREADY_REGISTERED_CODE);
-        });
-    });
+			component['registerMerchant']();
 
-    describe('performAction', () => {
-        it('should call approveMerchant if isApprovalDialog is true', () => {
-            component.isApprovalDialog = true;
-            const approveMerchantSpy = jest.spyOn(component as any, 'approveMerchant');
+			expect(matDialogRefStub.close).toHaveBeenCalledWith(ALREADY_REGISTERED_CODE);
+		});
+	});
 
-            component.performAction();
+	describe('performAction', () => {
+		it('should call approveMerchant if isApprovalDialog is true', () => {
+			component.isApprovalDialog = true;
+			const approveMerchantSpy = jest.spyOn(component as any, 'approveMerchant');
 
-            expect(approveMerchantSpy).toHaveBeenCalled();
-        });
+			component.performAction();
 
-        it('should call registerMerchant if isApprovalDialog is false', () => {
-            component.isApprovalDialog = false;
-            const registerMerchantSpy = jest.spyOn(component as any, 'registerMerchant');
+			expect(approveMerchantSpy).toHaveBeenCalled();
+		});
 
-            component.performAction();
+		it('should call registerMerchant if isApprovalDialog is false', () => {
+			component.isApprovalDialog = false;
+			const registerMerchantSpy = jest.spyOn(component as any, 'registerMerchant');
 
-            expect(registerMerchantSpy).toHaveBeenCalled();
-        });
-    });
+			component.performAction();
 
+			expect(registerMerchantSpy).toHaveBeenCalled();
+		});
+	});
 
+	describe('handleApprovalDialogValues', () => {
+		it('should return "-" if formControl is WEBSITE and value is null', () => {
+			const field: FormField = { formControl: ColumnType.WEBSITE } as FormField;
+			const result = component['handleApprovalDialogValues'](field, null);
+
+			expect(result).toBe('-');
+		});
+
+		it('should return translated value if formControl is CATEGORY and value is not null', () => {
+			const field: FormField = { formControl: ColumnType.CATEGORY } as FormField;
+			const inputValue = 'someCategory';
+			const translatedValue = 'Translated Category';
+
+			jest.spyOn(translateService, 'instant').mockReturnValue(translatedValue);
+
+			const result = component['handleApprovalDialogValues'](field, inputValue);
+
+			expect(result).toBe(inputValue);
+		});
+
+		it('should return the value for any other formControl', () => {
+			const field: FormField = { formControl: 'someOtherControl' } as FormField;
+			const inputValue = 'someValue';
+
+			const result = component['handleApprovalDialogValues'](field, inputValue);
+
+			expect(result).toBe(inputValue);
+		});
+	});
+
+	it('should return an empty array if isApprovalDialog is true', () => {
+		component.isApprovalDialog = true;
+
+		const formField: FormField = {
+			formControl: 'companyName',
+			labelKey: 'label.companyName',
+			fieldType: 'input',
+			required: true,
+			isReadOnly: false
+		} as FormField;
+		const validators = component['getValidators'](formField);
+
+		expect(validators).toEqual([]);
+	});
+
+	it('should return required and pattern validators if isApprovalDialog is false and field has required and pattern', () => {
+		component.isApprovalDialog = false;
+
+		const formField: FormField = {
+			formControl: 'kvk',
+			labelKey: 'label.kvk',
+			fieldType: 'input',
+			required: true,
+			isReadOnly: false,
+			pattern: '\\d+',
+			requiredMessage: 'Field is required',
+			patternMessage: 'Must be a number'
+		} as FormField;
+		const validators = component['getValidators'](formField);
+
+		expect(validators.length).toBe(2);
+		expect(validators[0]).toBe(Validators.required);
+	});
+
+	it('should return only required validator if isApprovalDialog is false and field is required but has no pattern', () => {
+		component.isApprovalDialog = false;
+
+		const formField: FormField = {
+			formControl: 'address',
+			labelKey: 'label.address',
+			fieldType: 'input',
+			required: true,
+			isReadOnly: false
+		} as FormField;
+		const validators = component['getValidators'](formField);
+
+		expect(validators.length).toBe(1);
+		expect(validators[0]).toBe(Validators.required);
+	});
+
+	it('should return only pattern validator if isApprovalDialog is false and field has pattern but is not required', () => {
+		component.isApprovalDialog = false;
+
+		const formField: FormField = {
+			formControl: 'website',
+			labelKey: 'label.website',
+			fieldType: 'input',
+			required: false,
+			isReadOnly: false,
+			pattern: 'https?://.+'
+		} as FormField;
+		const validators = component['getValidators'](formField);
+
+		expect(validators.length).toBe(1);
+	});
 });

@@ -297,7 +297,7 @@ export class MerchantDialogComponent implements OnInit {
 
 	private checkFormMode(): void {
 		this.isApprovalDialog = this.data?.isApprovalDialog ?? false;
-		this.currentMerchantId = this.data?.merchant.id;
+		this.currentMerchantId = this.data?.merchant?.id;
 	}
 
 }
