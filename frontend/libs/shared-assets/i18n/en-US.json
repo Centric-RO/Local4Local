@@ -1,6 +1,7 @@
 {
     "general": {
         "noResults": "No results for this input",
+        "noActions": "No actions",
         "button": {
             "cancel": "Cancel",
             "delete": "Delete button",
@@ -37,6 +38,10 @@
             "status": "Status",
             "actions": "Actions"
         }
+    },
+    "tooltip": {
+        "approveMerchant": "Approve merchants",
+        "rejectMerchant": "Reject merchant"
     },
     "welcomePage": {
         "registerButton": "Register as a merchant",

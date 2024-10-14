@@ -179,29 +179,29 @@ public class MerchantServiceImplTests {
         merchant2.setId(UUID.randomUUID());
 
         List<Merchant> merchantList = Arrays.asList(merchant1, merchant2);
-        when(merchantRepository.findAll()).thenReturn(merchantList);
+        when(merchantRepository.findByStatus(MerchantStatusEnum.APPROVED)).thenReturn(merchantList);
 
         // When
-        List<MerchantViewDto> result = merchantService.getAll();
+        List<MerchantViewDto> result = merchantService.getAllApproved();
 
         // Then
         assertEquals(2, result.size());
         assertEquals("Company 1", result.get(0).companyName());
         assertEquals("Company 2", result.get(1).companyName());
-        verify(merchantRepository, times(1)).findAll();
+        verify(merchantRepository, times(1)).findByStatus(MerchantStatusEnum.APPROVED);
     }
 
     @Test
     public void GivenEmptyRepository_WhenGetAll_ThenReturnEmptyList() {
         // Given
-        when(merchantRepository.findAll()).thenReturn(List.of());
+        when(merchantRepository.findByStatus(MerchantStatusEnum.APPROVED)).thenReturn(List.of());
 
         // When
-        List<MerchantViewDto> result = merchantService.getAll();
+        List<MerchantViewDto> result = merchantService.getAllApproved();
 
         // Then
         assertEquals(0, result.size());
-        verify(merchantRepository, times(1)).findAll();
+        verify(merchantRepository, times(1)).findByStatus(MerchantStatusEnum.APPROVED);
     }
 
     @Test
@@ -389,7 +389,7 @@ public class MerchantServiceImplTests {
                 .lon(4.462456)
                 .address("Address 1")
                 .contactEmail("domain@example.com")
-                .status(MerchantStatusEnum.PENDING)
+                .status(MerchantStatusEnum.APPROVED)
                 .build();
     }
 }

@@ -1,0 +1,53 @@
+name: Pull Request Validation
+
+on:
+  pull_request:
+    branches:
+      - development
+
+jobs:
+  validate:
+    runs-on: ubuntu-latest # Use an Ubuntu runner for the job
+
+    steps:
+      # Step 1: Checkout the repository
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: refs/heads/development # Check out the 'development' branch
+
+      # Step 2: Set up Node.js environment
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: "16" # You can specify the Node.js version you are using
+
+      # Step 3: Install npm packages
+      - name: Install npm packages
+        run: |
+          cd frontend
+          npm install --force
+
+      # Step 4: Install Jest globally
+      - name: Install Jest globally
+        run: |
+          npm install -g jest
+        working-directory: frontend
+
+      # Step 5: Lint project (Angular Lint)
+      - name: Lint project
+        run: |
+          npm run lint
+        working-directory: frontend
+
+      # Step 6: Run tests (Jest Tests)
+      - name: Run tests
+        run: |
+          npm test
+        working-directory: frontend
+
+      # Step 7: Build project (with Angular build)
+      - name: Build project
+        run: |
+          npm run ng build
+        working-directory: frontend

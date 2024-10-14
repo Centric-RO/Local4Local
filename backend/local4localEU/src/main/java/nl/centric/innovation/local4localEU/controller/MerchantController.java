@@ -50,7 +50,7 @@ public class MerchantController {
 
     @RequestMapping(path = "/all", method = RequestMethod.GET)
     public ResponseEntity<List<MerchantViewDto>> getAllMerchants() {
-        return ResponseEntity.ok(merchantService.getAll());
+        return ResponseEntity.ok(merchantService.getAllApproved());
     }
 
     @GetMapping("/paginated")

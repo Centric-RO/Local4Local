@@ -42,6 +42,7 @@ import { MatTableModule } from '@angular/material/table';
 import { MatPaginatorModule } from '@angular/material/paginator';
 import { ProfileComponent } from './components/profile/profile.component';
 import { MfaComponent } from './components/mfa/mfa.component';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { MerchantDialogComponent } from './components/merchant-dialog/merchant-dialog.component';
 
 export function httpLoaderFactory(http: HttpClient) {
@@ -69,6 +70,7 @@ export function httpLoaderFactory(http: HttpClient) {
 	],
 	imports: [
 		HttpClientModule,
+		MatTooltipModule,
 		MatExpansionModule,
 		MatDividerModule,
 		MatPaginatorModule,
