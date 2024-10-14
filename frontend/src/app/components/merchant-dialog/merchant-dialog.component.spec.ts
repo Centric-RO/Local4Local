@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { FormBuilder } from '@angular/forms';
-import { MatDialog, MatDialogRef } from '@angular/material/dialog';
-import { TranslateModule } from '@ngx-translate/core';
+import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
 import { EsriSuggestionResult } from '../../models/esri-suggestion-response.model';
 import { of, throwError } from 'rxjs';
@@ -13,6 +13,8 @@ import { HttpClientTestingModule } from '@angular/common/http/testing';
 import { MerchantService } from '../../services/merchant.service';
 import { ALREADY_REGISTERED_CODE } from '../../_constants/error-constants';
 import { MerchantDialogComponent } from './merchant-dialog.component';
+import { FormField } from '../../models/form-field.model';
+import { ColumnType } from '../../enums/column.enum';
 
 const matDialogRefStub = {
     close: jest.fn()
@@ -25,13 +27,15 @@ const merchantServiceStub = {
 const matDialogStub = {
     open: jest.fn()
 };
+const matDialogDataStub = {};
 
 describe('MerchantDialogComponent', () => {
     let component: MerchantDialogComponent;
     let fixture: ComponentFixture<MerchantDialogComponent>;
     let esriLocatorService: EsriLocatorService;
     let merchantService: MerchantService;
-
+    let translateService: TranslateService;
+    
     beforeEach(async () => {
         await TestBed.configureTestingModule({
             declarations: [MerchantDialogComponent],
@@ -47,6 +51,7 @@ describe('MerchantDialogComponent', () => {
                     }
                 },
                 { provide: MerchantService, useValue: merchantServiceStub },
+                { provide: MAT_DIALOG_DATA, useValue: matDialogDataStub },
                 CategoryService
             ],
             schemas: [NO_ERRORS_SCHEMA],
@@ -54,6 +59,7 @@ describe('MerchantDialogComponent', () => {
         }).compileComponents();
 
         fixture = TestBed.createComponent(MerchantDialogComponent);
+        translateService = { instant: jest.fn() } as unknown as TranslateService;
         component = fixture.componentInstance;
         esriLocatorService = TestBed.inject(EsriLocatorService);
         merchantService = TestBed.inject(MerchantService);
@@ -74,7 +80,7 @@ describe('MerchantDialogComponent', () => {
 
         test.each([
             ['companyName', 'required'],
-            ['kvkNumber', 'required'],
+            ['kvk', 'required'],
             ['category', 'required'],
             ['address', 'required'],
             ['contactEmail', 'required'],
@@ -99,8 +105,8 @@ describe('MerchantDialogComponent', () => {
 
     describe('Form Submission', () => {
         test.each([
-            [{ companyName: '', kvkNumber: '', category: '', address: '', contactEmail: '', website: '' }, true],
-            [{ companyName: 'Valid Company', kvkNumber: '12345678', category: 'Category 1', address: 'Valid Address', contactEmail: 'domain@example.com', website: 'https://valid.url' }, false]
+            [{ companyName: '', kvk: '', category: '', address: '', contactEmail: '', website: '' }, true],
+            [{ companyName: 'Valid Company', kvk: '12345678', category: 'Category 1', address: 'Valid Address', contactEmail: 'domain@example.com', website: 'https://valid.url' }, false]
         ])('should mark form as %s when form data is %s', (formValue, expectedValidity) => {
             component.form.setValue(formValue);
             component['registerMerchant']();
@@ -173,10 +179,10 @@ describe('MerchantDialogComponent', () => {
 
     describe('isDisabled', () => {
         test.each([
-            [{ companyName: '', kvkNumber: '', category: '', address: '', contactEmail: '', website: '' }, null, true],
-            [{ companyName: '', kvkNumber: '', category: '', address: '', contactEmail: '', website: '' }, { location: { x: 0, y: 0 } } as any, true],
-            [{ companyName: 'Valid Company', kvkNumber: '12345678', category: 'Category 1', address: 'Valid Address', contactEmail: 'domain@example.com', website: 'https://valid.url' }, null, true],
-            [{ companyName: 'Valid Company', kvkNumber: '12345678', category: 'Category 1', address: 'Valid Address', contactEmail: 'domain@example.com', website: 'https://valid.url' }, { location: { x: 0, y: 0 } } as any, false]
+            [{ companyName: '', kvk: '', category: '', address: '', contactEmail: '', website: '' }, null, true],
+            [{ companyName: '', kvk: '', category: '', address: '', contactEmail: '', website: '' }, { location: { x: 0, y: 0 } } as any, true],
+            [{ companyName: 'Valid Company', kvk: '12345678', category: 'Category 1', address: 'Valid Address', contactEmail: 'domain@example.com', website: 'https://valid.url' }, null, true],
+            [{ companyName: 'Valid Company', kvk: '12345678', category: 'Category 1', address: 'Valid Address', contactEmail: 'domain@example.com', website: 'https://valid.url' }, { location: { x: 0, y: 0 } } as any, false]
         ])(
             'should return %s when form is %p and selectedLocation is %p',
             (formValue, selectedLocation, expectedIsDisabled) => {
@@ -209,4 +215,26 @@ describe('MerchantDialogComponent', () => {
             expect(matDialogRefStub.close).toHaveBeenCalledWith(ALREADY_REGISTERED_CODE);
         });
     });
+
+    describe('performAction', () => {
+        it('should call approveMerchant if isApprovalDialog is true', () => {
+            component.isApprovalDialog = true;
+            const approveMerchantSpy = jest.spyOn(component as any, 'approveMerchant');
+
+            component.performAction();
+
+            expect(approveMerchantSpy).toHaveBeenCalled();
+        });
+
+        it('should call registerMerchant if isApprovalDialog is false', () => {
+            component.isApprovalDialog = false;
+            const registerMerchantSpy = jest.spyOn(component as any, 'registerMerchant');
+
+            component.performAction();
+
+            expect(registerMerchantSpy).toHaveBeenCalled();
+        });
+    });
+
+
 });

@@ -12,10 +12,6 @@ export class MerchantService {
 
     constructor(private httpClient: HttpClient) { }
 
-    public registerMerchant(merchantDto: MerchantDto): Observable<MerchantDto> {
-        return this.httpClient.post<MerchantDto>(`${environment.apiPath}/merchant/register`, merchantDto);
-    }
-
     public getAllMerchants(): Observable<MerchantDto[]> {
         return this.httpClient.get<MerchantDto[]>(`${environment.apiPath}/merchant/all`);
     }
@@ -35,14 +31,24 @@ export class MerchantService {
         return this.httpClient.get<MerchantDto[]>(`${environment.apiPath}/merchant/filter/${categoryId}`);
     }
 
-    public inviteMerchants(inviteMerchantsDto: InviteMerchantsDto): Observable<void> {
-        return this.httpClient.post<void>(`${environment.apiPath}/merchant/invite`, inviteMerchantsDto, { withCredentials: true });
-    }
-
     public countAllMerchants(): Observable<number> {
         return this.httpClient.get<number>(
             `${environment.apiPath}/merchant/count/all`,
             { withCredentials: true }
         );
+    }
+
+    public inviteMerchants(inviteMerchantsDto: InviteMerchantsDto): Observable<void> {
+        return this.httpClient.post<void>(`${environment.apiPath}/merchant/invite`, inviteMerchantsDto, { withCredentials: true });
+    }
+
+    public registerMerchant(merchantDto: MerchantDto): Observable<MerchantDto> {
+        return this.httpClient.post<MerchantDto>(`${environment.apiPath}/merchant/register`, merchantDto);
+    }
+
+    public approveMerchant(merchantId: string): Observable<void> {
+        return this.httpClient.patch<void>(`${environment.apiPath}/merchant/approve/${merchantId}`, {}, {
+            withCredentials: true
+        });
     }
 }

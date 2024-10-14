@@ -160,7 +160,8 @@
     },
     "approveMerchant": {
         "title": "Approve request",
-        "subtitle": "By approving this merchant, you allow them to appear on the map showing which suppliers accept X currency."
+        "subtitle": "By approving this merchant, you allow them to appear on the map showing which suppliers accept X currency.",
+        "success": "The request was successfully approved."
     },
     "errors": {
         "40007": "Ooops we got an error. Invalid credentials. Please try again or use the forgot password option",

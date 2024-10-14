@@ -15,6 +15,12 @@ import { ALREADY_REGISTERED_CODE, SUCCESS_CODE } from '../../_constants/error-co
 import { RegexUtil } from '../../util/regex.util';
 import { ColumnType } from '../../enums/column.enum';
 import { TranslateService } from '@ngx-translate/core';
+import { MatSnackBar } from '@angular/material/snack-bar';
+import { CustomSnackbarComponent } from '../custom-snackbar/custom-snackbar.component';
+import { SnackbarData } from '../../models/snackbar-data.model';
+import { SnackbarType } from '../../_enums/snackbar-type.enum';
+
+type ApprovalDialogValue = string | number | null | undefined;
 
 @Component({
 	selector: 'app-merchant-dialog',
@@ -36,13 +42,16 @@ export class MerchantDialogComponent implements OnInit {
 
 	private fb = inject(FormBuilder);
 	private esriLocatorService = inject(EsriLocatorService);
+	private translateService = inject(TranslateService);
 	private readonly data = inject(MAT_DIALOG_DATA);
 
 	private readonly dialogRef = inject(MatDialogRef<MerchantDialogComponent>);
 	private readonly categoryService = inject(CategoryService);
 	private readonly merchantService = inject(MerchantService);
+	private readonly snackBar = inject(MatSnackBar);
 
-	private translateService = inject(TranslateService);
+	private currentMerchantId: string;
+
 
 	public get isDisabled(): boolean {
 		return (this.form.invalid || !this.selectedLocation) && !this.isApprovalDialog;
@@ -106,7 +115,7 @@ export class MerchantDialogComponent implements OnInit {
 
 	public performAction(): void {
 		if (this.isApprovalDialog) {
-			this.approveMerchant();
+			this.approveMerchant(this.currentMerchantId);
 			return;
 		}
 
@@ -118,8 +127,22 @@ export class MerchantDialogComponent implements OnInit {
 		input.value = input.value.replace(/\D/g, '');
 	}
 
-	private approveMerchant(): void {
-		console.error("To be implemented in the next PR");
+	private approveMerchant(merchantId: string): void {
+		this.merchantService.approveMerchant(merchantId).subscribe(() => {
+			this.closeDialog(SUCCESS_CODE);
+			this.showSuccessToast();
+		})
+	}
+
+	private showSuccessToast(): void {
+		const toasterMessage = this.translateService.instant('approveMerchant.success');
+
+		this.snackBar.openFromComponent(CustomSnackbarComponent, {
+			duration: 8000,
+			data: new SnackbarData(toasterMessage, SnackbarType.SUCCESS),
+			horizontalPosition: 'right',
+			verticalPosition: 'bottom',
+		});
 	}
 
 	private registerMerchant(): void {
@@ -222,7 +245,7 @@ export class MerchantDialogComponent implements OnInit {
 
 		const controls = this.formFields.reduce((acc, field) => {
 			const formControlName = field.formControl as keyof MerchantDto;
-			
+
 			let formControlValue = merchantData ? merchantData[formControlName] : null;
 
 			if (this.isApprovalDialog) {
@@ -236,7 +259,7 @@ export class MerchantDialogComponent implements OnInit {
 		this.form = this.fb.group(controls);
 	}
 
-	private handleApprovalDialogValues(field: FormField, value: any): any {
+	private handleApprovalDialogValues(field: FormField, value: ApprovalDialogValue): ApprovalDialogValue {
 		if (field.formControl === ColumnType.WEBSITE && value === null) {
 			return '-';
 		}
@@ -274,6 +297,7 @@ export class MerchantDialogComponent implements OnInit {
 
 	private checkFormMode(): void {
 		this.isApprovalDialog = this.data?.isApprovalDialog ?? false;
+		this.currentMerchantId = this.data?.merchant.id;
 	}
 
 }

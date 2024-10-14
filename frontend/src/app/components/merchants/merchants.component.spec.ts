@@ -9,6 +9,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { MerchantDto } from '../../models/merchant-dto.model';
 import { ColumnType } from '../../enums/column.enum';
 import { PageEvent } from '@angular/material/paginator';
+import { MerchantDialogComponent } from '../merchant-dialog/merchant-dialog.component';
 
 describe('MerchantsComponent', () => {
     let component: MerchantsComponent;
@@ -180,4 +181,26 @@ describe('MerchantsComponent', () => {
         component.openInviteMerchantsDialog();
         expect(matDialogMock.open).toHaveBeenCalledWith(InviteMerchantDialogComponent, { width: '560px' });
     });
+
+    it('should open MerchantDialogComponent with correct data when approveMerchant is called', () => {
+        const mockMerchant: MerchantDto = {
+            companyName: 'Test Company',
+            kvk: '12345678',
+            category: 'Retail',
+            latitude: 52.3702,
+            longitude: 4.8952,
+            address: '123 Test Street, Test City',
+            contactEmail: 'test@example.com',
+            website: 'https://www.testcompany.com',
+            status: 'Active'
+        };
+    
+        component.approveMerchant(mockMerchant);
+    
+        expect(matDialogMock.open).toHaveBeenCalledWith(MerchantDialogComponent, {
+            data: { isApprovalDialog: true, merchant: mockMerchant },
+            width: '560px'
+        });
+    });
+    
 });
