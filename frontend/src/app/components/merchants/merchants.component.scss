@@ -1,11 +1,24 @@
 @use '../.././../../libs/shared-assets/_styles/mixins.scss' as mixins;
 
+::ng-deep {
+    .mat-mdc-paginator-outer-container {
+        background-color: var(--neutral-0);
+    }
+
+    .mdc-tooltip__surface {
+        color: black !important;
+        background: white !important;
+        box-shadow: 0 1px 2px 0 var(--theme-500-rgb) !important;
+    }
+}
+
 :host {
     overflow: hidden;
 
     .button-container {
         @include mixins.flex(row, flex-end);
-        padding: 32px;
+        padding-top: 32px;
+        padding-right: 32px;
 
         button {
             background-color: var(--theme-500);
@@ -14,13 +27,13 @@
 
     .mat-elevation-z8 {
         box-shadow: none;
-        margin: 32px;
+        margin: 0 32px;
     }
 
     .table-container {
         max-height: 580px;
         overflow-y: auto;
-        scrollbar-width: thin; 
+        scrollbar-width: thin;
     }
 
     .mat-mdc-table {
@@ -72,4 +85,26 @@
     .empty-state {
         height: 100%;
     }
+
+    .custom-header {
+        background-color: var(--theme-100);
+
+        p {
+            color: var(--neutral-900);
+        }
+    }
+
+    table tr:first-child th, .table-footer-spacer {
+        border-bottom: 1px solid var(--neutral-200);
+    }
+
+    .main-container {
+        @include mixins.flex(column);
+        gap: 16px;
+    }
+
+    .no-actions {
+        color: var(--neutral-500);
+    }
+
 }

@@ -1,6 +1,7 @@
 {
 	"general": {
 		"noResults": "...No results for this input",
+		"noActions": "...No actions",
 		"button": {
 			"cancel": "...Cancel",
 			"delete": "...Delete button",
@@ -26,6 +27,10 @@
 		},
 		"paginatorResult": "...Results per page",
 		"congratulations": "...Congratulations!"
+	},
+	"tooltip": {
+		"approveMerchant": "...Approve merchants",
+		"rejectMerchant": "...Reject merchant"
 	},
 	"table": {
 		"column": {
@@ -153,11 +158,11 @@
 		"title": "...Two-factor authentication",
 		"subtitle": "...To continue, enter the secure code we sent to your e-mail.<br>Check junk mail if it’s not in your inbox.",
 		"label": "...6-digit code",
-        "resendMessage": "...Didn’t receive an e-mail? You can request another code in 13s.",
-        "error": {
-            "required": "...Enter the one time code.",
-            "invalid": "...Invalid code"
-        }
+		"resendMessage": "...Didn’t receive an e-mail? You can request another code in 13s.",
+		"error": {
+			"required": "...Enter the one time code.",
+			"invalid": "...Invalid code"
+		}
 	},
 	"errors": {
 		"40007": "...Ooops we got an error. Invalid credentials. Please try again or use the forgot password option",
