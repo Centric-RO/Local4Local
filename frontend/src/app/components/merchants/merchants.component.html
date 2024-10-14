@@ -28,7 +28,12 @@
                                     @switch(element.status) {
                                         @case('PENDING') {
                                             <span class="action-icons">
-                                                <mat-icon class="action-icon pending pointer">check_circle</mat-icon>
+                                                <mat-icon 
+                                                 class="action-icon pending pointer"
+                                                 (click)="approveMerchant(element)"
+                                                 >
+                                                 check_circle
+                                                </mat-icon>
                                                 <mat-icon class="action-icon pending pointer">cancel</mat-icon>
                                             </span>
                                         }

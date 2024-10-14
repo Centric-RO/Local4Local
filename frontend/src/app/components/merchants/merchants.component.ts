@@ -8,6 +8,7 @@ import { MerchantService } from '../../services/merchant.service';
 import { ColumnConfig } from '../../models/column-config.model';
 import { ColumnType } from '../../enums/column.enum';
 import { forkJoin } from 'rxjs';
+import { MerchantDialogComponent } from '../merchant-dialog/merchant-dialog.component';
 
 @Component({
     selector: 'app-merchants',
@@ -71,6 +72,13 @@ export class MerchantsComponent implements OnInit {
 
     public openInviteMerchantsDialog(): void {
         this.dialog.open(InviteMerchantDialogComponent, { width: '560px' });
+    }
+
+    public approveMerchant(merchant: MerchantDto): void {
+        this.dialog.open(MerchantDialogComponent, {
+            data: { isRegistrationDialog: true, merchant: merchant },
+            width: '560px',
+        });
     }
 
     private initData(pageIndex: number, pageSize: number): void {

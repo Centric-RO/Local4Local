@@ -1,5 +1,5 @@
 import { Component, inject, OnInit } from '@angular/core';
-import { MatDialogRef } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormField } from '../../models/form-field.model';
 import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { L4LErrorStateMatcher } from '../../helpers/error-state-matcher';
@@ -34,6 +34,7 @@ export class MerchantDialogComponent implements OnInit {
 
 	private fb = inject(FormBuilder);
 	private esriLocatorService = inject(EsriLocatorService);
+	private readonly data = inject(MAT_DIALOG_DATA);
 
 	private readonly dialogRef = inject(MatDialogRef<MerchantDialogComponent>);
 	private readonly categoryService = inject(CategoryService);
@@ -48,10 +49,10 @@ export class MerchantDialogComponent implements OnInit {
 	}
 
 	public ngOnInit(): void {
+		this.checkFormMode();
 		this.initCategories();
 		this.initializeFormFields();
 		this.createForm();
-		this.checkDialogType();
 	}
 
 	public onSearchAddress(event: Event): void {
@@ -130,6 +131,7 @@ export class MerchantDialogComponent implements OnInit {
 				fieldType: 'input',
 				required: true,
 				maxLength: 256,
+				isReadOnly: this.isRegistrationDialog,
 				requiredMessage: 'register.error.companyNameRequired'
 			},
 			{
@@ -138,6 +140,7 @@ export class MerchantDialogComponent implements OnInit {
 				fieldType: 'input',
 				required: true,
 				maxLength: 8,
+				isReadOnly: this.isRegistrationDialog,
 				requiredMessage: 'register.error.kvkNumberRequired',
 				pattern: RegexUtil.kvkRegexPattern,
 				patternMessage: 'register.error.kvkFormControlLength'
@@ -147,6 +150,7 @@ export class MerchantDialogComponent implements OnInit {
 				labelKey: 'table.column.category',
 				fieldType: 'select',
 				required: true,
+				isReadOnly: this.isRegistrationDialog,
 				options: this.categories,
 				requiredMessage: 'register.error.categoryRequired'
 			},
@@ -155,6 +159,7 @@ export class MerchantDialogComponent implements OnInit {
 				labelKey: 'table.column.address',
 				fieldType: 'input',
 				required: true,
+				isReadOnly: this.isRegistrationDialog,
 				maxLength: 256,
 				requiredMessage: 'register.error.addressRequired'
 			},
@@ -163,6 +168,7 @@ export class MerchantDialogComponent implements OnInit {
 				labelKey: 'register.contactEmail',
 				fieldType: 'input',
 				required: true,
+				isReadOnly: this.isRegistrationDialog,
 				maxLength: 256,
 				pattern: RegexUtil.emailRegexPattern,
 				patternMessage: 'register.error.emailInvalid',
@@ -173,15 +179,19 @@ export class MerchantDialogComponent implements OnInit {
 				labelKey: 'register.website',
 				fieldType: 'input',
 				required: false,
+				isReadOnly: this.isRegistrationDialog,
 				maxLength: 256,
 				pattern: RegexUtil.urlRegexPattern,
 				patternMessage: 'register.error.invalidUrl'
 			}
 		];
+
 	}
 
 	private createForm(): void {
 		const controls: Record<string, FormControl> = {};
+
+		const merchantData = this.isRegistrationDialog ? this.data.merchant as MerchantDto : null;
 
 		this.formFields.forEach((field) => {
 			const validators = [];
@@ -193,7 +203,32 @@ export class MerchantDialogComponent implements OnInit {
 				validators.push(Validators.pattern(field.pattern));
 			}
 
-			controls[field.formControl] = new FormControl(null, validators);
+			let formControlValue = null;
+
+			if (merchantData) {
+				switch (field.formControl) {
+					case 'companyName':
+						formControlValue = merchantData.companyName || null;
+						break;
+					case 'kvkNumber':
+						formControlValue = merchantData.kvk || null;
+						break;
+					case 'category':
+						formControlValue = merchantData.category || null;
+						break;
+					case 'address':
+						formControlValue = merchantData.address || null;
+						break;
+					case 'contactEmail':
+						formControlValue = merchantData.contactEmail || null;
+						break;
+					case 'website':
+						formControlValue = merchantData.website || null;
+						break;
+				}
+			}
+
+			controls[field.formControl] = new FormControl(formControlValue, validators);
 		});
 
 		this.form = this.fb.group(controls);
@@ -205,11 +240,8 @@ export class MerchantDialogComponent implements OnInit {
 		});
 	}
 
-	private checkDialogType(): void {
-		if (!this.isRegistrationDialog) {
-			return;
-		}
-
-		this.form.disable();
+	private checkFormMode(): void {
+		this.isRegistrationDialog = this.data.isRegistrationDialog ?? false;
 	}
+
 }
