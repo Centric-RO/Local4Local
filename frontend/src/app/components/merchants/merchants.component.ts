@@ -76,8 +76,8 @@ export class MerchantsComponent implements OnInit {
 
     public approveMerchant(merchant: MerchantDto): void {
         this.dialog.open(MerchantDialogComponent, {
-            data: { isRegistrationDialog: true, merchant: merchant },
-            width: '560px',
+            data: { isApprovalDialog: true, merchant: merchant },
+            width: '560px'
         });
     }
 

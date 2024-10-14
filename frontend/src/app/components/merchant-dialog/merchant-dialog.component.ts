@@ -1,7 +1,7 @@
 import { Component, inject, OnInit } from '@angular/core';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 import { FormField } from '../../models/form-field.model';
-import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, ValidatorFn, Validators } from '@angular/forms';
 import { L4LErrorStateMatcher } from '../../helpers/error-state-matcher';
 import { FormUtil } from '../../util/form.util';
 import { EsriLocatorService } from '../../services/esri-locator/esri-locator.service';
@@ -13,6 +13,8 @@ import { MerchantService } from '../../services/merchant.service';
 import { MerchantDto } from '../../models/merchant-dto.model';
 import { ALREADY_REGISTERED_CODE, SUCCESS_CODE } from '../../_constants/error-constants';
 import { RegexUtil } from '../../util/regex.util';
+import { ColumnType } from '../../enums/column.enum';
+import { TranslateService } from '@ngx-translate/core';
 
 @Component({
 	selector: 'app-merchant-dialog',
@@ -23,7 +25,7 @@ export class MerchantDialogComponent implements OnInit {
 	public hasRequiredError = FormUtil.hasRequiredError;
 	public hasPatternError = FormUtil.hasPatternError;
 
-	public isRegistrationDialog = false;
+	public isApprovalDialog = false;
 	public formFields: FormField[] = [];
 	public form: FormGroup;
 	public matcher = new L4LErrorStateMatcher();
@@ -40,12 +42,26 @@ export class MerchantDialogComponent implements OnInit {
 	private readonly categoryService = inject(CategoryService);
 	private readonly merchantService = inject(MerchantService);
 
+	private translateService = inject(TranslateService);
+
 	public get isDisabled(): boolean {
-		return this.form.invalid || !this.selectedLocation;
+		return (this.form.invalid || !this.selectedLocation) && !this.isApprovalDialog;
 	}
 
 	public get hasNoSuggestions(): boolean {
 		return this.suggestions.length === 0 && !this.selectedLocation
+	}
+
+	public get title(): string {
+		return this.isApprovalDialog ? 'approveMerchant.title' : 'register.title';
+	}
+
+	public get subtitle(): string {
+		return this.isApprovalDialog ? 'approveMerchant.subtitle' : 'register.subtitle';
+	}
+
+	public get actionButton(): string {
+		return this.isApprovalDialog ? 'approveMerchant.title' : 'register.registerButton';
 	}
 
 	public ngOnInit(): void {
@@ -88,7 +104,25 @@ export class MerchantDialogComponent implements OnInit {
 		this.dialogRef.close(success);
 	}
 
-	public registerMerchant(): void {
+	public performAction(): void {
+		if (this.isApprovalDialog) {
+			this.approveMerchant();
+			return;
+		}
+
+		this.registerMerchant();
+	}
+
+	public onKvkInput(event: Event): void {
+		const input = event.target as HTMLInputElement;
+		input.value = input.value.replace(/\D/g, '');
+	}
+
+	private approveMerchant(): void {
+		console.error("To be implemented in the next PR");
+	}
+
+	private registerMerchant(): void {
 		if (this.form.invalid) return;
 
 		const merchantDto = this.createMerchantDto();
@@ -102,18 +136,13 @@ export class MerchantDialogComponent implements OnInit {
 		});
 	}
 
-	public onKvkInput(event: Event): void {
-		const input = event.target as HTMLInputElement;
-		input.value = input.value.replace(/\D/g, '');
-	}
-
 	private createMerchantDto(): MerchantDto {
-		const { companyName, kvkNumber, category, address, contactEmail, website } = this.form.value;
+		const { companyName, kvk, category, address, contactEmail, website } = this.form.value;
 		const { location } = this.selectedLocation ?? {};
 
 		return {
 			companyName,
-			kvk: kvkNumber,
+			kvk: kvk,
 			category,
 			latitude: location?.y ?? 0.0,
 			longitude: location?.x ?? 0.0,
@@ -131,16 +160,16 @@ export class MerchantDialogComponent implements OnInit {
 				fieldType: 'input',
 				required: true,
 				maxLength: 256,
-				isReadOnly: this.isRegistrationDialog,
+				isReadOnly: this.isApprovalDialog,
 				requiredMessage: 'register.error.companyNameRequired'
 			},
 			{
-				formControl: 'kvkNumber',
+				formControl: 'kvk',
 				labelKey: 'table.column.kvkNumber',
 				fieldType: 'input',
 				required: true,
 				maxLength: 8,
-				isReadOnly: this.isRegistrationDialog,
+				isReadOnly: this.isApprovalDialog,
 				requiredMessage: 'register.error.kvkNumberRequired',
 				pattern: RegexUtil.kvkRegexPattern,
 				patternMessage: 'register.error.kvkFormControlLength'
@@ -148,9 +177,9 @@ export class MerchantDialogComponent implements OnInit {
 			{
 				formControl: 'category',
 				labelKey: 'table.column.category',
-				fieldType: 'select',
+				fieldType: this.isApprovalDialog ? 'input' : 'select',
 				required: true,
-				isReadOnly: this.isRegistrationDialog,
+				isReadOnly: this.isApprovalDialog,
 				options: this.categories,
 				requiredMessage: 'register.error.categoryRequired'
 			},
@@ -159,7 +188,7 @@ export class MerchantDialogComponent implements OnInit {
 				labelKey: 'table.column.address',
 				fieldType: 'input',
 				required: true,
-				isReadOnly: this.isRegistrationDialog,
+				isReadOnly: this.isApprovalDialog,
 				maxLength: 256,
 				requiredMessage: 'register.error.addressRequired'
 			},
@@ -168,7 +197,7 @@ export class MerchantDialogComponent implements OnInit {
 				labelKey: 'register.contactEmail',
 				fieldType: 'input',
 				required: true,
-				isReadOnly: this.isRegistrationDialog,
+				isReadOnly: this.isApprovalDialog,
 				maxLength: 256,
 				pattern: RegexUtil.emailRegexPattern,
 				patternMessage: 'register.error.emailInvalid',
@@ -179,7 +208,7 @@ export class MerchantDialogComponent implements OnInit {
 				labelKey: 'register.website',
 				fieldType: 'input',
 				required: false,
-				isReadOnly: this.isRegistrationDialog,
+				isReadOnly: this.isApprovalDialog,
 				maxLength: 256,
 				pattern: RegexUtil.urlRegexPattern,
 				patternMessage: 'register.error.invalidUrl'
@@ -189,50 +218,53 @@ export class MerchantDialogComponent implements OnInit {
 	}
 
 	private createForm(): void {
-		const controls: Record<string, FormControl> = {};
+		const merchantData = this.isApprovalDialog ? (this.data.merchant as MerchantDto) : null;
 
-		const merchantData = this.isRegistrationDialog ? this.data.merchant as MerchantDto : null;
+		const controls = this.formFields.reduce((acc, field) => {
+			const formControlName = field.formControl as keyof MerchantDto;
+			
+			let formControlValue = merchantData ? merchantData[formControlName] : null;
 
-		this.formFields.forEach((field) => {
-			const validators = [];
-			if (field.required) {
-				validators.push(Validators.required);
+			if (this.isApprovalDialog) {
+				formControlValue = this.handleApprovalDialogValues(field, formControlValue);
 			}
 
-			if (field.pattern) {
-				validators.push(Validators.pattern(field.pattern));
-			}
-
-			let formControlValue = null;
-
-			if (merchantData) {
-				switch (field.formControl) {
-					case 'companyName':
-						formControlValue = merchantData.companyName || null;
-						break;
-					case 'kvkNumber':
-						formControlValue = merchantData.kvk || null;
-						break;
-					case 'category':
-						formControlValue = merchantData.category || null;
-						break;
-					case 'address':
-						formControlValue = merchantData.address || null;
-						break;
-					case 'contactEmail':
-						formControlValue = merchantData.contactEmail || null;
-						break;
-					case 'website':
-						formControlValue = merchantData.website || null;
-						break;
-				}
-			}
-
-			controls[field.formControl] = new FormControl(formControlValue, validators);
-		});
+			acc[formControlName] = new FormControl(formControlValue, this.getValidators(field));
+			return acc;
+		}, {} as Record<string, FormControl>);
 
 		this.form = this.fb.group(controls);
 	}
+
+	private handleApprovalDialogValues(field: FormField, value: any): any {
+		if (field.formControl === ColumnType.WEBSITE && value === null) {
+			return '-';
+		}
+
+		if (field.formControl === ColumnType.CATEGORY && value !== null) {
+			return this.translateService.instant(value as string);
+		}
+
+		return value;
+	}
+
+	private getValidators(field: FormField): ValidatorFn[] {
+		if (this.isApprovalDialog) {
+			return [];
+		}
+
+		const validators = [];
+		if (field.required) {
+			validators.push(Validators.required);
+		}
+
+		if (field.pattern) {
+			validators.push(Validators.pattern(field.pattern));
+		}
+
+		return validators;
+	}
+
 
 	private initCategories(): void {
 		this.categoryService.categories.subscribe((data) => {
@@ -241,7 +273,7 @@ export class MerchantDialogComponent implements OnInit {
 	}
 
 	private checkFormMode(): void {
-		this.isRegistrationDialog = this.data.isRegistrationDialog ?? false;
+		this.isApprovalDialog = this.data?.isApprovalDialog ?? false;
 	}
 
 }

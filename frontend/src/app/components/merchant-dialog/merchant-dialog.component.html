@@ -1,5 +1,5 @@
 <section mat-dialog-title class="dialog-header">
-    <span>{{ 'register.title' | translate }}</span>
+    <span>{{ title | translate }}</span>
     <button
         mat-icon-button
         mat-dialog-close
@@ -10,7 +10,7 @@
 </section>
 
 <mat-dialog-content>
-    <p>{{ 'register.subtitle' | translate }}</p>
+    <p>{{ subtitle | translate }}</p>
     <form [formGroup]="form">
         @for (field of formFields; track field.formControl) {
             <mat-form-field appearance="outline">
@@ -43,7 +43,7 @@
                                 </mat-autocomplete>
                             }
 
-                            @case('kvkNumber') {
+                            @case('kvk') {
                                 <input
                                     matInput
                                     [readonly]="field.isReadOnly"
@@ -85,7 +85,7 @@
                     </mat-error>
                 }
 
-                @if (hasPatternError(form, field.formControl) && field.patternMessage) {
+                @if (hasPatternError(form, field.formControl) && field.patternMessage && !isApprovalDialog) {
                     <mat-error>
                         {{ field.patternMessage | translate }}
                     </mat-error>
@@ -105,7 +105,7 @@
         mat-flat-button
         [disabled]="isDisabled"
         [class.disabled]="isDisabled"
-        (click)="registerMerchant()">
-        {{ 'register.registerButton' | translate }}
+        (click)="performAction()">
+        {{ actionButton | translate }}
     </button>
 </mat-dialog-actions>
