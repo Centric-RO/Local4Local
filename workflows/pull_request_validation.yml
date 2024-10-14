@@ -3,7 +3,7 @@ name: Pull Request Validation
 on:
   pull_request:
     branches:
-      - development # This will trigger only on pull requests to the 'development' branch
+      - development
 
 jobs:
   validate:
