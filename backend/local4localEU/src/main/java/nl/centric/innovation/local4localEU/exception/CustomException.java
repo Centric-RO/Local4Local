@@ -48,4 +48,10 @@ public class CustomException {
             super(message);
         }
     }
+
+    public static class TalerException extends Exception {
+        public TalerException(String message) {
+            super(message);
+        }
+    }
 }

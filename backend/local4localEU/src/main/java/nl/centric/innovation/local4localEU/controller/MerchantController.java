@@ -1,8 +1,10 @@
 package nl.centric.innovation.local4localEU.controller;
 
-import java.util.List;
-import java.util.UUID;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.util.List;import java.util.UUID;
 
+import nl.centric.innovation.local4localEU.exception.CustomException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.annotation.Secured;
@@ -84,7 +86,8 @@ public class MerchantController {
     @RequestMapping(path = "/approve/{merchantId}", method = RequestMethod.PATCH)
     @Secured({Role.ROLE_MANAGER})
     public ResponseEntity<Void> approveMerchant(@PathVariable("merchantId") UUID merchantId,
-                                                @CookieValue(value = "language", defaultValue = "nl-NL") String language) throws DtoValidateException {
+                                                @CookieValue(value = "language", defaultValue = "nl-NL") String language)
+            throws DtoValidateException, URISyntaxException, IOException, InterruptedException, CustomException.TalerException {
         merchantService.approveMerchant(merchantId, language);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }

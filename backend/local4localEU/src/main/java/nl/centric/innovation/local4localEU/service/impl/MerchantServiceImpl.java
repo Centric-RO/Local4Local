@@ -4,14 +4,24 @@ import static nl.centric.innovation.local4localEU.dto.MerchantDto.toEntity;
 import static util.Validators.isKvkValid;
 import static util.Validators.isValidUrl;
 
+import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 import java.util.stream.Collectors;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import nl.centric.innovation.local4localEU.entity.TalerInstance;
 import nl.centric.innovation.local4localEU.enums.MerchantStatusEnum;
+import nl.centric.innovation.local4localEU.exception.CustomException.TalerException;
 import nl.centric.innovation.local4localEU.exception.CustomException.DtoValidateNotFoundException;
 import nl.centric.innovation.local4localEU.service.interfaces.EmailService;
+import nl.centric.innovation.local4localEU.service.interfaces.TalerService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.data.domain.Page;
@@ -38,6 +48,8 @@ public class MerchantServiceImpl implements MerchantService {
 
     private final EmailService emailService;
 
+    private final TalerService talerService;
+
     @Value("${error.unique.violation}")
     private String errorUniqueViolation;
 
@@ -54,7 +66,8 @@ public class MerchantServiceImpl implements MerchantService {
     private String redundantChange;
 
     @Override
-    public void approveMerchant(UUID merchantId, String language) throws DtoValidateException {
+    public void approveMerchant(UUID merchantId, String language) throws DtoValidateException, URISyntaxException,
+            IOException, InterruptedException, TalerException {
         Optional<Merchant> merchant = merchantRepository.findById(merchantId);
 
         if (merchant.isEmpty()) {
@@ -68,6 +81,7 @@ public class MerchantServiceImpl implements MerchantService {
         merchant.get().setStatus(MerchantStatusEnum.APPROVED);
         merchantRepository.save(merchant.get());
 
+        talerService.createTallerInstance(merchant.get().getCompanyName());
         String[] email = new String[]{merchant.get().getContactEmail()};
         emailService.sendApproveMerchantEmail(email, language, merchant.get().getCompanyName());
     }
