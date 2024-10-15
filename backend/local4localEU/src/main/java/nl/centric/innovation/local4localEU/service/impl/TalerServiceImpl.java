@@ -31,6 +31,7 @@ public class TalerServiceImpl implements TalerService {
     @Value("${error.taler.createInstance}")
     private String errorTalerCreateInstance;
 
+    @Override
     public void createTallerInstance(String merchantName) throws URISyntaxException, IOException,
             InterruptedException, TalerException {
 
