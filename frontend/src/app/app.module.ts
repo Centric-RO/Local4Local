@@ -9,9 +9,6 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { MerchantsMapComponent } from './components/merchants-map/merchants-map.component';
 import { MatCardModule } from '@angular/material/card';
 import { MatDialogModule } from '@angular/material/dialog';
-import {
-	MerchantRegistrationDialogComponent
-} from './components/merchant-registration-dialog/merchant-registration-dialog.component';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatDialogActions, MatDialogClose, MatDialogContent, MatDialogTitle } from '@angular/material/dialog';
@@ -46,6 +43,7 @@ import { MatPaginatorModule } from '@angular/material/paginator';
 import { ProfileComponent } from './components/profile/profile.component';
 import { MfaComponent } from './components/mfa/mfa.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MerchantDialogComponent } from './components/merchant-dialog/merchant-dialog.component';
 
 export function httpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -56,7 +54,7 @@ export function httpLoaderFactory(http: HttpClient) {
 		AppComponent,
 		HomeComponent,
 		MerchantsMapComponent,
-		MerchantRegistrationDialogComponent,
+		MerchantDialogComponent,
 		GenericDialogComponent,
 		LoginComponent,
 		DashboardComponent,

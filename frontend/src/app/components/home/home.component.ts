@@ -1,8 +1,5 @@
 import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
-import {
-	MerchantRegistrationDialogComponent
-} from '../merchant-registration-dialog/merchant-registration-dialog.component';
 import { CategoryService } from "../../services/category.service";
 import { CategoryDto } from "../../_models/category-dto.model";
 import { GenericDialogComponent } from '../generic-dialog/generic-dialog.component';
@@ -10,6 +7,7 @@ import { CustomDialogConfigUtil } from '../../config/custom-dialog-config';
 import { ModalData } from '../../models/dialog-data.model';
 import { ALREADY_REGISTERED_CODE, SUCCESS_CODE } from '../../_constants/error-constants';
 import { MerchantsMapComponent } from '../merchants-map/merchants-map.component';
+import { MerchantDialogComponent } from '../merchant-dialog/merchant-dialog.component';
 
 @Component({
 	selector: 'app-home',
@@ -30,7 +28,7 @@ export class HomeComponent implements OnInit {
 	}
 
 	public openDialog(): void {
-		this.dialog.open(MerchantRegistrationDialogComponent, { width: '560px' })
+		this.dialog.open(MerchantDialogComponent, { width: '560px' })
 			.afterClosed()
 			.subscribe((result) => {
 				switch (result) {

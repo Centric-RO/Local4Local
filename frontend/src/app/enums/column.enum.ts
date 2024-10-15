@@ -6,4 +6,5 @@ export enum ColumnType {
     KVK = 'kvk',
     ADDRESS = 'address',
     WEBSITE = 'website',
+    CONTACT_EMAIL = 'contactEmail'
 }

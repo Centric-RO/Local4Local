@@ -8,6 +8,8 @@ import { MerchantService } from '../../services/merchant.service';
 import { ColumnConfig } from '../../models/column-config.model';
 import { ColumnType } from '../../enums/column.enum';
 import { forkJoin } from 'rxjs';
+import { MerchantDialogComponent } from '../merchant-dialog/merchant-dialog.component';
+import { SUCCESS_CODE } from '../../_constants/error-constants';
 
 @Component({
     selector: 'app-merchants',
@@ -17,16 +19,15 @@ import { forkJoin } from 'rxjs';
 export class MerchantsComponent implements OnInit {
     @ViewChild(MatPaginator) paginator: MatPaginator;
 
-    public displayedColumns: string[] =
-        [
-            ColumnType.STATUS,
-            ColumnType.COMPANY_NAME,
-            ColumnType.CATEGORY,
-            ColumnType.KVK,
-            ColumnType.ADDRESS,
-            ColumnType.WEBSITE,
-            ColumnType.ACTIONS
-        ];
+    public displayedColumns: string[] = [
+        ColumnType.STATUS,
+        ColumnType.COMPANY_NAME,
+        ColumnType.CATEGORY,
+        ColumnType.KVK,
+        ColumnType.ADDRESS,
+        ColumnType.WEBSITE,
+        ColumnType.ACTIONS
+    ];
 
     public dataSource: MatTableDataSource<MerchantDto>;
     public data: MerchantDto[] = [];
@@ -36,7 +37,11 @@ export class MerchantsComponent implements OnInit {
 
     public columnConfigs: ColumnConfig[] = [
         { columnDef: ColumnType.STATUS, header: 'table.column.status', cell: (element) => element.status || '' },
-        { columnDef: ColumnType.COMPANY_NAME, header: 'table.column.companyName', cell: (element) => element.companyName },
+        {
+            columnDef: ColumnType.COMPANY_NAME,
+            header: 'table.column.companyName',
+            cell: (element) => element.companyName
+        },
         { columnDef: ColumnType.CATEGORY, header: 'table.column.category', cell: (element) => element.category },
         { columnDef: ColumnType.KVK, header: 'table.column.kvkNumber', cell: (element) => element.kvk },
         { columnDef: ColumnType.ADDRESS, header: 'table.column.address', cell: (element) => element.address },
@@ -71,6 +76,21 @@ export class MerchantsComponent implements OnInit {
 
     public openInviteMerchantsDialog(): void {
         this.dialog.open(InviteMerchantDialogComponent, { width: '560px' });
+    }
+
+    public approveMerchant(merchant: MerchantDto): void {
+        this.dialog
+            .open(MerchantDialogComponent, {
+                data: { isApprovalDialog: true, merchant: merchant },
+                width: '560px'
+            })
+            .afterClosed()
+            .subscribe((result) => {
+                switch (result) {
+                    case SUCCESS_CODE:
+                        this.initData(this.DEFAULT_PAGE_INDEX, this.DEFAULT_PAGE_SIZE);
+                }
+            });
     }
 
     private initData(pageIndex: number, pageSize: number): void {
