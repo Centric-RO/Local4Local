@@ -251,7 +251,7 @@ export class MerchantDialogComponent implements OnInit {
 			if (this.isApprovalDialog) {
 				formControlValue = this.handleApprovalDialogValues(field, formControlValue);
 			}
-
+            console.log("test")
 			acc[formControlName] = new FormControl(formControlValue, this.getValidators(field));
 			return acc;
 		}, {} as Record<string, FormControl>);
