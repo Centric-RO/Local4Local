@@ -6,15 +6,12 @@ import nl.centric.innovation.local4localEU.service.impl.TalerServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.ArgumentMatcher;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.util.ReflectionTestUtils;
 
 import java.io.IOException;
-import java.net.URI;
-import java.net.URISyntaxException;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -47,7 +44,7 @@ public class TalerServiceImplTests {
 
     @Test
     @SneakyThrows
-    void givenValidRequest_whenCreateTallerInstance_thenSucceed() {
+    void GivenValidRequest_WhenCreateTallerInstance_ThenSucceed() {
         // Given
         String merchantName = "TestMerchant";
         when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
@@ -63,7 +60,7 @@ public class TalerServiceImplTests {
 
     @Test
     @SneakyThrows
-    void givenFailedResponse_whenCreateTallerInstance_thenThrowTalerException() {
+    void GivenFailedResponse_WhenCreateTallerInstance_ThenThrowTalerException() {
         // Given
         String merchantName = "TestMerchant";
         when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
@@ -79,7 +76,7 @@ public class TalerServiceImplTests {
 
     @Test
     @SneakyThrows
-    void givenIOException_whenCreateTallerInstance_thenThrowException() {
+    void GivenIOException_WhenCreateTallerInstance_ThenThrowException() {
         // Given
         String merchantName = "IOExceptionMerchant";
         when(httpClient.send(any(HttpRequest.class), any(HttpResponse.BodyHandler.class)))
