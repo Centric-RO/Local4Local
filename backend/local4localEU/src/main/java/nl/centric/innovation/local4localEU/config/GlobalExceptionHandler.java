@@ -1,6 +1,7 @@
 package nl.centric.innovation.local4localEU.config;
 
 import io.jsonwebtoken.ExpiredJwtException;
+import nl.centric.innovation.local4localEU.exception.CustomException.TalerException;
 import nl.centric.innovation.local4localEU.exception.CustomException.RecoverException;
 import nl.centric.innovation.local4localEU.exception.RefreshTokenException;
 import nl.centric.innovation.local4localEU.exception.CustomException.PasswordSameException;
@@ -98,6 +99,13 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     @ResponseStatus(HttpStatus.FORBIDDEN)
     protected ResponseEntity<ErrorResponse> handleRecoveryException(RecoverException ex) {
         return ResponseEntity.status(HttpStatus.FORBIDDEN)
+                .body(new ErrorResponse(ex.getMessage()));
+    }
+
+    @ExceptionHandler(value = {TalerException.class})
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
+    protected ResponseEntity<ErrorResponse> handleTalerException(TalerException ex) {
+        return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body(new ErrorResponse(ex.getMessage()));
     }
 
