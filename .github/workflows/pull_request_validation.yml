@@ -4,6 +4,9 @@ on:
   pull_request:
     branches:
       - development
+      
+    paths:
+      - 'frontend/**'
 
 jobs:
   validate:
