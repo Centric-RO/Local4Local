@@ -12,6 +12,7 @@ import nl.centric.innovation.local4localEU.exception.CustomException.DtoValidate
 import nl.centric.innovation.local4localEU.repository.MerchantRepository;
 import nl.centric.innovation.local4localEU.service.impl.MerchantServiceImpl;
 import nl.centric.innovation.local4localEU.service.interfaces.EmailService;
+import nl.centric.innovation.local4localEU.service.interfaces.TalerService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -28,6 +29,7 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -46,6 +48,9 @@ public class MerchantServiceImplTests {
     private MerchantRepository merchantRepository;
     @Mock
     private EmailService emailService;
+
+    @Mock
+    private TalerService talerService;
 
     private static final String VALID_KVK = "12345678";
     private static final String INVALID_KVK = "1234";
@@ -295,7 +300,7 @@ public class MerchantServiceImplTests {
         when(merchantRepository.findAll(any(Pageable.class))).thenReturn(merchantPage);
 
         // When
-        List<MerchantViewDto> result = merchantService.getPaginatedMerchants(0, 10); // page 0, size 10
+        List<MerchantViewDto> result = merchantService.getPaginatedMerchants(0, 10);
 
         // Then
         assertEquals(2, result.size());
@@ -312,7 +317,7 @@ public class MerchantServiceImplTests {
         when(merchantRepository.findAll(any(Pageable.class))).thenReturn(emptyMerchantPage);
 
         // When
-        List<MerchantViewDto> result = merchantService.getPaginatedMerchants(0, 10); // page 0, size 10
+        List<MerchantViewDto> result = merchantService.getPaginatedMerchants(0, 10);
 
         // Then
         assertEquals(0, result.size());
@@ -327,7 +332,7 @@ public class MerchantServiceImplTests {
         when(merchantRepository.findAll(any(Pageable.class))).thenReturn(emptyMerchantPage);
 
         // When
-        List<MerchantViewDto> result = merchantService.getPaginatedMerchants(999, 10); // page 999, size 10
+        List<MerchantViewDto> result = merchantService.getPaginatedMerchants(999, 10);
 
         // Then
         assertEquals(0, result.size());
@@ -351,7 +356,7 @@ public class MerchantServiceImplTests {
     public void GivenAlreadyApprovedMerchant_WhenApproveMerchant_ThenThrowDtoValidateAlreadyExistsException() {
         // Given
         Merchant approvedMerchant = merchantBuilder("Company 1", VALID_KVK);
-        approvedMerchant.setStatus(MerchantStatusEnum.APPROVED); // Set the merchant status to APPROVED
+        approvedMerchant.setStatus(MerchantStatusEnum.APPROVED);
         when(merchantRepository.findById(VALID_MERCHANT_ID)).thenReturn(Optional.of(approvedMerchant));
 
         // When & Then
@@ -363,12 +368,13 @@ public class MerchantServiceImplTests {
     }
 
     @Test
-    public void GivenPendingMerchant_WhenApproveMerchant_ThenMerchantIsApprovedAndEmailIsSent() throws DtoValidateException {
+    @SneakyThrows
+    public void GivenPendingMerchant_WhenApproveMerchant_ThenMerchantIsApprovedAndEmailIsSent() {
         // Given
         Merchant pendingMerchant = merchantBuilder("Company 1", VALID_KVK);
-        pendingMerchant.setStatus(MerchantStatusEnum.PENDING); // Set the merchant status to PENDING
+        pendingMerchant.setStatus(MerchantStatusEnum.PENDING);
         when(merchantRepository.findById(VALID_MERCHANT_ID)).thenReturn(Optional.of(pendingMerchant));
-
+        doNothing().when(talerService).createTallerInstance(pendingMerchant.getCompanyName());
         // When
         merchantService.approveMerchant(VALID_MERCHANT_ID, VALID_LANGUAGE);
 
