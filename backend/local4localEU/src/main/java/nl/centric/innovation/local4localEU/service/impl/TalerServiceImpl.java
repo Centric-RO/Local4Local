@@ -2,7 +2,7 @@ package nl.centric.innovation.local4localEU.service.impl;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
-import nl.centric.innovation.local4localEU.entity.TalerInstance;
+import nl.centric.innovation.local4localEU.entity.taler.TalerInstance;
 import nl.centric.innovation.local4localEU.exception.CustomException.TalerException;
 import nl.centric.innovation.local4localEU.service.interfaces.TalerService;
 import org.springframework.beans.factory.annotation.Value;

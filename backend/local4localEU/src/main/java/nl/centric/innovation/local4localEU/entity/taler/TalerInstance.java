@@ -1,4 +1,4 @@
-package nl.centric.innovation.local4localEU.entity;
+package nl.centric.innovation.local4localEU.entity.taler;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
