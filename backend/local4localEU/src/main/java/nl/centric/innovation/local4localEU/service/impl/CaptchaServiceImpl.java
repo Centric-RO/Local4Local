@@ -50,6 +50,7 @@ public class CaptchaServiceImpl implements CaptchaService {
     }
 
     private boolean responseSanityCheck(final String response) {
+        System.out.println("test");
         return StringUtils.hasLength(response) && RESPONSE_PATTERN.matcher(response).matches();
     }
 }
