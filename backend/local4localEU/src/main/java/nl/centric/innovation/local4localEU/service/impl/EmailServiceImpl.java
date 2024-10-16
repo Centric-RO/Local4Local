@@ -23,6 +23,7 @@ import util.MailTemplate;
 import util.StringUtils;
 
 import java.util.Locale;
+import java.util.UUID;
 
 @Slf4j
 @Service
@@ -34,6 +35,12 @@ public class EmailServiceImpl implements EmailService {
 
     @Value("${local4localEU.server.name}")
     private String baseURL;
+
+    @Value("${taler.base.url}")
+    private String talerBaseURL;
+
+    @Value("${taler.base.url}")
+    private String talerBaseURL;
 
     private final ResourceBundleMessageSource messageSource;
 
@@ -128,8 +135,9 @@ public class EmailServiceImpl implements EmailService {
     }
 
     @Override
-    public void sendApproveMerchantEmail(String[] email, String language, String companyName) {
-        MailTemplate mailTemplate = getApproveMerchantTemplate(language, baseURL, EmailTemplateEnum.APPROVE_MERCHANT.getTemplate(), companyName + EmailHtmlEnum.EXCL.getTag());
+    public void sendApproveMerchantEmail(String[] email, String language, String companyName, UUID token) {
+        MailTemplate mailTemplate = getApproveMerchantTemplate(language, baseURL, EmailTemplateEnum.APPROVE_MERCHANT.getTemplate(),
+                companyName + EmailHtmlEnum.EXCL.getTag(), token);
         String htmlContent = mailTemplateBuilder.buildEmailTemplate(mailTemplate);
         String textContent = buildTemplateText(mailTemplate);
         sendEmail(emailSender, email, mailTemplate.getSubject(), htmlContent, textContent.toString());
@@ -162,16 +170,16 @@ public class EmailServiceImpl implements EmailService {
         return mailTemplate;
     }
 
-    private MailTemplate getApproveMerchantTemplate(String language, String url, String templateMiddlePart, String receiverName) {
+    private MailTemplate getApproveMerchantTemplate(String language, String url, String templateMiddlePart, String receiverName, UUID token) {
         Locale locale = new Locale(language);
         MailTemplate mailTemplate = buildGenericTemplate(locale, language, url, templateMiddlePart, receiverName);
 
-        String content = getContentForApproveMerchant(locale, templateMiddlePart);
+        String content = getContentForApproveMerchant(locale, templateMiddlePart, token);
         String btnText = getEmailStringText(locale, EmailStructureEnum.GENERIC.getStructure(),
                 EmailStructureEnum.SEE_MAP.getStructure());
 
         mailTemplate.setAction(null);
-        mailTemplate.setBtnText(btnText);
+        mailTemplate.setBtnText(null);
         mailTemplate.setContent(content);
 
         return mailTemplate;
@@ -202,10 +210,29 @@ public class EmailServiceImpl implements EmailService {
                 .replace(EmailHtmlEnum.LINE_BREAK.getTag(), EmailHtmlEnum.RN.getTag());
         return StringUtils.joinStringPieces(contentInfo);
     }
-    private String getContentForApproveMerchant(Locale locale, String templateMiddlePart) {
+
+    private String getContentForApproveMerchant(Locale locale, String templateMiddlePart, UUID token) {
         String contentInfo = getEmailStringText(locale, templateMiddlePart, EmailStructureEnum.CONTENT.getStructure()).replace(EmailHtmlEnum.LINE_BREAK.getTag(), EmailHtmlEnum.RN.getTag());
-        String approveText = StringUtils.addStringBeforeAndAfter(EmailHtmlEnum.P_START.getTag(), "", EmailHtmlEnum.P_END.getTag());
-        return StringUtils.joinStringPieces(contentInfo, approveText);
+
+        String talerMessage = StringUtils.addStringBeforeAndAfter(EmailHtmlEnum.P_START.getTag(),
+                getEmailStringText(locale, templateMiddlePart, EmailStructureEnum.TALER_MESSAGE.getStructure()), EmailHtmlEnum.P_END.getTag());
+
+
+        String talerInstance = StringUtils.addStringBeforeAndAfter(getEmailStringText(locale, templateMiddlePart, EmailStructureEnum.TALER_INSTANCE.getStructure()),
+                EmailHtmlEnum.getLinkTag(talerBaseURL, talerBaseURL), EmailHtmlEnum.LI_END.getTag());
+
+
+        String talerAccessToken = StringUtils.addStringBeforeAndAfter(getEmailStringText(locale, templateMiddlePart, EmailStructureEnum.TALER_ACCESS_TOKEN.getStructure()),
+                String.valueOf(token), EmailHtmlEnum.LI_END.getTag());
+
+
+        String talerInstructions = StringUtils.addStringBeforeAndAfter(EmailHtmlEnum.LI_START.getTag(),
+                getEmailStringText(locale, templateMiddlePart, EmailStructureEnum.TALER_INSTRUCTIONS.getStructure()), EmailHtmlEnum.LI_END.getTag());
+
+        return StringUtils.joinStringPieces(contentInfo, EmailHtmlEnum.LINE_BREAK.getTag(), talerMessage,
+                EmailHtmlEnum.getLinkTag(talerBaseURL, talerBaseURL), EmailHtmlEnum.LINE_BREAK.getTag(),
+                EmailHtmlEnum.UL_START.getTag(), EmailHtmlEnum.LI_START.getTag(), talerInstance,
+                EmailHtmlEnum.LI_START.getTag(), talerAccessToken, talerInstructions, EmailHtmlEnum.UL_END.getTag());
     }
 
 

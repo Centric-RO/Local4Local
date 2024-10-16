@@ -26,7 +26,11 @@ public enum EmailStructureEnum {
     REPRESENTATIVE_NAME("name"),
     COMPANY_NAME("companyName"),
     OTP_CODE_MESSAGE("otpCodeMessage"),
-    SEE_MAP("seeMap");
+    SEE_MAP("seeMap"),
+    TALER_MESSAGE("talerMessage"),
+    TALER_INSTANCE("talerInstance"),
+    TALER_ACCESS_TOKEN("talerAccessToken"),
+    TALER_INSTRUCTIONS("talerInstructions");
 
     private final String structure;
 
