@@ -32,12 +32,12 @@ public class TalerServiceImpl implements TalerService {
     private String errorTalerCreateInstance;
 
     @Override
-    public void createTallerInstance(String merchantName) throws URISyntaxException, IOException,
+    public UUID createTallerInstance(String merchantName) throws URISyntaxException, IOException,
             InterruptedException, TalerException {
 
-        String token = "secret-token:" + UUID.randomUUID();
+        UUID token = UUID.randomUUID();
 
-        TalerInstance talerInstance = new TalerInstance(merchantName.replace(" ", "-"), token);
+        TalerInstance talerInstance = new TalerInstance(merchantName.replace(" ", "-"), "secret-token:" + token);
         ObjectMapper objectMapper = new ObjectMapper();
         String jsonRequestBody = objectMapper.writeValueAsString(talerInstance);
 
@@ -52,5 +52,7 @@ public class TalerServiceImpl implements TalerService {
 //        if (response.statusCode() != 204) {
 //            throw new TalerException(errorTalerCreateInstance);
 //        }
+
+        return token;
     }
 }

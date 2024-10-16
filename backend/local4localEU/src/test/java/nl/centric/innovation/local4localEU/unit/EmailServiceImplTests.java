@@ -23,6 +23,7 @@ import org.springframework.test.util.ReflectionTestUtils;
 import util.MailTemplate;
 
 import java.util.Locale;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
@@ -242,7 +243,7 @@ public class EmailServiceImplTests {
         when(mailTemplateBuilder.buildEmailTemplate(any(MailTemplate.class))).thenReturn(htmlContent);
 
         // When
-        emailService.sendApproveMerchantEmail(toAddress, language, companyName);
+        emailService.sendApproveMerchantEmail(toAddress, language, companyName, UUID.randomUUID());
 
         // Then
         verify(mailTemplateBuilder, times(1)).buildEmailTemplate(any(MailTemplate.class));

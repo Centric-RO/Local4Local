@@ -4,8 +4,9 @@ import nl.centric.innovation.local4localEU.exception.CustomException.TalerExcept
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.UUID;
 
 public interface TalerService {
-    void createTallerInstance(String merchantName) throws URISyntaxException, IOException,
+    UUID createTallerInstance(String merchantName) throws URISyntaxException, IOException,
             InterruptedException, TalerException;
 }
