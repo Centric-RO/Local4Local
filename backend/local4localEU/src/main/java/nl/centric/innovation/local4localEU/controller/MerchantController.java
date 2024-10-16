@@ -85,7 +85,7 @@ public class MerchantController {
         return ResponseEntity.ok().build();
     }
 
-    //@Secured({Role.ROLE_MANAGER})
+    @Secured({Role.ROLE_MANAGER})
     @PostMapping(path = "/reject")
     public ResponseEntity<Void> rejectMerchant(@RequestBody RejectMerchantDto rejectMerchantDto,
                                                @CookieValue(value = "language", defaultValue = "nl-NL") String language) throws DtoValidateException {
