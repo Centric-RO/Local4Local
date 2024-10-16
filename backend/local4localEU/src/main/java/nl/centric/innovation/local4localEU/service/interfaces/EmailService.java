@@ -12,4 +12,6 @@ public interface EmailService {
     void sendManagerOtpEmail(String language, String[] managerEmail, Integer otpCode);
 
     void sendApproveMerchantEmail(String[] contactEmail, String language, String companyName, UUID token);
+
+    void sendRejectMerchantEmail(String[] toAddress, String language, String companyName, String reason);
 }

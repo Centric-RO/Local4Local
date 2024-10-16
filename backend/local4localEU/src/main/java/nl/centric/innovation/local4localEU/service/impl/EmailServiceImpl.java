@@ -39,6 +39,8 @@ public class EmailServiceImpl implements EmailService {
     @Value("${taler.base.url}")
     private String talerBaseURL;
 
+    @Value("${local4localEU.currencyManager.email}")
+    private String currencyManagerEmail;
 
     private final ResourceBundleMessageSource messageSource;
 
@@ -141,6 +143,14 @@ public class EmailServiceImpl implements EmailService {
         sendEmail(emailSender, email, mailTemplate.getSubject(), htmlContent, textContent.toString());
     }
 
+    @Override
+    public void sendRejectMerchantEmail(String[] toAddress, String language, String companyName, String reason) {
+        MailTemplate mailTemplate = getRejectMerchantTemplate(language, "", EmailTemplateEnum.REJECT_MERCHANT.getTemplate(), companyName + EmailHtmlEnum.EXCL.getTag(), reason);
+        String htmlContent = mailTemplateBuilder.buildEmailTemplate(mailTemplate);
+        String textContent = buildTemplateText(mailTemplate);
+        sendEmail(emailSender, toAddress, mailTemplate.getSubject(), htmlContent, textContent.toString());
+    }
+
     private MailTemplate getManagerOtpEmailTemplate(String language, String templateMiddlePart, int otpCode) {
         Locale locale = new Locale(language);
         MailTemplate mailTemplate = buildGenericTemplate(locale, language, "", templateMiddlePart, "");
@@ -179,6 +189,21 @@ public class EmailServiceImpl implements EmailService {
         mailTemplate.setContent(content);
         mailTemplate.setClosing(getEmailStringText(locale, EmailStructureEnum.GENERIC.getStructure(),
                 EmailStructureEnum.CLOSING_JOIN.getStructure()));
+
+        return mailTemplate;
+    }
+
+    private MailTemplate getRejectMerchantTemplate(String language, String url, String templateMiddlePart, String receiverName, String reason) {
+        Locale locale = new Locale(language);
+        MailTemplate mailTemplate = buildGenericTemplate(locale, language, url, templateMiddlePart, receiverName);
+
+        String fullReason = String.format("%s%s", reason, EmailHtmlEnum.END.getTag());
+        String content = getContentForRejectMerchant(locale, templateMiddlePart, fullReason);
+
+        mailTemplate.setContent(content);
+        mailTemplate.setBtnText(null);
+        String updatedAction = String.format("%s%s%s", mailTemplate.getAction(), currencyManagerEmail, EmailHtmlEnum.END.getTag());
+        mailTemplate.setAction(updatedAction);
 
         return mailTemplate;
     }
@@ -230,6 +255,11 @@ public class EmailServiceImpl implements EmailService {
                 EmailHtmlEnum.LI_START.getTag(), talerAccessToken, talerInstructions, EmailHtmlEnum.UL_END.getTag());
     }
 
+    private String getContentForRejectMerchant(Locale locale, String templateMiddlePart, String reason) {
+        String contentInfo = getEmailStringText(locale, templateMiddlePart, EmailStructureEnum.CONTENT.getStructure()).replace(EmailHtmlEnum.LINE_BREAK.getTag(), EmailHtmlEnum.RN.getTag());
+        String rejectionText = StringUtils.addStringBeforeAndAfter(EmailHtmlEnum.P_START.getTag(), getEmailStringText(locale, templateMiddlePart, EmailStructureEnum.REASON.getStructure(), reason), EmailHtmlEnum.P_END.getTag());
+        return StringUtils.joinStringPieces(contentInfo, rejectionText);
+    }
 
     private String getContentForMerchantRegistered(Locale locale, String templateMiddlePart, String merchantName) {
         String contentInfo = getEmailStringText(locale, templateMiddlePart, EmailStructureEnum.CONTENT.getStructure()).replace(EmailHtmlEnum.LINE_BREAK.getTag(), EmailHtmlEnum.RN.getTag());

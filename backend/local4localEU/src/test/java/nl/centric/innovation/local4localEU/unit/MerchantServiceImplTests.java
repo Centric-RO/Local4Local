@@ -3,13 +3,18 @@ package nl.centric.innovation.local4localEU.unit;
 import lombok.SneakyThrows;
 import nl.centric.innovation.local4localEU.dto.MerchantDto;
 import nl.centric.innovation.local4localEU.dto.MerchantViewDto;
+import nl.centric.innovation.local4localEU.dto.RejectMerchantDto;
 import nl.centric.innovation.local4localEU.entity.Category;
 import nl.centric.innovation.local4localEU.entity.Merchant;
+import nl.centric.innovation.local4localEU.entity.RejectMerchant;
+import nl.centric.innovation.local4localEU.entity.User;
 import nl.centric.innovation.local4localEU.enums.MerchantStatusEnum;
 import nl.centric.innovation.local4localEU.exception.CustomException.DtoValidateAlreadyExistsException;
 import nl.centric.innovation.local4localEU.exception.CustomException.DtoValidateException;
 import nl.centric.innovation.local4localEU.exception.CustomException.DtoValidateNotFoundException;
 import nl.centric.innovation.local4localEU.repository.MerchantRepository;
+import nl.centric.innovation.local4localEU.repository.RejectMerchantRepository;
+import nl.centric.innovation.local4localEU.repository.UserRepository;
 import nl.centric.innovation.local4localEU.service.impl.MerchantServiceImpl;
 import nl.centric.innovation.local4localEU.service.interfaces.EmailService;
 import nl.centric.innovation.local4localEU.service.interfaces.TalerService;
@@ -22,6 +27,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.util.List;
 import java.util.Optional;
@@ -46,6 +52,12 @@ public class MerchantServiceImplTests {
 
     @Mock
     private MerchantRepository merchantRepository;
+
+    @Mock
+    private RejectMerchantRepository rejectMerchantRepository;
+
+    @Mock
+    private UserRepository userRepository;
     @Mock
     private EmailService emailService;
 
@@ -61,6 +73,8 @@ public class MerchantServiceImplTests {
 
     private static final UUID VALID_MERCHANT_ID = UUID.randomUUID();
     private static final String VALID_LANGUAGE = "en";
+
+    private static final String CURRENCY_MANAGER_EMAIL = "currency.manager@example.com";
     private Merchant pendingMerchant;
     private Merchant approvedMerchant;
 
@@ -71,6 +85,8 @@ public class MerchantServiceImplTests {
 
     @BeforeEach
     void setup() {
+        ReflectionTestUtils.setField(merchantService, "currencyManagerEmail", CURRENCY_MANAGER_EMAIL);
+
         validMerchantDto = MerchantDto.builder()
                 .companyName("Company")
                 .kvk(VALID_KVK)
@@ -375,7 +391,7 @@ public class MerchantServiceImplTests {
         pendingMerchant.setStatus(MerchantStatusEnum.PENDING);
         when(merchantRepository.findById(VALID_MERCHANT_ID)).thenReturn(Optional.of(pendingMerchant));
         doNothing().when(talerService).createTallerInstance(pendingMerchant.getCompanyName());
-        
+
         // When
         merchantService.approveMerchant(VALID_MERCHANT_ID, VALID_LANGUAGE);
 
@@ -384,6 +400,83 @@ public class MerchantServiceImplTests {
         verify(merchantRepository, times(1)).findById(VALID_MERCHANT_ID);
         verify(merchantRepository, times(1)).save(pendingMerchant);
         verify(emailService, times(1)).sendApproveMerchantEmail(new String[]{pendingMerchant.getContactEmail()}, VALID_LANGUAGE, pendingMerchant.getCompanyName(), any());
+    }
+
+    @Test
+    public void GivenNonExistingMerchant_WhenRejectMerchant_ThenThrowDtoValidateNotFoundException() {
+        // Given
+        RejectMerchantDto rejectMerchantDto = new RejectMerchantDto("aaaa", VALID_MERCHANT_ID);
+        when(merchantRepository.findById(VALID_MERCHANT_ID)).thenReturn(Optional.empty());
+
+        // When & Then
+        assertThrows(DtoValidateNotFoundException.class,
+                () -> merchantService.rejectMerchant(rejectMerchantDto, VALID_LANGUAGE));
+
+        verify(merchantRepository, times(1)).findById(VALID_MERCHANT_ID);
+        verify(merchantRepository, never()).save(any(Merchant.class));
+        verify(emailService, never()).sendRejectMerchantEmail(any(), any(), any(), any());
+    }
+
+    @Test
+    public void GivenAlreadyRejectedMerchant_WhenRejectMerchant_ThenThrowDtoValidateAlreadyExistsException() {
+        // Given
+        Merchant rejectedMerchant = merchantBuilder("Company 1", VALID_KVK);
+        rejectedMerchant.setStatus(MerchantStatusEnum.REJECTED);
+        when(merchantRepository.findById(VALID_MERCHANT_ID)).thenReturn(Optional.of(rejectedMerchant));
+
+        RejectMerchantDto rejectMerchantDto = new RejectMerchantDto("Already Rejected", VALID_MERCHANT_ID);
+
+        // When & Then
+        assertThrows(DtoValidateAlreadyExistsException.class,
+                () -> merchantService.rejectMerchant(rejectMerchantDto, VALID_LANGUAGE));
+
+        verify(merchantRepository, times(1)).findById(VALID_MERCHANT_ID);
+        verify(rejectMerchantRepository, never()).save(any(RejectMerchant.class));
+        verify(emailService, never()).sendRejectMerchantEmail(any(), any(), any(), any());
+    }
+
+    @Test
+    public void GivenNonExistingCurrencyManager_WhenRejectMerchant_ThenThrowDtoValidateNotFoundException() {
+        // Given
+        RejectMerchantDto rejectMerchantDto = new RejectMerchantDto("Reason for rejection", VALID_MERCHANT_ID);
+        Merchant merchant = merchantBuilder("Company 1", VALID_KVK);
+        merchant.setStatus(MerchantStatusEnum.PENDING);
+
+        when(merchantRepository.findById(VALID_MERCHANT_ID)).thenReturn(Optional.of(merchant));
+        when(userRepository.findByEmailIgnoreCase(CURRENCY_MANAGER_EMAIL)).thenReturn(Optional.empty());
+
+        // When & Then
+        assertThrows(DtoValidateNotFoundException.class,
+                () -> merchantService.rejectMerchant(rejectMerchantDto, VALID_LANGUAGE));
+
+        verify(merchantRepository, times(1)).findById(VALID_MERCHANT_ID);
+        verify(userRepository, times(1)).findByEmailIgnoreCase(CURRENCY_MANAGER_EMAIL);
+        verify(rejectMerchantRepository, never()).save(any(RejectMerchant.class));
+        verify(merchantRepository, never()).save(any(Merchant.class));
+        verify(emailService, never()).sendRejectMerchantEmail(any(), any(), any(), any());
+    }
+
+    @Test
+    public void GivenValidMerchantAndCurrencyManager_WhenRejectMerchant_ThenMerchantIsRejectedAndEmailIsSent() throws DtoValidateException {
+        // Given
+        Merchant rejectedMerchant = merchantBuilder("Company 1", VALID_KVK);
+        rejectedMerchant.setStatus(MerchantStatusEnum.PENDING);
+        when(merchantRepository.findById(VALID_MERCHANT_ID)).thenReturn(Optional.of(rejectedMerchant));
+
+        // Mock the currency manager user
+        User currencyManagerUser = new User();
+        currencyManagerUser.setEmail(CURRENCY_MANAGER_EMAIL);
+        when(userRepository.findByEmailIgnoreCase(CURRENCY_MANAGER_EMAIL)).thenReturn(Optional.of(currencyManagerUser));
+
+        RejectMerchantDto rejectMerchantDto = new RejectMerchantDto("reason", VALID_MERCHANT_ID);
+
+        // When
+        merchantService.rejectMerchant(rejectMerchantDto, VALID_LANGUAGE);
+
+        // Then
+        assertEquals(MerchantStatusEnum.REJECTED, rejectedMerchant.getStatus());
+        verify(rejectMerchantRepository, times(1)).save(any(RejectMerchant.class));
+        verify(emailService, times(1)).sendRejectMerchantEmail(new String[]{rejectedMerchant.getContactEmail()}, VALID_LANGUAGE, rejectedMerchant.getCompanyName(), "reason");
     }
 
     private Merchant merchantBuilder(String companyName, String kvk) {
