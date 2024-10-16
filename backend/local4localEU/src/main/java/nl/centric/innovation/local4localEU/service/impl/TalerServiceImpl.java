@@ -47,10 +47,10 @@ public class TalerServiceImpl implements TalerService {
                 .POST(HttpRequest.BodyPublishers.ofString(jsonRequestBody))
                 .build();
 
-        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
-
-        if (response.statusCode() != 204) {
-            throw new TalerException(errorTalerCreateInstance);
-        }
+//        HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
+//
+//        if (response.statusCode() != 204) {
+//            throw new TalerException(errorTalerCreateInstance);
+//        }
     }
 }
