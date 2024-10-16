@@ -77,7 +77,7 @@ public class MerchantServiceImpl implements MerchantService {
 
         UUID token = talerService.createTallerInstance(merchant.get().getCompanyName());
         String[] email = new String[]{merchant.get().getContactEmail()};
-        emailService.sendApproveMerchantEmail(email, language, merchant.get().getCompanyName(), token);
+        emailService.sendApproveMerchantEmail(email, language, merchant.get().getCompanyName(), token, merchant.get().getCompanyName());
     }
 
     @Override
