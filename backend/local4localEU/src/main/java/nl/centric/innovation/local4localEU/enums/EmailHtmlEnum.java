@@ -16,7 +16,7 @@ public enum EmailHtmlEnum {
     LI_START("<li>"),
     LI_END("</li>"),
     EXCL("!"),
-    LINK_START("<a href=\"%s\">"),  // Placeholder for URL
+    LINK_START("<a href=\"%s\">"),
     LINK_END("</a>");
 
     private final String html;

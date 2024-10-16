@@ -30,7 +30,8 @@ public enum EmailStructureEnum {
     TALER_MESSAGE("talerMessage"),
     TALER_INSTANCE("talerInstance"),
     TALER_ACCESS_TOKEN("talerAccessToken"),
-    TALER_INSTRUCTIONS("talerInstructions");
+    TALER_INSTRUCTIONS("talerInstructions"),
+    CLOSING_JOIN("closingJoin");
 
     private final String structure;
 

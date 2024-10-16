@@ -39,8 +39,6 @@ public class EmailServiceImpl implements EmailService {
     @Value("${taler.base.url}")
     private String talerBaseURL;
 
-    @Value("${taler.base.url}")
-    private String talerBaseURL;
 
     private final ResourceBundleMessageSource messageSource;
 
@@ -175,12 +173,12 @@ public class EmailServiceImpl implements EmailService {
         MailTemplate mailTemplate = buildGenericTemplate(locale, language, url, templateMiddlePart, receiverName);
 
         String content = getContentForApproveMerchant(locale, templateMiddlePart, token);
-        String btnText = getEmailStringText(locale, EmailStructureEnum.GENERIC.getStructure(),
-                EmailStructureEnum.SEE_MAP.getStructure());
 
         mailTemplate.setAction(null);
         mailTemplate.setBtnText(null);
         mailTemplate.setContent(content);
+        mailTemplate.setClosing(getEmailStringText(locale, EmailStructureEnum.GENERIC.getStructure(),
+                EmailStructureEnum.CLOSING_JOIN.getStructure()));
 
         return mailTemplate;
     }
@@ -217,20 +215,17 @@ public class EmailServiceImpl implements EmailService {
         String talerMessage = StringUtils.addStringBeforeAndAfter(EmailHtmlEnum.P_START.getTag(),
                 getEmailStringText(locale, templateMiddlePart, EmailStructureEnum.TALER_MESSAGE.getStructure()), EmailHtmlEnum.P_END.getTag());
 
-
         String talerInstance = StringUtils.addStringBeforeAndAfter(getEmailStringText(locale, templateMiddlePart, EmailStructureEnum.TALER_INSTANCE.getStructure()),
                 EmailHtmlEnum.getLinkTag(talerBaseURL, talerBaseURL), EmailHtmlEnum.LI_END.getTag());
-
 
         String talerAccessToken = StringUtils.addStringBeforeAndAfter(getEmailStringText(locale, templateMiddlePart, EmailStructureEnum.TALER_ACCESS_TOKEN.getStructure()),
                 String.valueOf(token), EmailHtmlEnum.LI_END.getTag());
 
-
         String talerInstructions = StringUtils.addStringBeforeAndAfter(EmailHtmlEnum.LI_START.getTag(),
                 getEmailStringText(locale, templateMiddlePart, EmailStructureEnum.TALER_INSTRUCTIONS.getStructure()), EmailHtmlEnum.LI_END.getTag());
 
-        return StringUtils.joinStringPieces(contentInfo, EmailHtmlEnum.LINE_BREAK.getTag(), talerMessage,
-                EmailHtmlEnum.getLinkTag(talerBaseURL, talerBaseURL), EmailHtmlEnum.LINE_BREAK.getTag(),
+        return StringUtils.joinStringPieces(contentInfo, EmailHtmlEnum.getLinkTag(baseURL, baseURL),
+                EmailHtmlEnum.LINE_BREAK.getTag(), talerMessage, EmailHtmlEnum.LINE_BREAK.getTag(),
                 EmailHtmlEnum.UL_START.getTag(), EmailHtmlEnum.LI_START.getTag(), talerInstance,
                 EmailHtmlEnum.LI_START.getTag(), talerAccessToken, talerInstructions, EmailHtmlEnum.UL_END.getTag());
     }
