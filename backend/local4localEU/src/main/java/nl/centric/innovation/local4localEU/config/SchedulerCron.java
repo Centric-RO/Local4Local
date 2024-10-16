@@ -26,8 +26,7 @@ public class SchedulerCron {
 
     private SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
 
-    //    @Scheduled(cron = "0 0 23 ? * SUN")
-    @Scheduled(cron = "0 */20 * * * *")
+    @Scheduled(cron = "0 0 23 ? * SUN")
     @Transactional
     public void deleteExpiredOtps() {
         log.info("Scheduler Delete old otp codes task started at : " + sdf.format(new Date()));
