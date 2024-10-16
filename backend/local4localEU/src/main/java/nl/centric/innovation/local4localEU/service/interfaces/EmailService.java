@@ -1,6 +1,9 @@
 package nl.centric.innovation.local4localEU.service.interfaces;
 
 public interface EmailService {
+
+    void sendRejectMerchantEmail(String[] toAddress, String language, String companyName, String reason);
+
     void sendInviteMerchantEmail(String url, String language, String[] toAddress, String message);
 
     void sendPasswordRecoveryEmail(String url, String[] toAddress, String language);

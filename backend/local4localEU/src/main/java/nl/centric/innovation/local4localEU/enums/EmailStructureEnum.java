@@ -20,7 +20,6 @@ public enum EmailStructureEnum {
     LOGO_IMAGE("logoImage"),
     URL("url"),
     BTN_TEXT("btnText"),
-    REJECT("contentReject"),
     REASON("reason"),
     SUPPLIER_NAME("supplier"),
     REPRESENTATIVE_NAME("name"),

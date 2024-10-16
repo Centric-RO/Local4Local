@@ -24,12 +24,14 @@ import util.MailTemplate;
 
 import java.util.Locale;
 
+import static org.junit.jupiter.api.Assertions.assertDoesNotThrow;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.doThrow;
+import static org.mockito.Mockito.never;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -247,6 +249,47 @@ public class EmailServiceImplTests {
         // Then
         verify(mailTemplateBuilder, times(1)).buildEmailTemplate(any(MailTemplate.class));
         verify(amazonEmailService, times(1)).sendEmail(any(SendEmailRequest.class));
+    }
+
+    @Test
+    public void GivenValidRejectMerchantEmail_WhenSendRejectMerchantEmail_ThenExpectAmazonEmailServiceToBeCalled() {
+        // Given
+        String[] toAddress = {"to@example.com"};
+        String language = "en";
+        String companyName = "Test Company";
+        String reason = "Reason for rejection";
+
+        MailTemplate mailTemplate = MailTemplate.builder()
+                .locale(new Locale(language))
+                .subject("Rejection of " + companyName)
+                .content(companyName + " has been rejected for the following reason: " + reason)
+                .build();
+
+        String htmlContent = "<html><body><h1>Rejection: " + companyName + "</h1><p>Reason: " + reason + "</p></body></html>";
+        String textContent = "Rejection: " + companyName + "\nReason: " + reason;
+
+        when(mailTemplateBuilder.buildEmailTemplate(any(MailTemplate.class))).thenReturn(htmlContent);
+
+        // When
+        emailService.sendRejectMerchantEmail(toAddress, language, companyName, reason);
+
+        // Then
+        verify(mailTemplateBuilder, times(1)).buildEmailTemplate(any(MailTemplate.class));
+        verify(amazonEmailService, times(1)).sendEmail(any(SendEmailRequest.class));
+    }
+
+    @Test
+    public void GivenNullToAddress_WhenSendRejectMerchantEmail_ThenShouldThrowException() {
+        // Given
+        String[] toAddress = null;
+        String language = "en";
+        String companyName = "Test Company";
+        String reason = "Reason for rejection";
+
+        // When & Then
+        assertThrows(NullPointerException.class, () -> {
+            emailService.sendRejectMerchantEmail(toAddress, language, companyName, reason);
+        });
     }
 
 }

@@ -83,6 +83,7 @@ public class SecurityConfig {
                 .requestMatchers("/merchant/register")
                 .requestMatchers("/merchant/all")
                 .requestMatchers("/merchant/approve/**")
+                .requestMatchers("/merchant/reject/**")
                 .requestMatchers("/merchant/paginated")
                 .requestMatchers("/merchant/filter/**")
                 .requestMatchers("/category/**")
