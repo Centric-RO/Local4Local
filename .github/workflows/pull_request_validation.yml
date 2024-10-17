@@ -13,17 +13,18 @@ jobs:
     runs-on: ubuntu-latest # Use an Ubuntu runner for the job
 
     steps:
-      # Step 1: Checkout the repository
+      # Step 1: Checkout the pull request branch
       - name: Checkout repository
         uses: actions/checkout@v3
         with:
-          ref: refs/heads/development # Check out the 'development' branch
+          fetch-depth: 0 # Fetch all history for all branches and tags
+          ref: ${{ github.head_ref }} # Check out the pull request's source branch
 
       # Step 2: Set up Node.js environment
       - name: Set up Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: "16" # You can specify the Node.js version you are using
+          node-version: "16" # Specify the Node.js version you are using
 
       # Step 3: Install npm packages
       - name: Install npm packages
