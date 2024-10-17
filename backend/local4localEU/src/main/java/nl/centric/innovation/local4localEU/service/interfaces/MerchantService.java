@@ -7,12 +7,15 @@ import java.util.UUID;
 
 import nl.centric.innovation.local4localEU.dto.MerchantDto;
 import nl.centric.innovation.local4localEU.dto.MerchantViewDto;
+import nl.centric.innovation.local4localEU.dto.RejectMerchantDto;
 import nl.centric.innovation.local4localEU.exception.CustomException.TalerException;
 import nl.centric.innovation.local4localEU.exception.CustomException.DtoValidateException;
 
 public interface MerchantService {
     void approveMerchant(UUID merchantId, String language) throws DtoValidateException, URISyntaxException, IOException,
             InterruptedException, TalerException;
+
+    void rejectMerchant(RejectMerchantDto rejectMerchantDto, String language) throws DtoValidateException;
 
     MerchantDto saveMerchant(MerchantDto merchantDto) throws DtoValidateException;
 

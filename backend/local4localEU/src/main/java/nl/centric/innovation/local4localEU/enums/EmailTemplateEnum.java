@@ -9,7 +9,8 @@ public enum EmailTemplateEnum {
     PASSWORD_RECOVER("passwordRecover"),
     MERCHANT_REGISTERED("merchantRegistered"),
     MANAGER_OTP("managerOtp"),
-    APPROVE_MERCHANT("approveMerchant");
+    APPROVE_MERCHANT("approveMerchant"),
+    REJECT_MERCHANT("rejectMerchant");
 
     private final String template;
 
