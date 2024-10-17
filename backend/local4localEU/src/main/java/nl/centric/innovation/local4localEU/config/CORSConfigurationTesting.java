@@ -12,7 +12,8 @@ public class CORSConfigurationTesting implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(@NonNull CorsRegistry registry) {
         registry.addMapping("/**").allowedMethods("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS")
-                .allowedOrigins("https://d33w7pv9348qml.cloudfront.net")
+                .allowedOrigins("https://d33w7pv9348qml.cloudfront.net",
+                        "https://demo.localforlocal.io/")
                 .exposedHeaders("Set-Cookie")
                 .allowCredentials(true)
                 .allowedHeaders("*");
