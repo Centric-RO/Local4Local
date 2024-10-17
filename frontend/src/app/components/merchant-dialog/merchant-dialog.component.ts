@@ -111,7 +111,6 @@ export class MerchantDialogComponent implements OnInit {
 		}
 
 		if (this.merchantDialogType === MerchantDialogType.REJECTION) {
-			console.log(this.form);
 			return this.form.invalid;
 		}
 
