@@ -15,6 +15,7 @@ import { ALREADY_REGISTERED_CODE } from '../../_constants/error-constants';
 import { MerchantDialogComponent } from './merchant-dialog.component';
 import { FormField } from '../../models/form-field.model';
 import { ColumnType } from '../../enums/column.enum';
+import { MerchantDialogType } from '../../enums/merchant-dialog-type.enum';
 
 const matDialogRefStub = {
 	close: jest.fn()
@@ -257,7 +258,7 @@ describe('MerchantDialogComponent', () => {
 
 	describe('performAction', () => {
 		it('should call approveMerchant if isApprovalDialog is true', () => {
-			component.isApprovalDialog = true;
+			component.merchantDialogType = MerchantDialogType.APPROVAL;
 			const approveMerchantSpy = jest.spyOn(component as any, 'approveMerchant');
 
 			component.performAction();
@@ -266,7 +267,7 @@ describe('MerchantDialogComponent', () => {
 		});
 
 		it('should call registerMerchant if isApprovalDialog is false', () => {
-			component.isApprovalDialog = false;
+			component.merchantDialogType = MerchantDialogType.REGISTRATION;
 			const registerMerchantSpy = jest.spyOn(component as any, 'registerMerchant');
 
 			component.performAction();
@@ -306,7 +307,7 @@ describe('MerchantDialogComponent', () => {
 	});
 
 	it('should return an empty array if isApprovalDialog is true', () => {
-		component.isApprovalDialog = true;
+		component.merchantDialogType = MerchantDialogType.APPROVAL;
 
 		const formField: FormField = {
 			formControl: 'companyName',
@@ -321,7 +322,7 @@ describe('MerchantDialogComponent', () => {
 	});
 
 	it('should return required and pattern validators if isApprovalDialog is false and field has required and pattern', () => {
-		component.isApprovalDialog = false;
+		component.merchantDialogType = MerchantDialogType.REGISTRATION;
 
 		const formField: FormField = {
 			formControl: 'kvk',
@@ -340,7 +341,7 @@ describe('MerchantDialogComponent', () => {
 	});
 
 	it('should return only required validator if isApprovalDialog is false and field is required but has no pattern', () => {
-		component.isApprovalDialog = false;
+		component.merchantDialogType = MerchantDialogType.REGISTRATION;
 
 		const formField: FormField = {
 			formControl: 'address',
@@ -356,7 +357,7 @@ describe('MerchantDialogComponent', () => {
 	});
 
 	it('should return only pattern validator if isApprovalDialog is false and field has pattern but is not required', () => {
-		component.isApprovalDialog = false;
+		component.merchantDialogType = MerchantDialogType.REGISTRATION;
 
 		const formField: FormField = {
 			formControl: 'website',

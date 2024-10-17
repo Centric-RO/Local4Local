@@ -11,6 +11,7 @@ import { ColumnType } from '../../enums/column.enum';
 import { PageEvent } from '@angular/material/paginator';
 import { MerchantDialogComponent } from '../merchant-dialog/merchant-dialog.component';
 import { SUCCESS_CODE } from '../../_constants/error-constants';
+import { MerchantDialogType } from '../../enums/merchant-dialog-type.enum';
 
 describe('MerchantsComponent', () => {
 	let component: MerchantsComponent;
@@ -198,7 +199,7 @@ describe('MerchantsComponent', () => {
 		component.approveMerchant(mockMerchant);
 
 		expect(matDialogMock.open).toHaveBeenCalledWith(MerchantDialogComponent, {
-			data: { isApprovalDialog: true, merchant: mockMerchant },
+			data: { dialogType: MerchantDialogType.APPROVAL, merchant: mockMerchant },
 			width: '560px'
 		});
 	});

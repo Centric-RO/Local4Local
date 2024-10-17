@@ -19,6 +19,7 @@ import { MatSnackBar } from '@angular/material/snack-bar';
 import { CustomSnackbarComponent } from '../custom-snackbar/custom-snackbar.component';
 import { SnackbarData } from '../../models/snackbar-data.model';
 import { SnackbarType } from '../../_enums/snackbar-type.enum';
+import { MerchantDialogType } from '../../enums/merchant-dialog-type.enum';
 
 type ApprovalDialogValue = string | number | null | undefined;
 
@@ -31,7 +32,7 @@ export class MerchantDialogComponent implements OnInit {
 	public hasRequiredError = FormUtil.hasRequiredError;
 	public hasPatternError = FormUtil.hasPatternError;
 
-	public isApprovalDialog = false;
+	public merchantDialogType: MerchantDialogType;
 	public formFields: FormField[] = [];
 	public form: FormGroup;
 	public matcher = new L4LErrorStateMatcher();
@@ -52,25 +53,38 @@ export class MerchantDialogComponent implements OnInit {
 
 	private currentMerchantId: string;
 
-
-	public get isDisabled(): boolean {
-		return (this.form.invalid || !this.selectedLocation) && !this.isApprovalDialog;
-	}
+	private readonly merchantDialogContent = {
+		[MerchantDialogType.APPROVAL]: {
+			title: 'approveMerchant.title',
+			subtitle: 'approveMerchant.subtitle',
+			actionButton: 'approveMerchant.title'
+		},
+		[MerchantDialogType.REJECTION]: {
+			title: 'rejectMerchant.title',
+			subtitle: 'rejectMerchant.subtitle',
+			actionButton: 'rejectMerchant.title'
+		},
+		[MerchantDialogType.REGISTRATION]: {
+			title: 'register.title',
+			subtitle: 'register.subtitle',
+			actionButton: 'register.registerButton'
+		}
+	};
 
 	public get hasNoSuggestions(): boolean {
-		return this.suggestions.length === 0 && !this.selectedLocation
+		return this.suggestions.length === 0 && !this.selectedLocation;
 	}
 
 	public get title(): string {
-		return this.isApprovalDialog ? 'approveMerchant.title' : 'register.title';
+		return this.merchantDialogContent[this.merchantDialogType]?.title ?? '';
 	}
 
 	public get subtitle(): string {
-		return this.isApprovalDialog ? 'approveMerchant.subtitle' : 'register.subtitle';
+		return this.merchantDialogContent[this.merchantDialogType]?.subtitle ?? '';
 	}
 
 	public get actionButton(): string {
-		return this.isApprovalDialog ? 'approveMerchant.title' : 'register.registerButton';
+		return this.merchantDialogContent[this.merchantDialogType]?.actionButton ?? '';
 	}
 
 	public ngOnInit(): void {
@@ -78,6 +92,17 @@ export class MerchantDialogComponent implements OnInit {
 		this.initCategories();
 		this.initializeFormFields();
 		this.createForm();
+	}
+
+	public isApprovalOrRejection(): boolean {
+		return (
+			this.merchantDialogType === MerchantDialogType.APPROVAL ||
+			this.merchantDialogType === MerchantDialogType.REJECTION
+		);
+	}
+
+	public isDisabled(): boolean {
+		return (this.form.invalid || !this.selectedLocation) && !this.isApprovalOrRejection();
 	}
 
 	public onSearchAddress(event: Event): void {
@@ -114,12 +139,17 @@ export class MerchantDialogComponent implements OnInit {
 	}
 
 	public performAction(): void {
-		if (this.isApprovalDialog) {
-			this.approveMerchant(this.currentMerchantId);
-			return;
+		switch (this.merchantDialogType) {
+			case MerchantDialogType.APPROVAL:
+				this.approveMerchant(this.currentMerchantId);
+				break;
+			case MerchantDialogType.REJECTION:
+				this.rejectMerchant(this.currentMerchantId);
+				break;
+			case MerchantDialogType.REGISTRATION:
+				this.registerMerchant();
+				break;
 		}
-
-		this.registerMerchant();
 	}
 
 	public onKvkInput(event: Event): void {
@@ -131,7 +161,11 @@ export class MerchantDialogComponent implements OnInit {
 		this.merchantService.approveMerchant(merchantId).subscribe(() => {
 			this.closeDialog(SUCCESS_CODE);
 			this.showSuccessToast();
-		})
+		});
+	}
+
+	private rejectMerchant(currentMerchantId: string): void {
+		throw new Error('Method not implemented.');
 	}
 
 	private showSuccessToast(): void {
@@ -141,7 +175,7 @@ export class MerchantDialogComponent implements OnInit {
 			duration: 8000,
 			data: new SnackbarData(toasterMessage, SnackbarType.SUCCESS),
 			horizontalPosition: 'right',
-			verticalPosition: 'bottom',
+			verticalPosition: 'bottom'
 		});
 	}
 
@@ -183,7 +217,7 @@ export class MerchantDialogComponent implements OnInit {
 				fieldType: 'input',
 				required: true,
 				maxLength: 256,
-				isReadOnly: this.isApprovalDialog,
+				isReadOnly: this.isApprovalOrRejection(),
 				requiredMessage: 'register.error.companyNameRequired'
 			},
 			{
@@ -192,7 +226,7 @@ export class MerchantDialogComponent implements OnInit {
 				fieldType: 'input',
 				required: true,
 				maxLength: 8,
-				isReadOnly: this.isApprovalDialog,
+				isReadOnly: this.isApprovalOrRejection(),
 				requiredMessage: 'register.error.kvkNumberRequired',
 				pattern: RegexUtil.kvkRegexPattern,
 				patternMessage: 'register.error.kvkFormControlLength'
@@ -200,9 +234,9 @@ export class MerchantDialogComponent implements OnInit {
 			{
 				formControl: 'category',
 				labelKey: 'table.column.category',
-				fieldType: this.isApprovalDialog ? 'input' : 'select',
+				fieldType: this.isApprovalOrRejection() ? 'input' : 'select',
 				required: true,
-				isReadOnly: this.isApprovalDialog,
+				isReadOnly: this.isApprovalOrRejection(),
 				options: this.categories,
 				requiredMessage: 'register.error.categoryRequired'
 			},
@@ -211,7 +245,7 @@ export class MerchantDialogComponent implements OnInit {
 				labelKey: 'table.column.address',
 				fieldType: 'input',
 				required: true,
-				isReadOnly: this.isApprovalDialog,
+				isReadOnly: this.isApprovalOrRejection(),
 				maxLength: 256,
 				requiredMessage: 'register.error.addressRequired'
 			},
@@ -220,7 +254,7 @@ export class MerchantDialogComponent implements OnInit {
 				labelKey: 'register.contactEmail',
 				fieldType: 'input',
 				required: true,
-				isReadOnly: this.isApprovalDialog,
+				isReadOnly: this.isApprovalOrRejection(),
 				maxLength: 256,
 				pattern: RegexUtil.emailRegexPattern,
 				patternMessage: 'register.error.emailInvalid',
@@ -231,24 +265,35 @@ export class MerchantDialogComponent implements OnInit {
 				labelKey: 'register.website',
 				fieldType: 'input',
 				required: false,
-				isReadOnly: this.isApprovalDialog,
+				isReadOnly: this.isApprovalOrRejection(),
 				maxLength: 256,
 				pattern: RegexUtil.urlRegexPattern,
 				patternMessage: 'register.error.invalidUrl'
 			}
 		];
 
+		if (this.merchantDialogType === MerchantDialogType.REJECTION) {
+			this.formFields.push({
+				formControl: 'reason',
+				labelKey: 'rejectMerchant.reason',
+				fieldType: 'textarea',
+				required: true,
+				isReadOnly: false,
+				maxLength: 1024,
+				requiredMessage: 'rejectMerchant.error.reasonRequired'
+			});
+		}
 	}
 
 	private createForm(): void {
-		const merchantData = this.isApprovalDialog ? (this.data.merchant as MerchantDto) : null;
+		const merchantData = this.isApprovalOrRejection() ? (this.data.merchant as MerchantDto) : null;
 
 		const controls = this.formFields.reduce((acc, field) => {
 			const formControlName = field.formControl as keyof MerchantDto;
 
 			let formControlValue = merchantData ? merchantData[formControlName] : null;
 
-			if (this.isApprovalDialog) {
+			if (this.isApprovalOrRejection()) {
 				formControlValue = this.handleApprovalDialogValues(field, formControlValue);
 			}
 
@@ -272,11 +317,12 @@ export class MerchantDialogComponent implements OnInit {
 	}
 
 	private getValidators(field: FormField): ValidatorFn[] {
-		if (this.isApprovalDialog) {
+		if (this.isApprovalOrRejection()) {
 			return [];
 		}
 
 		const validators = [];
+
 		if (field.required) {
 			validators.push(Validators.required);
 		}
@@ -288,7 +334,6 @@ export class MerchantDialogComponent implements OnInit {
 		return validators;
 	}
 
-
 	private initCategories(): void {
 		this.categoryService.categories.subscribe((data) => {
 			this.categories = data;
@@ -296,8 +341,7 @@ export class MerchantDialogComponent implements OnInit {
 	}
 
 	private checkFormMode(): void {
-		this.isApprovalDialog = this.data?.isApprovalDialog ?? false;
+		this.merchantDialogType = this.data?.dialogType ?? MerchantDialogType.REGISTRATION;
 		this.currentMerchantId = this.data?.merchant?.id;
 	}
-
 }
