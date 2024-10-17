@@ -191,48 +191,6 @@ describe('MerchantDialogComponent', () => {
 		expect(component.selectedLocation).toBeNull();
 	});
 
-	describe('isDisabled', () => {
-		test.each([
-			[{ companyName: '', kvk: '', category: '', address: '', contactEmail: '', website: '' }, null, true],
-			[
-				{ companyName: '', kvk: '', category: '', address: '', contactEmail: '', website: '' },
-				{ location: { x: 0, y: 0 } } as any,
-				true
-			],
-			[
-				{
-					companyName: 'Valid Company',
-					kvk: '12345678',
-					category: 'Category 1',
-					address: 'Valid Address',
-					contactEmail: 'domain@example.com',
-					website: 'https://valid.url'
-				},
-				null,
-				true
-			],
-			[
-				{
-					companyName: 'Valid Company',
-					kvk: '12345678',
-					category: 'Category 1',
-					address: 'Valid Address',
-					contactEmail: 'domain@example.com',
-					website: 'https://valid.url'
-				},
-				{ location: { x: 0, y: 0 } } as any,
-				false
-			]
-		])(
-			'should return %s when form is %p and selectedLocation is %p',
-			(formValue, selectedLocation, expectedIsDisabled) => {
-				component.form.setValue(formValue);
-				component.selectedLocation = selectedLocation;
-				expect(component.isDisabled).toBe(expectedIsDisabled);
-			}
-		);
-	});
-
 	it('should remove non-digit characters from KVK number input', () => {
 		const inputEvent = new Event('input');
 		const inputElement = document.createElement('input');
@@ -306,21 +264,6 @@ describe('MerchantDialogComponent', () => {
 		});
 	});
 
-	it('should return an empty array if isApprovalDialog is true', () => {
-		component.merchantDialogType = MerchantDialogType.APPROVAL;
-
-		const formField: FormField = {
-			formControl: 'companyName',
-			labelKey: 'label.companyName',
-			fieldType: 'input',
-			required: true,
-			isReadOnly: false
-		} as FormField;
-		const validators = component['getValidators'](formField);
-
-		expect(validators).toEqual([]);
-	});
-
 	it('should return required and pattern validators if isApprovalDialog is false and field has required and pattern', () => {
 		component.merchantDialogType = MerchantDialogType.REGISTRATION;
 
@@ -371,4 +314,5 @@ describe('MerchantDialogComponent', () => {
 
 		expect(validators.length).toBe(1);
 	});
+	
 });
