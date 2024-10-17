@@ -365,7 +365,7 @@ public class MerchantServiceImplTests {
 
         verify(merchantRepository, times(1)).findById(VALID_MERCHANT_ID);
         verify(merchantRepository, never()).save(any(Merchant.class));
-        verify(emailService, never()).sendApproveMerchantEmail(any(), any(), any(), any());
+        verify(emailService, never()).sendApproveMerchantEmail(any(), any(), any(), any(), any());
     }
 
     @Test
@@ -380,7 +380,7 @@ public class MerchantServiceImplTests {
 
         verify(merchantRepository, times(1)).findById(VALID_MERCHANT_ID);
         verify(merchantRepository, never()).save(any(Merchant.class));
-        verify(emailService, never()).sendApproveMerchantEmail(any(), any(), any(), any());
+        verify(emailService, never()).sendApproveMerchantEmail(any(), any(), any(), any(), any());
     }
 
     @Test
@@ -388,9 +388,10 @@ public class MerchantServiceImplTests {
     public void GivenPendingMerchant_WhenApproveMerchant_ThenMerchantIsApprovedAndEmailIsSent() {
         // Given
         Merchant pendingMerchant = merchantBuilder("Company 1", VALID_KVK);
+        UUID token = UUID.randomUUID();
         pendingMerchant.setStatus(MerchantStatusEnum.PENDING);
         when(merchantRepository.findById(VALID_MERCHANT_ID)).thenReturn(Optional.of(pendingMerchant));
-        doNothing().when(talerService).createTallerInstance(pendingMerchant.getCompanyName());
+        when(talerService.createTallerInstance(pendingMerchant.getCompanyName())).thenReturn(token);
 
         // When
         merchantService.approveMerchant(VALID_MERCHANT_ID, VALID_LANGUAGE);
@@ -399,7 +400,8 @@ public class MerchantServiceImplTests {
         assertEquals(MerchantStatusEnum.APPROVED, pendingMerchant.getStatus());
         verify(merchantRepository, times(1)).findById(VALID_MERCHANT_ID);
         verify(merchantRepository, times(1)).save(pendingMerchant);
-        verify(emailService, times(1)).sendApproveMerchantEmail(new String[]{pendingMerchant.getContactEmail()}, VALID_LANGUAGE, pendingMerchant.getCompanyName(), any());
+        verify(emailService, times(1)).sendApproveMerchantEmail(new String[]{pendingMerchant.getContactEmail()},
+                VALID_LANGUAGE, pendingMerchant.getCompanyName(), token, "Company 1");
     }
 
     @Test

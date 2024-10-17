@@ -243,7 +243,7 @@ public class EmailServiceImplTests {
         when(mailTemplateBuilder.buildEmailTemplate(any(MailTemplate.class))).thenReturn(htmlContent);
 
         // When
-        emailService.sendApproveMerchantEmail(toAddress, language, companyName, UUID.randomUUID());
+        emailService.sendApproveMerchantEmail(toAddress, language, companyName, UUID.randomUUID(), "MerchantName");
 
         // Then
         verify(mailTemplateBuilder, times(1)).buildEmailTemplate(any(MailTemplate.class));
