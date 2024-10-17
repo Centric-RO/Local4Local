@@ -79,6 +79,20 @@
                             </mat-option>
                         </mat-select>
                     }
+
+                    @case('textarea') {
+                        <textarea
+				           matInput
+				           formControlName="reason"
+				           rows="5"
+				           maxlength="1024"
+				           [placeholder]="'rejectMerchant.reason' | translate">
+                        </textarea>
+                    }
+                }
+
+                @if (field.formControl==='reason') {
+                    <mat-hint align="end">{{ reasonMessageLength }} / 1024</mat-hint>
                 }
 
                 @if (hasRequiredError(form, field.formControl) && field.requiredMessage) {
@@ -87,11 +101,12 @@
                     </mat-error>
                 }
 
-                @if (hasPatternError(form, field.formControl) && field.patternMessage && !isApprovalDialog) {
+                @if (hasPatternError(form, field.formControl) && field.patternMessage && !isApprovalOrRejection()) {
                     <mat-error>
                         {{ field.patternMessage | translate }}
                     </mat-error>
                 }
+
             </mat-form-field>
         }
     </form>
@@ -105,8 +120,8 @@
     </button>
     <button
         mat-flat-button
-        [disabled]="isDisabled"
-        [class.disabled]="isDisabled"
+        [disabled]="isDisabled()"
+        [class.disabled]="isDisabled()"
         (click)="performAction()">
         {{ actionButton | translate }}
     </button>

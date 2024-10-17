@@ -10,6 +10,7 @@ import { ColumnType } from '../../enums/column.enum';
 import { forkJoin } from 'rxjs';
 import { MerchantDialogComponent } from '../merchant-dialog/merchant-dialog.component';
 import { SUCCESS_CODE } from '../../_constants/error-constants';
+import { MerchantDialogType } from '../../enums/merchant-dialog-type.enum';
 
 @Component({
     selector: 'app-merchants',
@@ -81,7 +82,22 @@ export class MerchantsComponent implements OnInit {
     public approveMerchant(merchant: MerchantDto): void {
         this.dialog
             .open(MerchantDialogComponent, {
-                data: { isApprovalDialog: true, merchant: merchant },
+                data: { dialogType: MerchantDialogType.APPROVAL, merchant: merchant },
+                width: '560px'
+            })
+            .afterClosed()
+            .subscribe((result) => {
+                switch (result) {
+                    case SUCCESS_CODE:
+                        this.initData(this.DEFAULT_PAGE_INDEX, this.DEFAULT_PAGE_SIZE);
+                }
+            });
+    }
+
+    public rejectMerchant(merchant: MerchantDto): void {
+        this.dialog
+            .open(MerchantDialogComponent, {
+                data: { dialogType: MerchantDialogType.REJECTION, merchant: merchant },
                 width: '560px'
             })
             .afterClosed()
