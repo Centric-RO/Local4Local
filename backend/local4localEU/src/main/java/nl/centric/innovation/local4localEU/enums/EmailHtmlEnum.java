@@ -17,13 +17,15 @@ public enum EmailHtmlEnum {
     LI_END("</li>"),
     EXCL("!"),
     LINK_START("<a href=\"%s\">"),
-    LINK_END("</a>");
+    LINK_END("</a>"),
+    END(".");;
 
     private final String html;
 
     EmailHtmlEnum(String html) {
         this.html = html;
     }
+
     public String getTag() {
         return html;
     }
