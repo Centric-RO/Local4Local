@@ -6,6 +6,7 @@ import static util.Validators.isValidUrl;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.EnumSet;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -103,7 +104,9 @@ public class MerchantServiceImpl implements MerchantService {
             throw new DtoValidateNotFoundException(errorEntityNotFound);
         }
 
-        if (merchant.get().getStatus() == MerchantStatusEnum.REJECTED) {
+        EnumSet<MerchantStatusEnum> invalidStatuses = EnumSet.of(MerchantStatusEnum.REJECTED, MerchantStatusEnum.APPROVED);
+
+        if (invalidStatuses.contains(merchant.get().getStatus())) {
             throw new DtoValidateAlreadyExistsException(redundantChange);
         }
 
