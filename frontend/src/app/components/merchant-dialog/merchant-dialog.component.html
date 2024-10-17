@@ -83,13 +83,16 @@
                     @case('textarea') {
                         <textarea
 				           matInput
-				           formControlName="invitationMessage"
+				           formControlName="reason"
 				           rows="5"
 				           maxlength="1024"
-				           [placeholder]="'inviteMerchants.invitationMessage' | translate">
+				           [placeholder]="'rejectMerchant.reason' | translate">
                         </textarea>
-			            
                     }
+                }
+
+                @if (field.formControl==='reason') {
+                    <mat-hint align="end">{{ reasonMessageLength }} / 1024</mat-hint>
                 }
 
                 @if (hasRequiredError(form, field.formControl) && field.requiredMessage) {
@@ -103,6 +106,7 @@
                         {{ field.patternMessage | translate }}
                     </mat-error>
                 }
+
             </mat-form-field>
         }
     </form>

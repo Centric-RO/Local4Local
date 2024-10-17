@@ -71,6 +71,10 @@ export class MerchantDialogComponent implements OnInit {
 		}
 	};
 
+	public get reasonMessageLength(): number {
+		return this.form.controls['reason'].value?.length;
+	}
+
 	public get hasNoSuggestions(): boolean {
 		return this.suggestions.length === 0 && !this.selectedLocation;
 	}
@@ -102,7 +106,16 @@ export class MerchantDialogComponent implements OnInit {
 	}
 
 	public isDisabled(): boolean {
-		return (this.form.invalid || !this.selectedLocation) && !this.isApprovalOrRejection();
+		if (this.merchantDialogType === MerchantDialogType.APPROVAL) {
+			return false;
+		}
+
+		if (this.merchantDialogType === MerchantDialogType.REJECTION) {
+			console.log(this.form);
+			return this.form.invalid;
+		}
+
+		return this.form.invalid || !this.selectedLocation;
 	}
 
 	public onSearchAddress(event: Event): void {
@@ -210,7 +223,21 @@ export class MerchantDialogComponent implements OnInit {
 	}
 
 	private initializeFormFields(): void {
-		this.formFields = [
+		this.formFields = [];
+
+		if (this.merchantDialogType === MerchantDialogType.REJECTION) {
+			this.formFields.push({
+				formControl: 'reason',
+				labelKey: 'rejectMerchant.reason',
+				fieldType: 'textarea',
+				required: true,
+				isReadOnly: false,
+				maxLength: 1024,
+				requiredMessage: 'rejectMerchant.error.reasonRequired'
+			});
+		}
+
+		this.formFields.push(
 			{
 				formControl: 'companyName',
 				labelKey: 'table.column.companyName',
@@ -270,19 +297,7 @@ export class MerchantDialogComponent implements OnInit {
 				pattern: RegexUtil.urlRegexPattern,
 				patternMessage: 'register.error.invalidUrl'
 			}
-		];
-
-		if (this.merchantDialogType === MerchantDialogType.REJECTION) {
-			this.formFields.push({
-				formControl: 'reason',
-				labelKey: 'rejectMerchant.reason',
-				fieldType: 'textarea',
-				required: true,
-				isReadOnly: false,
-				maxLength: 1024,
-				requiredMessage: 'rejectMerchant.error.reasonRequired'
-			});
-		}
+		);
 	}
 
 	private createForm(): void {
@@ -317,17 +332,13 @@ export class MerchantDialogComponent implements OnInit {
 	}
 
 	private getValidators(field: FormField): ValidatorFn[] {
-		if (this.isApprovalOrRejection()) {
-			return [];
-		}
-
 		const validators = [];
 
 		if (field.required) {
 			validators.push(Validators.required);
 		}
 
-		if (field.pattern) {
+		if (this.merchantDialogType === MerchantDialogType.REGISTRATION && field.pattern) {
 			validators.push(Validators.pattern(field.pattern));
 		}
 

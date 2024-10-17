@@ -172,6 +172,7 @@
         "title": "Reject request",
         "subtitle": "By rejecting this merchant, you prevent them from appearing on the map showing which suppliers accept X currency.",
         "success": "The request was successfully rejected.",
+        "reason": "Rejection reason",
         "error": {
             "reasonRequired": "Rejection reason is required."
         }
