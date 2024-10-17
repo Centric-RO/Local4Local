@@ -226,4 +226,48 @@ describe('MerchantsComponent', () => {
 
 		expect(initDataSpy).toHaveBeenCalledWith(component['DEFAULT_PAGE_INDEX'], component['DEFAULT_PAGE_SIZE']);
 	});
+
+	it('should open MerchantDialogComponent with correct data when rejectMerchant is called', () => {
+		const mockMerchant: MerchantDto = {
+			companyName: 'Test Company',
+			kvk: '12345678',
+			category: 'Retail',
+			latitude: 52.3702,
+			longitude: 4.8952,
+			address: '123 Test Street, Test City',
+			contactEmail: 'test@example.com',
+			website: 'https://www.testcompany.com',
+			status: 'Active'
+		};
+
+		component.rejectMerchant(mockMerchant);
+
+		expect(matDialogMock.open).toHaveBeenCalledWith(MerchantDialogComponent, {
+			data: { dialogType: MerchantDialogType.REJECTION, merchant: mockMerchant },
+			width: '560px'
+		});
+	});
+
+	it('should call initData when the dialog result is SUCCESS_CODE after rejectMerchant is called', () => {
+		const initDataSpy = jest.spyOn(component as any, 'initData');
+		const mockMerchant: MerchantDto = {
+			companyName: 'Test Company',
+			kvk: '12345678',
+			category: 'Retail',
+			latitude: 52.3702,
+			longitude: 4.8952,
+			address: '123 Test Street, Test City',
+			contactEmail: 'test@example.com',
+			website: 'https://www.testcompany.com',
+			status: 'Active'
+		};
+
+		matDialogMock.open = jest.fn().mockReturnValue({
+			afterClosed: jest.fn().mockReturnValue(of(SUCCESS_CODE))
+		});
+
+		component.rejectMerchant(mockMerchant);
+
+		expect(initDataSpy).toHaveBeenCalledWith(component['DEFAULT_PAGE_INDEX'], component['DEFAULT_PAGE_SIZE']);
+	});
 });

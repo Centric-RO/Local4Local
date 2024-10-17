@@ -215,16 +215,29 @@ describe('MerchantDialogComponent', () => {
 	});
 
 	describe('performAction', () => {
-		it('should call approveMerchant if isApprovalDialog is true', () => {
+		it('should call approveMerchant when merchantDialogType is APPROVAL', () => {
+			const merchantId = '12345';
 			component.merchantDialogType = MerchantDialogType.APPROVAL;
+			component['currentMerchantId'] = merchantId;
 			const approveMerchantSpy = jest.spyOn(component as any, 'approveMerchant');
 
 			component.performAction();
 
-			expect(approveMerchantSpy).toHaveBeenCalled();
+			expect(approveMerchantSpy).toHaveBeenCalledWith(merchantId);
 		});
 
-		it('should call registerMerchant if isApprovalDialog is false', () => {
+		it('should call rejectMerchant when merchantDialogType is REJECTION', () => {
+			const merchantId = '12345';
+			component.merchantDialogType = MerchantDialogType.REJECTION;
+			component['currentMerchantId'] = merchantId;
+			const rejectMerchantSpy = jest.spyOn(component as any, 'rejectMerchant');
+
+			component.performAction();
+
+			expect(rejectMerchantSpy).toHaveBeenCalledWith(merchantId);
+		});
+
+		it('should call registerMerchant when merchantDialogType is REGISTRATION', () => {
 			component.merchantDialogType = MerchantDialogType.REGISTRATION;
 			const registerMerchantSpy = jest.spyOn(component as any, 'registerMerchant');
 
@@ -314,5 +327,124 @@ describe('MerchantDialogComponent', () => {
 
 		expect(validators.length).toBe(1);
 	});
-	
+
+	it('should initialize rejection reason field when dialog type is REJECTION', () => {
+		component.merchantDialogType = MerchantDialogType.REJECTION;
+		component['initializeFormFields']();
+
+		expect(component.formFields.length).toBe(7);
+		const reasonField = component.formFields[0];
+
+		expect(reasonField.formControl).toBe('reason');
+		expect(reasonField.labelKey).toBe('rejectMerchant.reason');
+		expect(reasonField.fieldType).toBe('textarea');
+		expect(reasonField.required).toBe(true);
+		expect(reasonField.isReadOnly).toBe(false);
+		expect(reasonField.maxLength).toBe(1024);
+		expect(reasonField.requiredMessage).toBe('rejectMerchant.error.reasonRequired');
+	});
+
+	it('should log the currentMerchantId when rejectMerchant is called', () => {
+		const merchantId = '12345';
+		const consoleSpy = jest.spyOn(console, 'log');
+
+		component['rejectMerchant'](merchantId);
+
+		expect(consoleSpy).toHaveBeenCalledWith(merchantId);
+
+		consoleSpy.mockRestore();
+	});
+
+	describe('isDisabled', () => {
+		it('should return false when merchantDialogType is APPROVAL', () => {
+			component.merchantDialogType = MerchantDialogType.APPROVAL;
+
+			const result = component.isDisabled();
+
+			expect(result).toBe(false);
+		});
+
+		it('should return true when merchantDialogType is REJECTION and form is invalid', () => {
+			component.merchantDialogType = MerchantDialogType.REJECTION;
+			component.form = { invalid: true } as any;
+
+			const result = component.isDisabled();
+
+			expect(result).toBe(true);
+		});
+
+		it('should return false when merchantDialogType is REJECTION and form is valid', () => {
+			component.merchantDialogType = MerchantDialogType.REJECTION;
+			component.form = { invalid: false } as any;
+
+			const result = component.isDisabled();
+
+			expect(result).toBe(false);
+		});
+
+		it('should return true when merchantDialogType is not APPROVAL or REJECTION and form is invalid', () => {
+			component.merchantDialogType = MerchantDialogType.REGISTRATION;
+			component.form = { invalid: true } as any;
+			component.selectedLocation = {} as any;
+
+			const result = component.isDisabled();
+
+			expect(result).toBe(true);
+		});
+
+		it('should return true when merchantDialogType is not APPROVAL or REJECTION and selectedLocation is null', () => {
+			component.merchantDialogType = MerchantDialogType.REGISTRATION;
+			component.form = { invalid: false } as any;
+			component.selectedLocation = null;
+
+			const result = component.isDisabled();
+
+			expect(result).toBe(true);
+		});
+	});
+
+	describe('reasonMessageLength', () => {
+		it('should return the length of the reason value when it is defined', () => {
+			component.form = {
+				controls: {
+					reason: {
+						value: 'Some reason text'
+					}
+				}
+			} as any; 
+
+			const result = component.reasonMessageLength;
+
+			expect(result).toBe(16); 
+		});
+
+		it('should return undefined when reason value is null', () => {
+			component.form = {
+				controls: {
+					reason: {
+						value: null
+					}
+				}
+			} as any; 
+
+			const result = component.reasonMessageLength;
+
+			expect(result).toBeUndefined();
+		});
+
+		it('should return undefined when reason control is undefined', () => {
+			component.form = {
+				controls: {
+					reason: {
+						value: undefined
+					}
+				}
+			} as any; 
+
+			const result = component.reasonMessageLength;
+
+			expect(result).toBeUndefined();
+		});
+
+	});
 });

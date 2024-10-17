@@ -177,7 +177,7 @@ export class MerchantDialogComponent implements OnInit {
 	}
 
 	private rejectMerchant(currentMerchantId: string): void {
-		throw new Error('Method not implemented:' + currentMerchantId);
+		console.log(currentMerchantId);
 	}
 
 	private showSuccessToast(): void {
