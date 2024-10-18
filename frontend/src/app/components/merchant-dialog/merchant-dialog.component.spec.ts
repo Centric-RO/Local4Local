@@ -23,7 +23,8 @@ const matDialogRefStub = {
 
 const merchantServiceStub = {
 	registerMerchant: jest.fn().mockReturnValue(of({})),
-	approveMerchant: jest.fn().mockReturnValue(of({}))
+	approveMerchant: jest.fn().mockReturnValue(of({})),
+	rejectMerchant: jest.fn().mockReturnValue(of({}))
 };
 
 const matDialogStub = {
@@ -344,17 +345,6 @@ describe('MerchantDialogComponent', () => {
 		expect(reasonField.requiredMessage).toBe('rejectMerchant.error.reasonRequired');
 	});
 
-	it('should log the currentMerchantId when rejectMerchant is called', () => {
-		const merchantId = '12345';
-		const consoleSpy = jest.spyOn(console, 'log');
-
-		component['rejectMerchant'](merchantId);
-
-		expect(consoleSpy).toHaveBeenCalledWith(merchantId);
-
-		consoleSpy.mockRestore();
-	});
-
 	describe('isDisabled', () => {
 		it('should return false when merchantDialogType is APPROVAL', () => {
 			component.merchantDialogType = MerchantDialogType.APPROVAL;
@@ -411,11 +401,11 @@ describe('MerchantDialogComponent', () => {
 						value: 'Some reason text'
 					}
 				}
-			} as any; 
+			} as any;
 
 			const result = component.reasonMessageLength;
 
-			expect(result).toBe(16); 
+			expect(result).toBe(16);
 		});
 
 		it('should return undefined when reason value is null', () => {
@@ -425,7 +415,7 @@ describe('MerchantDialogComponent', () => {
 						value: null
 					}
 				}
-			} as any; 
+			} as any;
 
 			const result = component.reasonMessageLength;
 
@@ -439,12 +429,11 @@ describe('MerchantDialogComponent', () => {
 						value: undefined
 					}
 				}
-			} as any; 
+			} as any;
 
 			const result = component.reasonMessageLength;
 
 			expect(result).toBeUndefined();
 		});
-
 	});
 });

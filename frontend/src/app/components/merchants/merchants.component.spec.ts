@@ -224,7 +224,7 @@ describe('MerchantsComponent', () => {
 
 		component.approveMerchant(mockMerchant);
 
-		expect(initDataSpy).toHaveBeenCalledWith(component['DEFAULT_PAGE_INDEX'], component['DEFAULT_PAGE_SIZE']);
+		expect(initDataSpy).toHaveBeenCalledWith(component['currentPageIndex'], component['currentPageSize']);
 	});
 
 	it('should open MerchantDialogComponent with correct data when rejectMerchant is called', () => {
@@ -268,6 +268,6 @@ describe('MerchantsComponent', () => {
 
 		component.rejectMerchant(mockMerchant);
 
-		expect(initDataSpy).toHaveBeenCalledWith(component['DEFAULT_PAGE_INDEX'], component['DEFAULT_PAGE_SIZE']);
+		expect(initDataSpy).toHaveBeenCalledWith(component['currentPageIndex'], component['currentPageSize']);
 	});
 });
