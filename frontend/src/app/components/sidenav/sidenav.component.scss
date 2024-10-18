@@ -4,6 +4,12 @@
 $common-margin: 32px;
 $theme: mat.define-theme();
 
+:host {
+	.panel-header {
+		height: 40px;
+	}
+}
+
 ::ng-deep {
 	.mat-typography p {
 		margin: 0;
