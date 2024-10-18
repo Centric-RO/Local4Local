@@ -1,0 +1,5 @@
+export enum MerchantDialogType {
+	APPROVAL = 'APPROVAL',
+	REJECTION = 'REJECTION',
+	REGISTRATION = 'REGISTRATION'
+}
