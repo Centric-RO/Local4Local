@@ -26,7 +26,12 @@
             "approved": "Approved"
         },
         "paginatorResult": "Results per page",
-        "congratulations": "Congratulations!"
+        "congratulations": "Congratulations!",
+        "noLocationData": {
+			"noDataTitle": "...Location is turned off",
+			"noDataDescription": "...It looks like location is turned off in your system preferences. Please enable location services to explore the map."
+		}
+        
     },
     "table": {
         "column": {
