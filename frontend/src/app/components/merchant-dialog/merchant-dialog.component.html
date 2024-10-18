@@ -13,7 +13,7 @@
     <p>{{ subtitle | translate }}</p>
     <form [formGroup]="form">
         @for (field of formFields; track field.formControl) {
-            <mat-form-field appearance="outline">
+            <mat-form-field [class.no-border]="field.isReadOnly" appearance="outline">
                 <mat-label>{{ field.labelKey | translate }}</mat-label>
 
                 @switch(field.fieldType) {
