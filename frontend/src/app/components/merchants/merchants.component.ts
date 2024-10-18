@@ -53,17 +53,19 @@ export class MerchantsComponent implements OnInit {
 	public readonly noDataTitle: string = 'merchants.noData.title';
 	public readonly noDataDescription: string = 'merchants.noData.description';
 
-	private readonly DEFAULT_PAGE_INDEX = 0;
-	private readonly DEFAULT_PAGE_SIZE = 10;
+	private currentPageIndex = 0;
+	private currentPageSize = 10;
 
 	private dialog = inject(MatDialog);
 	private merchantsService = inject(MerchantService);
 
 	public ngOnInit(): void {
-		this.initData(this.DEFAULT_PAGE_INDEX, this.DEFAULT_PAGE_SIZE);
+		this.initData(this.currentPageIndex, this.currentPageSize);
 	}
 
 	public onPageChange(event: PageEvent): void {
+		this.currentPageIndex = event.pageIndex;
+		this.currentPageSize = event.pageSize;
 		this.initData(event.pageIndex, event.pageSize);
 	}
 
@@ -88,7 +90,7 @@ export class MerchantsComponent implements OnInit {
 			.afterClosed()
 			.subscribe((result) => {
 				if (result === SUCCESS_CODE) {
-					this.initData(this.DEFAULT_PAGE_INDEX, this.DEFAULT_PAGE_SIZE);
+					this.initData(this.currentPageIndex, this.currentPageSize);
 				}
 			});
 	}
@@ -102,7 +104,7 @@ export class MerchantsComponent implements OnInit {
 			.afterClosed()
 			.subscribe((result) => {
 				if (result === SUCCESS_CODE) {
-					this.initData(this.DEFAULT_PAGE_INDEX, this.DEFAULT_PAGE_SIZE);
+					this.initData(this.currentPageIndex, this.currentPageSize);
 				}
 			});
 	}

@@ -3,6 +3,7 @@ import { HttpClientTestingModule, HttpTestingController } from '@angular/common/
 import { MerchantService } from './merchant.service';
 import { MerchantDto } from '../models/merchant-dto.model';
 import { InviteMerchantsDto } from '../models/invite-merchants-dto.model';
+import { RejectMerchantDto } from '../models/reject-merchant-dto.model';
 
 describe('MerchantService', () => {
 	let service: MerchantService;
@@ -202,6 +203,22 @@ describe('MerchantService', () => {
 
 		const req = httpMock.expectOne(`${environmentMock.apiPath}/merchant/approve/${mockMerchantId}`);
 		expect(req.request.method).toBe('PATCH');
+		req.flush(null);
+	});
+
+	it('should reject a merchant', () => {
+		const mockRejectMerchantDto: RejectMerchantDto = {
+			merchantId: 'merchant123',
+			reason: 'Non-compliance with guidelines'
+		};
+
+		service.rejectMerchant(mockRejectMerchantDto).subscribe(() => {
+			expect(true).toBeTruthy();
+		});
+
+		const req = httpMock.expectOne(`${environmentMock.apiPath}/merchant/reject`);
+		expect(req.request.method).toBe('POST');
+		expect(req.request.body).toEqual(mockRejectMerchantDto);
 		req.flush(null);
 	});
 });

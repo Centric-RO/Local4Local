@@ -20,6 +20,7 @@ import { CustomSnackbarComponent } from '../custom-snackbar/custom-snackbar.comp
 import { SnackbarData } from '../../models/snackbar-data.model';
 import { SnackbarType } from '../../_enums/snackbar-type.enum';
 import { MerchantDialogType } from '../../enums/merchant-dialog-type.enum';
+import { RejectMerchantDto } from '../../models/reject-merchant-dto.model';
 
 type ApprovalDialogValue = string | number | null | undefined;
 
@@ -177,15 +178,26 @@ export class MerchantDialogComponent implements OnInit {
 	}
 
 	private rejectMerchant(currentMerchantId: string): void {
-		console.log(currentMerchantId);
+		const reason = this.form.get('reason')?.value;
+		const rejectMerchantDto = new RejectMerchantDto(currentMerchantId, reason);
+
+		this.merchantService.rejectMerchant(rejectMerchantDto).subscribe(() => {
+			this.closeDialog(SUCCESS_CODE);
+			this.showSuccessToast();
+		});
 	}
 
 	private showSuccessToast(): void {
-		const toasterMessage = this.translateService.instant('approveMerchant.success');
+		const toasterMessage =
+			this.merchantDialogType === MerchantDialogType.APPROVAL
+				? 'approveMerchant.success'
+				: 'rejectMerchant.success';
+
+		const translatedValue = this.translateService.instant(toasterMessage);
 
 		this.snackBar.openFromComponent(CustomSnackbarComponent, {
 			duration: 8000,
-			data: new SnackbarData(toasterMessage, SnackbarType.SUCCESS),
+			data: new SnackbarData(translatedValue, SnackbarType.SUCCESS),
 			horizontalPosition: 'right',
 			verticalPosition: 'bottom'
 		});
