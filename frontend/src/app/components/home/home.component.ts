@@ -28,7 +28,7 @@ export class HomeComponent implements OnInit {
 	}
 
 	public openDialog(): void {
-		this.dialog.open(MerchantDialogComponent, { width: '560px' })
+		this.dialog.open(MerchantDialogComponent, CustomDialogConfigUtil.GENERIC_MODAL_CONFIG)
 			.afterClosed()
 			.subscribe((result) => {
 				switch (result) {

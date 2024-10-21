@@ -180,7 +180,13 @@ describe('MerchantsComponent', () => {
 
 	it('should open invite merchant dialog', () => {
 		component.openInviteMerchantsDialog();
-		expect(matDialogMock.open).toHaveBeenCalledWith(InviteMerchantDialogComponent, { width: '560px' });
+		expect(matDialogMock.open).toHaveBeenCalledWith(InviteMerchantDialogComponent, {
+			width: '560px',
+			autoFocus: false,
+			disableClose: true,
+			hasBackdrop: true,
+			restoreFocus: false
+		});
 	});
 
 	it('should open MerchantDialogComponent with correct data when approveMerchant is called', () => {
@@ -200,7 +206,11 @@ describe('MerchantsComponent', () => {
 
 		expect(matDialogMock.open).toHaveBeenCalledWith(MerchantDialogComponent, {
 			data: { dialogType: MerchantDialogType.APPROVAL, merchant: mockMerchant },
-			width: '560px'
+			width: '560px',
+			autoFocus: false,
+			disableClose: true,
+			hasBackdrop: true,
+			restoreFocus: false
 		});
 	});
 
@@ -244,7 +254,11 @@ describe('MerchantsComponent', () => {
 
 		expect(matDialogMock.open).toHaveBeenCalledWith(MerchantDialogComponent, {
 			data: { dialogType: MerchantDialogType.REJECTION, merchant: mockMerchant },
-			width: '560px'
+			width: '560px',
+			autoFocus: false,
+			disableClose: true,
+			hasBackdrop: true,
+			restoreFocus: false
 		});
 	});
 

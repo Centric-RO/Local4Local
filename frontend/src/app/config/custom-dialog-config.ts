@@ -2,10 +2,20 @@ import { MatDialogConfig } from '@angular/material/dialog';
 import { ModalData } from '../models/dialog-data.model';
 
 export class CustomDialogConfigUtil {
+	static GENERIC_MODAL_CONFIG: MatDialogConfig = {
+		width: '560px',
+		autoFocus: false,
+		hasBackdrop: true,
+		disableClose: true,
+		restoreFocus: false
+	};
+
 	static MESSAGE_MODAL_CONFIG: MatDialogConfig = {
 		width: '600px',
 		disableClose: false,
-		autoFocus: true,
+		hasBackdrop: true,
+		autoFocus: false,
+		restoreFocus: false,
 		data: {
 			title: '',
 			mainContent: '',
@@ -30,5 +40,4 @@ export class CustomDialogConfigUtil {
 		config.data.imageName = successModal.imageName;
 		return config;
 	}
-
 }

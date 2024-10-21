@@ -11,6 +11,7 @@ import { forkJoin } from 'rxjs';
 import { MerchantDialogComponent } from '../merchant-dialog/merchant-dialog.component';
 import { SUCCESS_CODE } from '../../_constants/error-constants';
 import { MerchantDialogType } from '../../enums/merchant-dialog-type.enum';
+import { CustomDialogConfigUtil } from '../../config/custom-dialog-config';
 
 @Component({
 	selector: 'app-merchants',
@@ -78,14 +79,14 @@ export class MerchantsComponent implements OnInit {
 	}
 
 	public openInviteMerchantsDialog(): void {
-		this.dialog.open(InviteMerchantDialogComponent, { width: '560px' });
+		this.dialog.open(InviteMerchantDialogComponent, CustomDialogConfigUtil.GENERIC_MODAL_CONFIG);
 	}
 
 	public approveMerchant(merchant: MerchantDto): void {
 		this.dialog
 			.open(MerchantDialogComponent, {
 				data: { dialogType: MerchantDialogType.APPROVAL, merchant: merchant },
-				width: '560px'
+				...CustomDialogConfigUtil.GENERIC_MODAL_CONFIG
 			})
 			.afterClosed()
 			.subscribe((result) => {
@@ -99,7 +100,7 @@ export class MerchantsComponent implements OnInit {
 		this.dialog
 			.open(MerchantDialogComponent, {
 				data: { dialogType: MerchantDialogType.REJECTION, merchant: merchant },
-				width: '560px'
+				...CustomDialogConfigUtil.GENERIC_MODAL_CONFIG
 			})
 			.afterClosed()
 			.subscribe((result) => {

@@ -2,6 +2,7 @@ import { Component, inject, OnInit } from '@angular/core';
 import { MerchantService } from "../../services/merchant.service";
 import { MatDialog } from "@angular/material/dialog";
 import { InviteMerchantDialogComponent } from "../invite-merchant-dialog/invite-merchant-dialog.component";
+import { CustomDialogConfigUtil } from '../../config/custom-dialog-config';
 
 
 @Component({
@@ -19,7 +20,7 @@ export class DashboardComponent implements OnInit {
 	}
 
 	public openInviteMerchantsDialog(): void {
-		this.dialog.open(InviteMerchantDialogComponent, { width: '560px' });
+		this.dialog.open(InviteMerchantDialogComponent, CustomDialogConfigUtil.GENERIC_MODAL_CONFIG);
 	}
 
 	private initData(): void {
