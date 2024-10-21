@@ -6,7 +6,7 @@ import { AppLoaderService } from '../services/app-loader.service';
 import { of, throwError } from 'rxjs';
 
 describe('AppHttpInterceptor', () => {
-	let interceptor: AppHttpInterceptor;
+	let interceptor: AppHttpInterceptor<any>;
 	let appLoaderService: AppLoaderService;
 	let httpHandler: HttpHandler;
 	let httpRequest: HttpRequest<any>;
