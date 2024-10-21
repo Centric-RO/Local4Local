@@ -9,8 +9,7 @@
             </button>
         </div>
 
-        <div class="mat-elevation-z8">
-            <div class="table-container" tabindex="0"> 
+        <div class="mat-elevation-z8" tabindex="0">
                 <table mat-table [dataSource]="dataSource">
                     @for(column of columnConfigs; track column) {
                         <ng-container [matColumnDef]="column.columnDef">
@@ -87,7 +86,6 @@
                     <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
                     <tr mat-row *matRowDef="let row; columns: displayedColumns"></tr>
                 </table>
-            </div>
             <div class="table-footer-spacer"></div>
             <mat-paginator
                 showFirstLastButtons
