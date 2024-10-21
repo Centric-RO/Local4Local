@@ -10,6 +10,21 @@
         background: var(--neutral-0) !important;
         box-shadow: 0 1px 2px 0 var(--theme-500-rgb) !important;
     }
+
+    tbody {
+        display: block;
+        height: 496px;
+        overflow-y: auto;
+        scrollbar-width: thin;
+    }
+
+    thead,
+    tbody tr {
+        display: table;
+        width: 100%;
+        table-layout: fixed;
+    }
+
 }
 
 :host {
@@ -30,11 +45,6 @@
         margin: 0 32px;
     }
 
-    .table-container {
-        max-height: 580px;
-        overflow-y: auto;
-        scrollbar-width: thin;
-    }
 
     .mat-mdc-table {
         background-color: var(--neutral-0);
@@ -94,7 +104,8 @@
         }
     }
 
-    table tr:first-child th, .table-footer-spacer {
+    table tr:first-child th,
+    .table-footer-spacer {
         border-bottom: 1px solid var(--neutral-200);
     }
 
