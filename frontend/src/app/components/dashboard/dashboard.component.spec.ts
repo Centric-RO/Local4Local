@@ -1,12 +1,12 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { DashboardComponent } from './dashboard.component';
 import { HttpClientTestingModule } from '@angular/common/http/testing';
-import { TranslateModule } from "@ngx-translate/core";
-import { of } from "rxjs";
-import { MerchantService } from "../../services/merchant.service";
-import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from "@angular/core";
-import { MatDialog } from "@angular/material/dialog";
-import { InviteMerchantDialogComponent } from "../invite-merchant-dialog/invite-merchant-dialog.component";
+import { TranslateModule } from '@ngx-translate/core';
+import { of } from 'rxjs';
+import { MerchantService } from '../../services/merchant.service';
+import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
+import { MatDialog } from '@angular/material/dialog';
+import { InviteMerchantDialogComponent } from '../invite-merchant-dialog/invite-merchant-dialog.component';
 
 describe('DashboardComponent', () => {
 	let component: DashboardComponent;
@@ -19,7 +19,7 @@ describe('DashboardComponent', () => {
 		})
 	};
 	beforeEach(async () => {
-		global.structuredClone = jest.fn(val => {
+		global.structuredClone = jest.fn((val) => {
 			return JSON.parse(JSON.stringify(val));
 		});
 
@@ -34,10 +34,7 @@ describe('DashboardComponent', () => {
 				{ provide: MerchantService, useValue: merchantService },
 				{ provide: MatDialog, useValue: matDialogMock }
 			],
-			schemas: [
-				CUSTOM_ELEMENTS_SCHEMA,
-				NO_ERRORS_SCHEMA
-			]
+			schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA]
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(DashboardComponent);
@@ -53,8 +50,11 @@ describe('DashboardComponent', () => {
 	it('should open the invite dialog when the invite is pressed', () => {
 		component.openInviteMerchantsDialog();
 		expect(matDialogMock.open).toHaveBeenCalledWith(InviteMerchantDialogComponent, {
-			width: '560px'
+			width: '560px',
+			autoFocus: false,
+			disableClose: true,
+			hasBackdrop: true,
+			restoreFocus: false
 		});
 	});
-
 });

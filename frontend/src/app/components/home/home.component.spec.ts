@@ -1,10 +1,10 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 import { MatDialog } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { CategoryService } from "../../services/category.service";
-import { of } from "rxjs";
-import { MatChip, MatChipSet, MatChipsModule } from "@angular/material/chips";
-import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from "@angular/core";
+import { CategoryService } from '../../services/category.service';
+import { of } from 'rxjs';
+import { MatChip, MatChipSet, MatChipsModule } from '@angular/material/chips';
+import { CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA } from '@angular/core';
 import { HomeComponent } from './home.component';
 import { ModalData } from '../../models/dialog-data.model';
 import { GenericDialogComponent } from '../generic-dialog/generic-dialog.component';
@@ -31,13 +31,13 @@ describe('HomeComponent', () => {
 	beforeEach(async () => {
 		jest.clearAllMocks();
 
-		global.structuredClone = jest.fn(val => {
+		global.structuredClone = jest.fn((val) => {
 			return JSON.parse(JSON.stringify(val));
 		});
 
 		categoryServiceMock = {
-			getAllCategories: jest.fn().mockReturnValue(of(
-				[
+			getAllCategories: jest.fn().mockReturnValue(
+				of([
 					{
 						id: 0,
 						label: 'category1'
@@ -45,18 +45,15 @@ describe('HomeComponent', () => {
 					{
 						id: 1,
 						label: 'category2'
-					},
-				]
-			))
+					}
+				])
+			)
 		};
 
 		await TestBed.configureTestingModule({
 			declarations: [HomeComponent],
 			imports: [TranslateModule.forRoot(), MatChipsModule],
-			schemas: [
-				CUSTOM_ELEMENTS_SCHEMA,
-				NO_ERRORS_SCHEMA
-			],
+			schemas: [CUSTOM_ELEMENTS_SCHEMA, NO_ERRORS_SCHEMA],
 			providers: [
 				{ provide: MatDialog, useValue: matDialogMock },
 				{ provide: CategoryService, useValue: categoryServiceMock },
@@ -64,7 +61,7 @@ describe('HomeComponent', () => {
 				MatChipSet,
 				MatChip,
 				TranslateService
-			],
+			]
 		}).compileComponents();
 
 		fixture = TestBed.createComponent(HomeComponent);
@@ -80,7 +77,11 @@ describe('HomeComponent', () => {
 	it('should open the dialog with correct configuration when openDialog is called', () => {
 		component.openDialog();
 		expect(matDialogMock.open).toHaveBeenCalledWith(MerchantDialogComponent, {
-			width: '560px'
+			width: '560px',
+			autoFocus: false,
+			disableClose: true,
+			hasBackdrop: true,
+			restoreFocus: false
 		});
 	});
 
@@ -164,5 +165,4 @@ describe('HomeComponent', () => {
 
 		expect(merchantsMapComponentMock.filterMerchantsByCategory).toHaveBeenCalledWith(selectedCategory.id);
 	});
-
 });
