@@ -1,27 +1,21 @@
-import {
-	HttpEvent,
-	HttpHandler,
-	HttpInterceptor,
-	HttpRequest,
-	HttpResponse
-} from '@angular/common/http';
+import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest, HttpResponse } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { AppLoaderService } from '../services/app-loader.service';
 import { Observable, tap } from 'rxjs';
 
 @Injectable()
-export class AppHttpInterceptor implements HttpInterceptor {
+export class AppHttpInterceptor<T> implements HttpInterceptor {
 	private totalRequests = 0;
 
 	constructor(private readonly appLoaderService: AppLoaderService) {}
 
-	intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
+	intercept(req: HttpRequest<T>, next: HttpHandler): Observable<HttpEvent<T>> {
 		this.totalRequests++;
 		this.appLoaderService.loaderShow(true);
 
 		return next.handle(req).pipe(
 			tap({
-				next: (event: HttpEvent<any>) => this.handleResponse(event),
+				next: (event: HttpEvent<T>) => this.handleResponse(event),
 				error: () => this.decreaseRequests()
 			})
 		);
@@ -35,7 +29,7 @@ export class AppHttpInterceptor implements HttpInterceptor {
 		}
 	}
 
-	private handleResponse(event: HttpEvent<any>): void {
+	private handleResponse(event: HttpEvent<T>): void {
 		if (event instanceof HttpResponse) {
 			this.decreaseRequests();
 		}
