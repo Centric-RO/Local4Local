@@ -102,7 +102,7 @@ export class ErrorCatchingInterceptor implements HttpInterceptor {
         const toasterMessage = this.translateService.instant(`errors.${message}`);
 
         this.snackBar.openFromComponent(CustomSnackbarComponent, {
-            duration: 100000,
+            duration: 8000,
             data: new SnackbarData(toasterMessage, type),
             horizontalPosition: 'right',
             verticalPosition: 'bottom',
