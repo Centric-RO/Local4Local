@@ -73,7 +73,7 @@ export class MerchantDialogComponent implements OnInit {
 	};
 
 	public get reasonMessageLength(): number {
-		return this.form.controls['reason'].value?.length;
+		return this.form.controls['reason'].value?.length || 0;
 	}
 
 	public get hasNoSuggestions(): boolean {
