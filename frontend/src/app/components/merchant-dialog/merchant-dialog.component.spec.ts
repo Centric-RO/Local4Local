@@ -419,7 +419,7 @@ describe('MerchantDialogComponent', () => {
 
 			const result = component.reasonMessageLength;
 
-			expect(result).toBeUndefined();
+			expect(result).toBe(0);
 		});
 
 		it('should return undefined when reason control is undefined', () => {
