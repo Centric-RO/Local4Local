@@ -433,7 +433,7 @@ describe('MerchantDialogComponent', () => {
 
 			const result = component.reasonMessageLength;
 
-			expect(result).toBeUndefined();
+			expect(result).toBe(0);
 		});
 	});
 });
