@@ -11,6 +11,8 @@ import { JsStack } from "@/js-stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import styles from "@/__styles__/layout-style";
 import paperIcons from "@/constants/paper-icons";
+import LoadingIndicator from '@/components/loader/loading-indicator';
+import React from 'react';
 
 export default function RootLayout() {
 	const { t } = useTranslation('common');
@@ -39,22 +41,25 @@ export default function RootLayout() {
 	}
 
 	return (
-		<I18nextProvider i18n={i18n}>
-			<PaperProvider>
-				<JsStack screenOptions={STACK_OPTIONS}>
-					<Stack.Screen name="index" options={{
-						headerTitle: t('title.merchants'),
-						headerRight: () => (
-							<Link href="/change-language" asChild>
-								<IconButton icon={paperIcons.WEB} style={styles.headerRightIcon} />
-							</Link>
-						)
-					}} />
-					<Stack.Screen name="change-language" options={{
-						headerTitle: t('title.changeLanguage'),
-					}} />
-				</JsStack>
-			</PaperProvider>
-		</I18nextProvider>
+        <>
+            <LoadingIndicator />
+            <I18nextProvider i18n={i18n}>
+                <PaperProvider>
+                    <JsStack screenOptions={STACK_OPTIONS}>
+                        <Stack.Screen name="index" options={{
+                            headerTitle: t('title.merchants'),
+                            headerRight: () => (
+                                <Link href="/change-language" asChild>
+                                    <IconButton icon={paperIcons.WEB} style={styles.headerRightIcon} />
+                                </Link>
+                            )
+                        }} />
+                        <Stack.Screen name="change-language" options={{
+                            headerTitle: t('title.changeLanguage'),
+                        }} />
+                    </JsStack>
+                </PaperProvider>
+            </I18nextProvider>
+        </>
 	);
 }

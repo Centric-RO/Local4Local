@@ -21,6 +21,7 @@ export default function MerchantCallout({ merchant, onClose }: MerchantCalloutPr
 				}
 				onClose();
 			}}
+			testID="callout"
 		>
 			<View style={styles.innerContainer}>
 				<View style={styles.header}>
