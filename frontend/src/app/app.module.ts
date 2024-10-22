@@ -18,7 +18,7 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { BrowserModule, provideClientHydration } from '@angular/platform-browser';
 import { provideAnimationsAsync } from '@angular/platform-browser/animations/async';
 import { NgModule } from '@angular/core';
-import { MatChipsModule } from "@angular/material/chips";
+import { MatChipsModule } from '@angular/material/chips';
 import { GenericDialogComponent } from './components/generic-dialog/generic-dialog.component';
 import { HomeComponent } from './components/home/home.component';
 import { MatCheckboxModule } from '@angular/material/checkbox';
@@ -30,9 +30,9 @@ import { InviteMerchantDialogComponent } from './components/invite-merchant-dial
 import { MatSnackBarModule } from '@angular/material/snack-bar';
 import { CustomSnackbarComponent } from './components/custom-snackbar/custom-snackbar.component';
 import { MatMenuModule } from '@angular/material/menu';
-import { SidenavComponent } from "./components/sidenav/sidenav.component";
-import { MatSidenavModule } from "@angular/material/sidenav";
-import { MatListModule } from "@angular/material/list";
+import { SidenavComponent } from './components/sidenav/sidenav.component';
+import { MatSidenavModule } from '@angular/material/sidenav';
+import { MatListModule } from '@angular/material/list';
 import { GenericFormComponent } from './components/generic-form/generic-form.component';
 import { NoDataComponent } from './components/no-data/no-data.component';
 import { MerchantsComponent } from './components/merchants/merchants.component';
@@ -44,6 +44,8 @@ import { ProfileComponent } from './components/profile/profile.component';
 import { MfaComponent } from './components/mfa/mfa.component';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MerchantDialogComponent } from './components/merchant-dialog/merchant-dialog.component';
+import { AppHttpInterceptor } from './_interceptors/app-http.interceptor';
+import { AppLoaderComponent } from './components/app-loader/app-loader.component';
 
 export function httpLoaderFactory(http: HttpClient) {
 	return new TranslateHttpLoader(http, './assets/i18n/', '.json');
@@ -65,8 +67,9 @@ export function httpLoaderFactory(http: HttpClient) {
 		InvitationsComponent,
 		MerchantsComponent,
 		NoDataComponent,
-  ProfileComponent,
-  MfaComponent
+		ProfileComponent,
+		MfaComponent,
+  AppLoaderComponent
 	],
 	imports: [
 		HttpClientModule,
@@ -108,20 +111,26 @@ export function httpLoaderFactory(http: HttpClient) {
 			}
 		})
 	],
-	providers: [provideClientHydration(), provideAnimationsAsync(),
-	{
-		provide: RECAPTCHA_SETTINGS,
-		useValue: {
-			siteKey: '6Ld-jb4pAAAAAI34pOa8uqqGX407eykhcPLDTdO7'
+	providers: [
+		provideClientHydration(),
+		provideAnimationsAsync(),
+		{
+			provide: RECAPTCHA_SETTINGS,
+			useValue: {
+				siteKey: '6Ld-jb4pAAAAAI34pOa8uqqGX407eykhcPLDTdO7'
+			}
+		},
+		{
+			provide: HTTP_INTERCEPTORS,
+			useClass: ErrorCatchingInterceptor,
+			multi: true
+		},
+		{
+			provide: HTTP_INTERCEPTORS,
+			useClass: AppHttpInterceptor,
+			multi: true
 		}
-	},
-	{
-		provide: HTTP_INTERCEPTORS,
-		useClass: ErrorCatchingInterceptor,
-		multi: true
-	},
 	],
 	bootstrap: [AppComponent]
 })
-export class AppModule {
-}
+export class AppModule {}
