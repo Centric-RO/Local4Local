@@ -11,6 +11,7 @@ import { JsStack } from "@/js-stack";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import styles from "@/__styles__/layout-style";
 import paperIcons from "@/constants/paper-icons";
+import React from 'react';
 
 export default function RootLayout() {
 	const { t } = useTranslation('common');
