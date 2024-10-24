@@ -4,7 +4,6 @@ import { MerchantService } from './merchant.service';
 import { MerchantDto } from '../models/merchant-dto.model';
 import { InviteMerchantsDto } from '../models/invite-merchants-dto.model';
 import { RejectMerchantDto } from '../models/reject-merchant-dto.model';
-import { InvitationDto } from '../models/invitation-dto.model';
 
 describe('MerchantService', () => {
 	let service: MerchantService;
