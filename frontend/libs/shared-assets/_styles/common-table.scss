@@ -7,7 +7,7 @@
 
     tbody {
         display: block;
-        max-height: 496px;
+        max-height: calc(100vh - 212px);
         overflow-y: auto;
         scrollbar-width: thin;
     }
