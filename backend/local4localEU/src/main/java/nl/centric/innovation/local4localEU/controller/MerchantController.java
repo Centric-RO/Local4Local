@@ -2,8 +2,10 @@ package nl.centric.innovation.local4localEU.controller;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.List;import java.util.UUID;
+import java.util.List;
+import java.util.UUID;
 
+import nl.centric.innovation.local4localEU.dto.InvitationDto;
 import nl.centric.innovation.local4localEU.dto.RejectMerchantDto;
 import nl.centric.innovation.local4localEU.exception.CustomException.TalerException;
 import org.springframework.http.HttpStatus;
@@ -63,6 +65,15 @@ public class MerchantController {
             @RequestParam(defaultValue = "0") Integer page,
             @RequestParam(defaultValue = "25") Integer size) {
         return ResponseEntity.ok(merchantService.getPaginatedMerchants(page, size));
+    }
+
+    @RequestMapping(path = "/invitations", method = RequestMethod.GET)
+    @Secured({Role.ROLE_MANAGER})
+    public ResponseEntity<List<InvitationDto>> getInvitations(
+            @RequestParam(defaultValue = "0") Integer page,
+            @RequestParam(defaultValue = "25") Integer size) throws DtoValidateException {
+
+        return ResponseEntity.ok(merchantInvitationService.getAllLatestSentToEmail(page, size));
     }
 
     @RequestMapping(path = "/filter/{categoryId}", method = RequestMethod.GET)
