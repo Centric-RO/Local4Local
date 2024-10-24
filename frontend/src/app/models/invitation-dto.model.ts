@@ -1,9 +1,9 @@
 export class InvitationDto {
     public email: string;
-    public sendingDate: Date;
+    public createdDate: string;
 
-    constructor(email: string, sendingDate: Date) {
+    constructor(email: string, createdDate: string) {
         this.email = email;
-        this.sendingDate = sendingDate;
+        this.createdDate = createdDate;
     }
 }

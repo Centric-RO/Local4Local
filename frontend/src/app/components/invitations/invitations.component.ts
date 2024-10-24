@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild } from '@angular/core';
+import { Component, inject, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { InviteMerchantDialogComponent } from '../invite-merchant-dialog/invite-merchant-dialog.component';
 import { CustomDialogConfigUtil } from '../../config/custom-dialog-config';
@@ -15,45 +15,50 @@ import { ColumnConfig } from '../../models/column-config.model';
 	templateUrl: './invitations.component.html',
 	styleUrl: './invitations.component.scss'
 })
-export class InvitationsComponent {
-    @ViewChild(MatPaginator) paginator: MatPaginator;
-    
-    public readonly noDataTitle: string = 'inviteMerchants.noData.title';
+export class InvitationsComponent implements OnInit {
+	@ViewChild(MatPaginator) paginator: MatPaginator;
+
+	public readonly noDataTitle: string = 'inviteMerchants.noData.title';
 	public readonly noDataDescription: string = 'inviteMerchants.noData.description';
 
-	public displayedColumns: string[] = [
-		ColumnType.EMAIL,
-		ColumnType.SENDING_DATE
-	];
+	public displayedColumns: string[] = [ColumnType.EMAIL, ColumnType.SENDING_DATE];
 
-    public dataSource: MatTableDataSource<InvitationDto>;
+	public dataSource: MatTableDataSource<InvitationDto>;
 	public data: InvitationDto[] = [];
 	public noOfInvitations = 0;
 
-    public readonly PAGE_SIZE_OPTIONS = [10, 25, 50];
+	public readonly PAGE_SIZE_OPTIONS = [10, 25, 50];
 
-    public columnConfigs: ColumnConfig<InvitationDto>[] = [
+	public columnConfigs: ColumnConfig<InvitationDto>[] = [
 		{ columnDef: ColumnType.EMAIL, header: 'table.column.email', cell: (element) => element.email },
-		{ columnDef: ColumnType.SENDING_DATE, header: 'table.column.sendingDate', cell: (element) => element.sendingDate },
+		{
+			columnDef: ColumnType.SENDING_DATE,
+			header: 'table.column.sendingDate',
+			cell: (element) => this.formatDate(element.createdDate)
+		}
 	];
 
 	private currentPageIndex = 0;
 	private currentPageSize = 10;
-    
-    private readonly dialog = inject(MatDialog);
-    private readonly merchantsService = inject(MerchantService);
+
+	private readonly dialog = inject(MatDialog);
+	private readonly merchantsService = inject(MerchantService);
+
+	public ngOnInit(): void {
+		this.initData(this.currentPageIndex, this.currentPageSize);
+	}
 
 	public openInviteMerchantsDialog(): void {
 		this.dialog.open(InviteMerchantDialogComponent, CustomDialogConfigUtil.GENERIC_MODAL_CONFIG);
 	}
 
-    public onPageChange(event: PageEvent): void {
+	public onPageChange(event: PageEvent): void {
 		this.currentPageIndex = event.pageIndex;
 		this.currentPageSize = event.pageSize;
 		this.initData(event.pageIndex, event.pageSize);
 	}
 
-    private initData(pageIndex: number, pageSize: number): void {
+	private initData(pageIndex: number, pageSize: number): void {
 		forkJoin({
 			invitations: this.merchantsService.getPaginatedInvitations(pageIndex, pageSize),
 			count: this.merchantsService.countAllInvitations()
@@ -62,5 +67,10 @@ export class InvitationsComponent {
 			this.dataSource = new MatTableDataSource<InvitationDto>(invitations);
 			this.noOfInvitations = count;
 		});
+	}
+
+	private formatDate(dateString: string): string {
+		const date = new Date(dateString);
+		return date.toLocaleDateString('en-GB');
 	}
 }

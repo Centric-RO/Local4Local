@@ -46,7 +46,9 @@
 			"address": "...Address",
 			"website": "...Website",
 			"status": "...Status",
-			"actions": "...Actions"
+			"actions": "...Actions",
+			"email": "...E-mail",
+			"sendingDate": "...Sending date"
 		}
 	},
 	"welcomePage": {
