@@ -161,8 +161,8 @@ public class MerchantServiceImpl implements MerchantService {
         boolean isValidCategory = categoryId != null && categoryId >= 0 && categoryId <= 8;
 
         List<Merchant> merchants = isValidCategory
-                ? merchantRepository.findByCategoryId(categoryId)
-                : merchantRepository.findAll();
+                ? merchantRepository.findByCategoryIdAndStatus(categoryId, MerchantStatusEnum.APPROVED)
+                : merchantRepository.findByStatus(MerchantStatusEnum.APPROVED);
 
         return merchants.stream()
                 .map(MerchantViewDto::fromEntity)
