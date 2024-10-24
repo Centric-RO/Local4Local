@@ -1,10 +1,18 @@
 package nl.centric.innovation.local4localEU.service.impl;
 
 import java.util.HashSet;
+import java.util.List;
+import java.util.Optional;
 import java.util.Set;
+import java.util.UUID;
+import java.util.stream.Collectors;
 
+import nl.centric.innovation.local4localEU.dto.InvitationDto;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.PropertySource;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -64,5 +72,14 @@ public class MerchantInvitationServiceImpl implements MerchantInvitationService 
 		String[] emailsArray = processedEmails.toArray(new String[0]);
 		emailService.sendInviteMerchantEmail(url, language, emailsArray, inviteMerchantDto.message());
 
+	}
+
+	@Override
+	public List<InvitationDto> getAllLatestSentToEmail(Integer page, Integer size) throws DtoValidateException {
+		Pageable pageable = PageRequest.of(page, size);
+
+		Page<MerchantInvitation> invitations = merchantInvitationRepository.findAllByIsActiveTrueOrderByCreatedDateDesc(pageable);
+
+		return invitations.stream().map(InvitationDto::toDto).collect(Collectors.toList());
 	}
 }
