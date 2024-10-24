@@ -1,12 +1,14 @@
-import { Component, inject } from '@angular/core';
+import { Component, inject, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog';
 import { InviteMerchantDialogComponent } from '../invite-merchant-dialog/invite-merchant-dialog.component';
 import { CustomDialogConfigUtil } from '../../config/custom-dialog-config';
-import { PageEvent } from '@angular/material/paginator';
+import { MatPaginator, PageEvent } from '@angular/material/paginator';
 import { forkJoin } from 'rxjs';
 import { MerchantService } from '../../services/merchant.service';
 import { MatTableDataSource } from '@angular/material/table';
 import { InvitationDto } from '../../models/invitation-dto.model';
+import { ColumnType } from '../../enums/column.enum';
+import { ColumnConfig } from '../../models/column-config.model';
 
 @Component({
 	selector: 'app-invitations',
@@ -14,16 +16,30 @@ import { InvitationDto } from '../../models/invitation-dto.model';
 	styleUrl: './invitations.component.scss'
 })
 export class InvitationsComponent {
+    @ViewChild(MatPaginator) paginator: MatPaginator;
+    
     public readonly noDataTitle: string = 'inviteMerchants.noData.title';
 	public readonly noDataDescription: string = 'inviteMerchants.noData.description';
+
+	public displayedColumns: string[] = [
+		ColumnType.EMAIL,
+		ColumnType.SENDING_DATE
+	];
 
     public dataSource: MatTableDataSource<InvitationDto>;
 	public data: InvitationDto[] = [];
 	public noOfInvitations = 0;
 
+    public readonly PAGE_SIZE_OPTIONS = [10, 25, 50];
+
+    public columnConfigs: ColumnConfig<InvitationDto>[] = [
+		{ columnDef: ColumnType.EMAIL, header: 'table.column.email', cell: (element) => element.email },
+		{ columnDef: ColumnType.SENDING_DATE, header: 'table.column.sendingDate', cell: (element) => element.sendingDate },
+	];
+
 	private currentPageIndex = 0;
 	private currentPageSize = 10;
-
+    
     private readonly dialog = inject(MatDialog);
     private readonly merchantsService = inject(MerchantService);
 
