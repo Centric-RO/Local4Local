@@ -24,12 +24,26 @@ export class MerchantService {
 		});
 	}
 
+	public getPaginatedMerchants(page: number, size: number): Observable<MerchantDto[]> {
+		const httpParams = new HttpParams().set('page', page.toString()).set('size', size.toString());
+		return this.httpClient.get<MerchantDto[]>(`${environment.apiPath}/merchant/paginated`, {
+			params: httpParams,
+			withCredentials: true
+		});
+	}
+
 	public getMerchantsByCategory(categoryId: number): Observable<MerchantDto[]> {
 		return this.httpClient.get<MerchantDto[]>(`${environment.apiPath}/merchant/filter/${categoryId}`);
 	}
 
 	public countAllMerchants(): Observable<number> {
 		return this.httpClient.get<number>(`${environment.apiPath}/merchant/count/all`, { withCredentials: true });
+	}
+
+	public countAllInvitations(): Observable<number> {
+		return this.httpClient.get<number>(`${environment.apiPath}/merchant/invitations/count`, {
+			withCredentials: true
+		});
 	}
 
 	public inviteMerchants(inviteMerchantsDto: InviteMerchantsDto): Observable<void> {
