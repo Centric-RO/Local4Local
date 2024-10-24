@@ -1,5 +1,5 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
-import { FormBuilder, Validators } from '@angular/forms';
+import { FormBuilder, FormControl, FormGroup, Validators } from '@angular/forms';
 import { MAT_DIALOG_DATA, MatDialog, MatDialogRef } from '@angular/material/dialog';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { NO_ERRORS_SCHEMA } from '@angular/core';
@@ -16,6 +16,9 @@ import { MerchantDialogComponent } from './merchant-dialog.component';
 import { FormField } from '../../models/form-field.model';
 import { ColumnType } from '../../enums/column.enum';
 import { MerchantDialogType } from '../../enums/merchant-dialog-type.enum';
+import { GenericDialogComponent } from '../generic-dialog/generic-dialog.component';
+import { CustomDialogConfigUtil } from '../../config/custom-dialog-config';
+import { ModalData } from '../../models/dialog-data.model';
 
 const matDialogRefStub = {
 	close: jest.fn()
@@ -40,6 +43,10 @@ describe('MerchantDialogComponent', () => {
 	let translateService: TranslateService;
 
 	beforeEach(async () => {
+		global.structuredClone = jest.fn((val) => {
+			return JSON.parse(JSON.stringify(val));
+		});
+
 		await TestBed.configureTestingModule({
 			declarations: [MerchantDialogComponent],
 			providers: [
@@ -436,4 +443,87 @@ describe('MerchantDialogComponent', () => {
 			expect(result).toBe(0);
 		});
 	});
+
+	describe('showWarningDialog', () => {
+		it('should open a warning dialog and close the dialogRef if confirmed', () => {
+			const mockDialogRef = {
+				afterClosed: jest.fn().mockReturnValue(of(true)) 
+			};
+
+			jest.spyOn(component['dialog'], 'open').mockReturnValue(mockDialogRef as any);
+
+			component['showWarningDialog']();
+
+			expect(component['dialog'].open).toHaveBeenCalledWith(
+				GenericDialogComponent,
+				CustomDialogConfigUtil.createMessageModal(
+					new ModalData(
+						'general.warning',
+						'',
+						'rejectMerchant.warning',
+						'general.button.stay',
+						'general.button.cancel',
+						false,
+						'',
+						true,
+						'warning'
+					),
+					'400px'
+				)
+			);
+
+			expect(component['dialogRef'].close).toHaveBeenCalled();
+		});
+
+		it('should not close the dialogRef if not confirmed', () => {
+			const mockDialogRef = {
+				afterClosed: jest.fn().mockReturnValue(of(false)) 
+			};
+
+			jest.spyOn(component['dialog'], 'open').mockReturnValue(mockDialogRef as any);
+
+			component['showWarningDialog']();
+
+			expect(component['dialog'].open).toHaveBeenCalled();
+		});
+	});
+
+	describe('closeDialog', () => {
+		beforeEach(() => {
+			// Reset the form before each test
+			component.form = new FormGroup({
+				reason: new FormControl(''), // Start with an empty reason
+				// Initialize other controls as necessary
+			});
+		});
+	
+		it('should show warning dialog when reason is provided', () => {
+			// Set the reason value to simulate user input
+			component.form.get('reason')?.setValue('Some reason');
+	
+			// Spy on the showWarningDialog method
+			const showWarningDialogSpy = jest.spyOn(component as any, 'showWarningDialog');
+	
+			// Call closeDialog
+			component.closeDialog();
+	
+			// Verify that the warning dialog is shown
+			expect(showWarningDialogSpy).toHaveBeenCalled();
+			// Ensure the dialogRef is not closed
+			expect(matDialogRefStub.close).not.toHaveBeenCalled();
+		});
+	
+		it('should close the dialog with success when reason is not provided', () => {
+			// Ensure reason is empty
+			component.form.get('reason')?.setValue('');
+	
+			// Call closeDialog
+			component.closeDialog('success_code');
+	
+			// Verify that the dialogRef is closed with the provided success code
+			expect(matDialogRefStub.close).toHaveBeenCalledWith('success_code');
+		});
+	});
+	
+
 });
