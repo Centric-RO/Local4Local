@@ -49,7 +49,16 @@ export class InvitationsComponent implements OnInit {
 	}
 
 	public openInviteMerchantsDialog(): void {
-		this.dialog.open(InviteMerchantDialogComponent, CustomDialogConfigUtil.GENERIC_MODAL_CONFIG);
+		this.dialog
+			.open(InviteMerchantDialogComponent, CustomDialogConfigUtil.GENERIC_MODAL_CONFIG)
+			.afterClosed()
+			.subscribe((result) => {
+				if (!result) {
+					return;
+				}
+
+				this.initData(0, this.currentPageSize);
+			});
 	}
 
 	public onPageChange(event: PageEvent): void {
