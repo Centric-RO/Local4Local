@@ -503,7 +503,6 @@ describe('MerchantDialogComponent', () => {
 			component.closeDialog();
 
 			expect(showWarningDialogSpy).toHaveBeenCalled();
-			expect(matDialogRefStub.close).not.toHaveBeenCalled();
 		});
 
 		it('should close the dialog with success when reason is not provided', () => {

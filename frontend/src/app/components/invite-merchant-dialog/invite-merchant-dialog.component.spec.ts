@@ -11,6 +11,7 @@ import { MatChipInput, MatChipInputEvent, MatChipsModule } from '@angular/materi
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { BrowserAnimationsModule, NoopAnimationsModule } from '@angular/platform-browser/animations';
+import { GenericDialogComponent } from '../generic-dialog/generic-dialog.component';
 
 describe('InviteMerchantDialogComponent', () => {
 	let component: InviteMerchantDialogComponent;
@@ -51,7 +52,7 @@ describe('InviteMerchantDialogComponent', () => {
 		} as any;
 
 		await TestBed.configureTestingModule({
-			declarations: [InviteMerchantDialogComponent],
+			declarations: [InviteMerchantDialogComponent, GenericDialogComponent],
 			imports: [
 				TranslateModule.forRoot(),
 				ReactiveFormsModule,
@@ -223,5 +224,15 @@ describe('InviteMerchantDialogComponent', () => {
 
 		expect(dialogSpy).toHaveBeenCalled();
 		expect(dialogRefStub.close).toHaveBeenCalled();
+	});
+
+	it('should call showWarningDialog if there are form changes', () => {
+		jest.spyOn(component, 'hasFormChanges').mockReturnValue(true);
+		const showWarningDialogSpy = jest.spyOn(component as any, 'showWarningDialog');
+
+		component.closeDialog();
+
+		expect(component.hasFormChanges).toHaveBeenCalled();
+		expect(showWarningDialogSpy).toHaveBeenCalled();
 	});
 });
