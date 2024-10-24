@@ -133,4 +133,15 @@ describe('InvitationsComponent', () => {
 		const formattedDate = component['formatDate'](invalidDateString);
 		expect(formattedDate).toBe('Invalid Date');
 	});
+
+	it('should not call initData when dialog result is null', () => {
+        matDialogMock.open.mockReturnValue({
+            afterClosed: jest.fn().mockReturnValue(of(null)) 
+        });
+
+        const initDataSpy = jest.spyOn(component as any, 'initData');
+        component.openInviteMerchantsDialog();
+
+        expect(initDataSpy).not.toHaveBeenCalled(); 
+    });
 });
