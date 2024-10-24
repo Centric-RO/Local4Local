@@ -1,5 +1,5 @@
 @use '../.././../../libs/shared-assets/_styles/mixins.scss' as mixins;
-@import '../../../../libs/shared-assets/_styles/common-table.scss';
+@use '../../../../libs/shared-assets/_styles/common-table.scss';
 
 ::ng-deep {
     .mdc-tooltip__surface {
