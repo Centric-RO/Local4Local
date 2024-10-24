@@ -447,7 +447,7 @@ describe('MerchantDialogComponent', () => {
 	describe('showWarningDialog', () => {
 		it('should open a warning dialog and close the dialogRef if confirmed', () => {
 			const mockDialogRef = {
-				afterClosed: jest.fn().mockReturnValue(of(true)) 
+				afterClosed: jest.fn().mockReturnValue(of(true))
 			};
 
 			jest.spyOn(component['dialog'], 'open').mockReturnValue(mockDialogRef as any);
@@ -477,7 +477,7 @@ describe('MerchantDialogComponent', () => {
 
 		it('should not close the dialogRef if not confirmed', () => {
 			const mockDialogRef = {
-				afterClosed: jest.fn().mockReturnValue(of(false)) 
+				afterClosed: jest.fn().mockReturnValue(of(false))
 			};
 
 			jest.spyOn(component['dialog'], 'open').mockReturnValue(mockDialogRef as any);
@@ -490,40 +490,28 @@ describe('MerchantDialogComponent', () => {
 
 	describe('closeDialog', () => {
 		beforeEach(() => {
-			// Reset the form before each test
 			component.form = new FormGroup({
-				reason: new FormControl(''), // Start with an empty reason
-				// Initialize other controls as necessary
+				reason: new FormControl('')
 			});
 		});
-	
+
 		it('should show warning dialog when reason is provided', () => {
-			// Set the reason value to simulate user input
 			component.form.get('reason')?.setValue('Some reason');
-	
-			// Spy on the showWarningDialog method
+
 			const showWarningDialogSpy = jest.spyOn(component as any, 'showWarningDialog');
-	
-			// Call closeDialog
+
 			component.closeDialog();
-	
-			// Verify that the warning dialog is shown
+
 			expect(showWarningDialogSpy).toHaveBeenCalled();
-			// Ensure the dialogRef is not closed
 			expect(matDialogRefStub.close).not.toHaveBeenCalled();
 		});
-	
+
 		it('should close the dialog with success when reason is not provided', () => {
-			// Ensure reason is empty
 			component.form.get('reason')?.setValue('');
-	
-			// Call closeDialog
+
 			component.closeDialog('success_code');
-	
-			// Verify that the dialogRef is closed with the provided success code
+
 			expect(matDialogRefStub.close).toHaveBeenCalledWith('success_code');
 		});
 	});
-	
-
 });
