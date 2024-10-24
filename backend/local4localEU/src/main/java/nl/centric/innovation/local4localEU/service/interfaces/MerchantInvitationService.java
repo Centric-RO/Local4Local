@@ -5,4 +5,6 @@ import nl.centric.innovation.local4localEU.exception.CustomException.DtoValidate
 
 public interface MerchantInvitationService {
 	void save(InviteMerchantDto inviteSupplierDto, String language) throws DtoValidateException;
+
+    Integer countInvitations();
 }

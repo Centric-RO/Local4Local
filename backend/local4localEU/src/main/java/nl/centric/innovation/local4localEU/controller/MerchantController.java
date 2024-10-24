@@ -2,7 +2,8 @@ package nl.centric.innovation.local4localEU.controller;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.List;import java.util.UUID;
+import java.util.List;
+import java.util.UUID;
 
 import nl.centric.innovation.local4localEU.dto.RejectMerchantDto;
 import nl.centric.innovation.local4localEU.exception.CustomException.TalerException;
@@ -74,6 +75,12 @@ public class MerchantController {
     @Secured({Role.ROLE_MANAGER})
     public ResponseEntity<Long> countAllMerchants() {
         return ResponseEntity.ok(merchantService.countAll());
+    }
+
+    @RequestMapping(path = "/invitations/count", method = RequestMethod.GET)
+    @Secured({Role.ROLE_MANAGER})
+    public ResponseEntity<Integer> countInvitations() throws DtoValidateException {
+        return ResponseEntity.ok(merchantInvitationService.countInvitations());
     }
 
     @RequestMapping(path = "/invite", method = RequestMethod.POST)

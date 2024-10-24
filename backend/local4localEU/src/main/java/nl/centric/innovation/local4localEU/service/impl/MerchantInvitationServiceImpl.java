@@ -17,52 +17,58 @@ import nl.centric.innovation.local4localEU.service.interfaces.MerchantInvitation
 
 @Service
 @RequiredArgsConstructor
-@PropertySource({ "classpath:errorcodes.properties" })
+@PropertySource({"classpath:errorcodes.properties"})
 public class MerchantInvitationServiceImpl implements MerchantInvitationService {
 
-	private final EmailService emailService;
+    private final EmailService emailService;
 
-	private final MerchantInvitationRepository merchantInvitationRepository;
+    private final MerchantInvitationRepository merchantInvitationRepository;
 
-	@Value("${error.constraint.duplicate}")
-	private String duplicateValue;
+    @Value("${error.constraint.duplicate}")
+    private String duplicateValue;
 
-	@Value("${error.TooManyEmails}")
-	private String errorTooManyEmails;
+    @Value("${error.TooManyEmails}")
+    private String errorTooManyEmails;
 
-	@Value("${local4localEU.server.name}")
-	private String baseURL;
+    @Value("${local4localEU.server.name}")
+    private String baseURL;
 
-	@Value("${error.general.entityValidate}")
-	private String errorEntityValidate;	
-	@Override
-	public void save(InviteMerchantDto inviteMerchantDto, String language) throws DtoValidateException {
+    @Value("${error.general.entityValidate}")
+    private String errorEntityValidate;
 
-		if (inviteMerchantDto.emails().size() > 50) {
-			throw new DtoValidateException(errorTooManyEmails);
-		}
+    @Override
+    public void save(InviteMerchantDto inviteMerchantDto, String language) throws DtoValidateException {
 
-		if (inviteMerchantDto.message() == null || inviteMerchantDto.message().isEmpty() || inviteMerchantDto.message().length() > 1024) {
-			throw new DtoValidateException(errorEntityValidate);
-		}
+        if (inviteMerchantDto.emails().size() > 50) {
+            throw new DtoValidateException(errorTooManyEmails);
+        }
 
-		Set<String> processedEmails = new HashSet<>();
+        if (inviteMerchantDto.message() == null || inviteMerchantDto.message().isEmpty() || inviteMerchantDto.message().length() > 1024) {
+            throw new DtoValidateException(errorEntityValidate);
+        }
 
-		for (String email : inviteMerchantDto.emails()) {
+        Set<String> processedEmails = new HashSet<>();
 
-			if (processedEmails.contains(email)) {
-				throw new DtoValidateException(duplicateValue);
-			}
+        for (String email : inviteMerchantDto.emails()) {
 
-			MerchantInvitation InviteMerchant = MerchantInvitation.builder().email(email)
-					.message(inviteMerchantDto.message()).build();
-			merchantInvitationRepository.save(InviteMerchant);
+            if (processedEmails.contains(email)) {
+                throw new DtoValidateException(duplicateValue);
+            }
 
-			processedEmails.add(email);
-		}
-		String url = baseURL;
-		String[] emailsArray = processedEmails.toArray(new String[0]);
-		emailService.sendInviteMerchantEmail(url, language, emailsArray, inviteMerchantDto.message());
+            MerchantInvitation InviteMerchant = MerchantInvitation.builder().email(email)
+                    .message(inviteMerchantDto.message()).build();
+            merchantInvitationRepository.save(InviteMerchant);
 
-	}
+            processedEmails.add(email);
+        }
+        String url = baseURL;
+        String[] emailsArray = processedEmails.toArray(new String[0]);
+        emailService.sendInviteMerchantEmail(url, language, emailsArray, inviteMerchantDto.message());
+
+    }
+
+    @Override
+    public Integer countInvitations() {
+        return merchantInvitationRepository.countByIsActiveTrue();
+    }
 }

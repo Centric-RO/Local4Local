@@ -1,10 +1,12 @@
 package nl.centric.innovation.local4localEU.unit;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 
@@ -25,10 +27,10 @@ import nl.centric.innovation.local4localEU.service.interfaces.EmailService;
 @ExtendWith(MockitoExtension.class)
 public class MerchantInvitationServiceImplTest {
 
-	@InjectMocks
+    @InjectMocks
     private MerchantInvitationServiceImpl merchantInvitationService;
 
-	@Mock
+    @Mock
     private EmailService emailService;
 
     @Mock
@@ -71,7 +73,7 @@ public class MerchantInvitationServiceImplTest {
             merchantInvitationService.save(dto, "en");
         });
     }
-    
+
     @Test
     void GivenValidInviteMerchantDto_WhenSave_ThenMerchantInvitationIsSavedAndEmailsAreSent() throws DtoValidateException {
         InviteMerchantDto dto = InviteMerchantDto.builder()
@@ -83,5 +85,18 @@ public class MerchantInvitationServiceImplTest {
 
         verify(merchantInvitationRepository, times(2)).save(any(MerchantInvitation.class));
         verify(emailService, times(1)).sendInviteMerchantEmail(any(), anyString(), any(), anyString());
+    }
+
+    @Test
+    void GivenActiveInvitations_WhenCountInvitations_ThenReturnCorrectCount() {
+        // Arrange
+        Integer activeInvitationsCount = 10; // Example count value
+        when(merchantInvitationRepository.countByIsActiveTrue()).thenReturn(activeInvitationsCount);
+
+        // Act
+        Integer result = merchantInvitationService.countInvitations();
+
+        // Assert
+        assertEquals(activeInvitationsCount, result);
     }
 }
