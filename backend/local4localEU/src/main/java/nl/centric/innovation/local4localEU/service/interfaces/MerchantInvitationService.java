@@ -10,4 +10,6 @@ public interface MerchantInvitationService {
 	void save(InviteMerchantDto inviteSupplierDto, String language) throws DtoValidateException;
 
     List<InvitationDto> getAllLatestSentToEmail(Integer page, Integer size) throws DtoValidateException;
+
+    Integer countInvitations();
 }

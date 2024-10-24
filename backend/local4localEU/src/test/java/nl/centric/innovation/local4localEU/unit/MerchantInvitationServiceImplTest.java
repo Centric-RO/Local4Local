@@ -120,4 +120,17 @@ public class MerchantInvitationServiceImplTest {
         assertEquals("test1@example.com", result.get(0).email());
         assertEquals("test2@example.com", result.get(1).email());
     }
+
+    @Test
+    void GivenActiveInvitations_WhenCountInvitations_ThenReturnCorrectCount() {
+        // Arrange
+        Integer activeInvitationsCount = 10; // Example count value
+        when(merchantInvitationRepository.countByIsActiveTrue()).thenReturn(activeInvitationsCount);
+
+        // Act
+        Integer result = merchantInvitationService.countInvitations();
+
+        // Assert
+        assertEquals(activeInvitationsCount, result);
+    }
 }

@@ -87,6 +87,12 @@ public class MerchantController {
         return ResponseEntity.ok(merchantService.countAll());
     }
 
+    @RequestMapping(path = "/invitations/count", method = RequestMethod.GET)
+    @Secured({Role.ROLE_MANAGER})
+    public ResponseEntity<Integer> countInvitations() throws DtoValidateException {
+        return ResponseEntity.ok(merchantInvitationService.countInvitations());
+    }
+
     @RequestMapping(path = "/invite", method = RequestMethod.POST)
     @Secured({Role.ROLE_MANAGER})
     public ResponseEntity<Void> inviteSupplier(@RequestBody InviteMerchantDto inviteMerchantDto,
