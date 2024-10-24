@@ -29,7 +29,7 @@ export class CustomDialogConfigUtil {
 		}
 	};
 
-	public static createMessageModal(successModal: ModalData, width: string = '600px'): MatDialogConfig {
+	public static createMessageModal(successModal: ModalData, width = '600px'): MatDialogConfig {
 		const config: MatDialogConfig = structuredClone(this.MESSAGE_MODAL_CONFIG);
 		config.width = width;
 
